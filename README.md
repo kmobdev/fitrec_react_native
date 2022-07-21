@@ -13,10 +13,11 @@ This is the most recent code for the mobile app. Still under development and not
 - [React Navigation](https://github.com/react-navigation/react-navigation) --> React Navigation for app routes.
 
 ## System Requirements
+
 - **Node Version** >= 16.15.0
 - **NPM Version** >= 8.5.5
 - **YARN Version** >= 1.22.18
-- **CocoaPods Version** >= 1.11.3 
+- **CocoaPods Version** >= 1.11.3
 - **Xcode Version** >= 13.4.1
 
 ## Getting set up
