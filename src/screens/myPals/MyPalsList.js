@@ -427,19 +427,15 @@ class MyPalsList extends Component {
             style={[
               GlobalTabs.tabLeft,
               this.state.tabSelectPals && GlobalTabs.tabActive,
-            ]}
-          >
-            <View>
-              <Text
-                style={
-                  this.state.tabSelectPals
-                    ? GlobalTabs.tabsTextActive
-                    : GlobalTabs.tabsText
-                }
-              >
-                Pals
-              </Text>
-            </View>
+            ]}>
+            <Text
+              style={
+                this.state.tabSelectPals
+                  ? GlobalTabs.tabsTextActive
+                  : GlobalTabs.tabsText
+              }>
+              Pals
+            </Text>
           </Pressable>
           <Pressable
             onPress={() => this.changeTab(false)}
@@ -448,17 +444,15 @@ class MyPalsList extends Component {
               !this.state.tabSelectPals && GlobalTabs.tabActive,
             ]}
           >
-            <View>
-              <Text
-                style={
-                  !this.state.tabSelectPals
-                    ? GlobalTabs.tabsTextActive
-                    : GlobalTabs.tabsText
-                }
-              >
-                Requests
-              </Text>
-            </View>
+            <Text
+              style={
+                !this.state.tabSelectPals
+                  ? GlobalTabs.tabsTextActive
+                  : GlobalTabs.tabsText
+              }
+            >
+              Requests
+            </Text>
           </Pressable>
         </View>
         {this.state.tabSelectPals ? (
@@ -497,16 +491,12 @@ class MyPalsList extends Component {
                     extraData={this.state.refresh}
                     renderItem={({ item }) => (
                       <Pressable
-                        style={{
-                          flexDirection: "row",
-                          width: "100%",
-                          padding: 10,
-                        }}
+                        style={styles.imagePressable}
                         onPress={() => this.redirectionViewProfile(item.id)}
                       >
                         {undefined === item.image || null === item.image ? (
                           <Image
-                            style={{ height: 80, width: 80 }}
+                            style={styles.profileImage}
                             source={require("../../assets/imgProfileReadOnly2.png")}
                           />
                         ) : (
@@ -1098,6 +1088,15 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginRight: 5,
     marginBottom: 5,
+  },
+  imagePressable: {
+    flexDirection: "row",
+    width: "100%",
+    padding: 10,
+  },
+  imageProfile: {
+    height: 80,
+    width: 80
   },
 });
 

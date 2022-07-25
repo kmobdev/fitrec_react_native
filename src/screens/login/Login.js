@@ -110,6 +110,12 @@ class Login extends Component {
     }, 2000);
   };
 
+  showTutorialHandler = () => {
+    this.setState({
+      showTutorial: true,
+    });
+  }
+
   render() {
     return (
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
@@ -119,21 +125,17 @@ class Login extends Component {
         >
           <View
             style={[
-              {
-                width: "100%",
-                height: "100%",
-                backgroundColor: "rgba(0, 0, 0, 0.2)",
-              },
+              styles.mainView,
               this.getKeyboardOffsetStyle(),
             ]}
           >
-            <View style={{ width: "100%", alignItems: "center" }}>
+            <View style={styles.imageView}>
               <Image
                 source={require("../../assets/logoWithName.png")}
                 style={{ marginTop: 40 }}
               />
             </View>
-            <View style={[styles.Content, { marginTop: -40 }]}>
+            <View style={styles.Content}>
               <View style={styles.SectionStyle}>
                 {"" === this.state.username ? (
                   <Image
@@ -232,11 +234,7 @@ class Login extends Component {
             <View style={[styles.viewSection, styles.viewSectionFooter]}>
               <View style={styles.switchButtons}>
                 <Pressable
-                  onPress={() => {
-                    this.setState({
-                      showTutorial: true,
-                    });
-                  }}
+                  onPress={this.showTutorialHandler}
                   style={[styles.roundButton, styles.roundButtonSwitchLeft]}
                 >
                   <Text style={styles.textButton}>TAKE A TOUR</Text>
@@ -278,6 +276,16 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
+    marginTop: -40
+  },
+  mainView: {
+    width: "100%",
+    height: "100%",
+    backgroundColor: "rgba(0, 0, 0, 0.2)",
+  },
+  imageView: {
+    width: "100%",
+    alignItems: "center"
   },
   SectionStyle: {
     flexDirection: "row",
