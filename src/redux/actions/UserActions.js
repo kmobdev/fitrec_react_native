@@ -24,13 +24,12 @@ import {
 } from "react-native-fbsdk";
 import { actionListMessages } from "./ChatActions";
 import { actionGetGroups, actionGetGroupInvitations } from "./GroupActions";
-// import appleAuth, {
-//   AppleAuthRequestOperation,
-//   AppleAuthRequestScope,
-//   AppleAuthCredentialState,
-//   AppleAuthError,
-// } from "@invertase/react-native-apple-authentication";
-import { appleAuth } from '@invertase/react-native-apple-authentication';
+import appleAuth, {
+  AppleAuthRequestOperation,
+  AppleAuthRequestScope,
+  AppleAuthCredentialState,
+  AppleAuthError,
+} from "@invertase/react-native-apple-authentication";
 import {
   actionMessage,
   actionDispatch,
@@ -320,154 +319,16 @@ export const actionUserLoginFB = () => {
  * Function that identifies a user with the Apple ID
  */
 export const actionUserLoginApple = () => {
-
-  // performs login request
-  // const appleAuthRequestResponse = await appleAuth.performRequest({
-  //   requestedOperation: appleAuth.Operation.LOGIN,
-  //   requestedScopes: [appleAuth.Scope.EMAIL, appleAuth.Scope.FULL_NAME],
-  // });
-
-  // // get current authentication state for user
-  // // /!\ This method must be tested on a real device. On the iOS simulator it always throws an error.
-  // const credentialState = await appleAuth.getCredentialStateForUser(appleAuthRequestResponse.user);
-
-  // // use credentialState response to ensure the user is authenticated
-  // if (credentialState === appleAuth.State.AUTHORIZED) {
-  //   if (appleAuthRequestResponse.identityToken) {
-  //     if (appleAuthRequestResponse.identityToken) {
-  //       let oProvider = new oFirebase.auth.OAuthProvider(
-  //         "apple.com"
-  //       );
-  //       // firebase functinality starting from here
-  //       const credential = oProvider.credential({
-  //         idToken: appleAuthRequestResponse.identityToken,
-  //         rawNonce: appleAuthRequestResponse.nonce,
-  //       });
-  //       oFirebase
-  //         .auth()
-  //         .signInWithCredential(credential)
-  //         .then((oLoginSuccess) => {
-  //           database
-  //             .ref(
-  //               Constants.FIREBASE_CONFIG.NODE_ACCOUNTS_DB +
-  //               oLoginSuccess.user.uid
-  //             )
-  //             .once("value", async function (oAccountSnap) {
-  //               if (oAccountSnap.exists()) {
-  //                 let oAccount = oAccountSnap.val();
-  //                 let oAccountData = {
-  //                   key: "",
-  //                   email: "",
-  //                   id: "",
-  //                   idPush: "",
-  //                   name: "",
-  //                   userId: "",
-  //                   username: "",
-  //                   provider: "",
-  //                   image: "",
-  //                 };
-  //                 oAccountData.key = oLoginSuccess.user.uid;
-  //                 oAccountData.active = oAccount.active;
-  //                 oAccountData.email = oAccount.email;
-  //                 oAccountData.id = oAccount.id;
-  //                 oAccountData.idPush = oAccount.idPush;
-  //                 oAccountData.name = oAccount.name;
-  //                 oAccountData.userId = oAccount.userId;
-  //                 oAccountData.username = oAccount.username;
-  //                 oAccountData.provider = oAccount.provider;
-  //                 oAccountData.image = oAccount.image;
-  //                 await setLoginDataLocalStorage({
-  //                   account: oAccountData,
-  //                 });
-  //                 database
-  //                   .ref(
-  //                     Constants.FIREBASE_CONFIG.NODE_ACCOUNTS_DB +
-  //                     oLoginSuccess.user.uid
-  //                   )
-  //                   .update({
-  //                     active: 1,
-  //                     online: true,
-  //                     lastLogin: Date(),
-  //                   });
-  //                 dispatch(
-  //                   actionDispatch(Actions.USER_LOGIN_SUCCESS, {
-  //                     account: oAccountData,
-  //                   })
-  //                 );
-  //               } else {
-  //                 if (oFirebase.auth().currentUser !== null)
-  //                   oFirebase
-  //                     .auth()
-  //                     .currentUser.delete()
-  //                     .then(function () {
-  //                       // User correctly deleted for not having a registered account
-  //                     })
-  //                     .catch(function (error) {
-  //                       // Problem to eliminate that user
-  //                     });
-  //                 dispatch(
-  //                   actionDispatch(
-  //                     Actions.USER_LOGIN_CREATE_ACCOUNT,
-  //                     {
-  //                       email:
-  //                         oSuccessApple.email !== null
-  //                           ? oSuccessApple.email
-  //                           : "",
-  //                       name:
-  //                         oSuccessApple.fullName.givenName !==
-  //                           null
-  //                           ? oSuccessApple.fullName.givenName +
-  //                           " " +
-  //                           oSuccessApple.fullName.familyName
-  //                           : "",
-  //                     }
-  //                   )
-  //                 );
-  //               }
-  //             });
-  //         })
-  //         .catch((oLoginError) => {
-  //           if (oFirebase.auth().currentUser !== null)
-  //             oFirebase
-  //               .auth()
-  //               .currentUser.delete()
-  //               .then(function () {
-  //                 // User correctly deleted for not having a registered account
-  //               })
-  //               .catch(function (error) {
-  //                 // Problem to eliminate that user from Firebase's authentication
-  //               });
-  //           dispatch(
-  //             actionDispatch(Actions.USER_LOGIN_CREATE_ACCOUNT, {
-  //               email:
-  //                 oSuccessApple.email !== null
-  //                   ? oSuccessApple.email
-  //                   : "",
-  //               name:
-  //                 oSuccessApple.fullName.givenName !== null
-  //                   ? oSuccessApple.fullName.givenName +
-  //                   " " +
-  //                   oSuccessApple.fullName.familyName
-  //                   : "",
-  //             })
-  //           );
-  //         })
-  //         .finally(() => dispatch(actionDeactivateLoading()));
-  //     }
-  //   } else {
-  //     dispatch(actionMessage(MESSAGE_ERROR));
-  //   }
-  // } else {
-  //   dispatch(actionMessage("Not authorized"));
-  // }
-
-
   return async (dispatch) => {
     dispatch(actionActiveLoading());
-    await appleAuth.performRequest({
-      requestedOperation: appleAuth.Operation.LOGIN,
-      requestedScopes: [appleAuth.Scope.EMAIL, appleAuth.Scope.FULL_NAME],
-    })
+    await appleAuth
+      .performRequest({
+        requestedOperation: AppleAuthRequestOperation.LOGIN,
+        requestedScopes: [
+          AppleAuthRequestScope.EMAIL,
+          AppleAuthRequestScope.FULL_NAME,
+        ],
+      })
       .then(async (oSuccessApple) => {
         console.log('oSuccessApple =====>>>> ', oSuccessApple);
         try {
@@ -484,7 +345,6 @@ export const actionUserLoginApple = () => {
                       let oProvider = new oFirebase.auth.OAuthProvider(
                         "apple.com"
                       );
-                      // firebase functinality starting from here
                       const credential = oProvider.credential({
                         idToken: oSuccessApple.identityToken,
                         rawNonce: oSuccessApple.nonce,

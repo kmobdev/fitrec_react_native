@@ -31,6 +31,7 @@ import {
   actionCleanMessage,
 } from "../../redux/actions/UserActions";
 import { APP_VERSION } from "../../Constants";
+import { Button, Input } from "../../components";
 
 class Login extends Component {
   constructor(props) {
@@ -75,11 +76,11 @@ class Login extends Component {
   componentWillReceiveProps = async (nextProps) => {
     if (!nextProps.login.status && nextProps.login.redirectSignIn) {
       if (nextProps.login.appleAccount !== null)
-        this.props.navigation.navigate("Register", {
+        this.navigateHandler("Register", {
           appleCredentials: nextProps.login.appleAccount,
         });
       else
-        this.props.navigation.navigate("Register", {
+        this.navigateHandler("Register", {
           userFBData: nextProps.login.appleAccount,
         });
     }
@@ -111,9 +112,15 @@ class Login extends Component {
   };
 
   showTutorialHandler = () => {
-    this.setState({
-      showTutorial: true,
-    });
+    this.setState({ showTutorial: true });
+  }
+
+  showVideoTutorialHandler = () => {
+    this.setState({ showVideoTutorial: true });
+  }
+
+  navigateHandler = (route) => {
+    this.props.navigation.navigate(route)
   }
 
   render() {
@@ -125,10 +132,13 @@ class Login extends Component {
         >
           <View
             style={[
-              styles.mainView,
+              {
+                width: "100%",
+                height: "100%",
+                backgroundColor: "rgba(0, 0, 0, 0.2)",
+              },
               this.getKeyboardOffsetStyle(),
-            ]}
-          >
+            ]}>
             <View style={styles.imageView}>
               <Image
                 source={require("../../assets/logoWithName.png")}
@@ -136,112 +146,77 @@ class Login extends Component {
               />
             </View>
             <View style={styles.Content}>
-              <View style={styles.SectionStyle}>
-                {"" === this.state.username ? (
-                  <Image
-                    source={require("../../assets/user.png")}
-                    style={styles.ImageStyle}
-                  />
-                ) : null}
-                <TextInput
-                  autoCapitalize={"none"}
-                  autoCompleteType={"username"}
-                  textContentType={"username"}
-                  style={styles.textInput}
-                  value={this.state.username}
-                  onChangeText={(text) => this.setState({ username: text })}
-                  onSubmitEditing={() => {
-                    this.secondTextInput.focus();
-                  }}
-                  blurOnSubmit={false}
-                />
-              </View>
-              <View style={styles.SectionStyle}>
-                {"" === this.state.password ? (
-                  <Image
-                    source={require("../../assets/password.png")}
-                    style={styles.ImageStyle}
-                  />
-                ) : null}
-                <TextInput
-                  ref={(input) => {
-                    this.secondTextInput = input;
-                  }}
-                  onSubmitEditing={() => {
-                    this.login();
-                  }}
-                  secureTextEntry={true}
-                  autoCapitalize={"none"}
-                  returnKeyType={"done"}
-                  textContentType={"password"}
-                  style={styles.textInput}
-                  value={this.state.password}
-                  onChangeText={(text) => this.setState({ password: text })}
-                />
-              </View>
-              <View style={styles.viewSection}>
-                <Pressable
-                  onPress={() => this.login()}
-                  style={[styles.roundButton, styles.loginButton]}
-                >
-                  <Text style={styles.loginText}>LOGIN NOW</Text>
-                  <Icon
-                    name="arrow-forward"
-                    color={GreenFitrecColor}
-                    size={22}
-                  />
-                </Pressable>
-              </View>
-              <View style={{ width: "100%" }}>
-                <View style={styles.viewSection}>
-                  <ButtonFacebook
-                    onPress={() => this.loginFB()}
-                    login={true}
-                    title="Sign in with Facebook"
-                  />
-                </View>
-              </View>
+              <Input
+                iconSource={"" === this.state.username && require("../../assets/user.png")}
+                autoCapitalize={"none"}
+                autoCompleteType={"username"}
+                textContentType={"username"}
+                // style={styles.textInput}
+                value={this.state.username}
+                onChangeText={(text) => this.setState({ username: text })}
+                onSubmitEditing={() => {
+                  this.secondTextInput.focus();
+                }}
+                blurOnSubmit={false}
+              />
+              <Input
+                ref={(input) => {
+                  this.secondTextInput = input;
+                }}
+                onSubmitEditing={() => {
+                  this.login();
+                }}
+                iconSource={"" === this.state.password && require("../../assets/password.png")}
+                secureTextEntry={true}
+                autoCapitalize={"none"}
+                returnKeyType={"done"}
+                textContentType={"password"}
+                style={styles.textInput}
+                value={this.state.password}
+                onChangeText={(text) => this.setState({ password: text })}
+              />
+              <Button
+                onPress={() => this.login()}
+                title={'LOGIN NOW'}
+              />
+              <ButtonFacebook
+                onPress={() => this.loginFB()}
+                login={true}
+                title="Sign in with Facebook"
+              />
               {Platform.OS === "ios" && (
-                <View style={{ width: "100%" }}>
-                  <View style={styles.viewSection}>
-                    <ButtonApple
-                      onPress={() => this.loginApple()}
-                      login={true}
-                      title="Sign in with Apple"
-                    />
-                  </View>
-                </View>
+                <ButtonApple
+                  onPress={() => this.loginApple()}
+                  login={true}
+                  title="Sign in with Apple"
+                />
               )}
-              <View style={styles.viewSection}>
-                <Pressable
-                  style={styles.touchableTextFree}
-                  onPress={() => {
-                    this.props.navigation.navigate("ForgotPassword");
-                  }}
-                >
-                  <Text style={styles.textFree}>FORGOT PASSWORD?</Text>
-                </Pressable>
-                <Pressable
-                  style={styles.touchableTextFree}
-                  onPress={() => {
-                    this.setState({ showVideoTutorial: true });
-                  }}
-                >
-                  <Text style={styles.textFree}>VIDEO APP TUTORIAL</Text>
-                </Pressable>
-              </View>
+              <Pressable
+                style={styles.touchableTextFree}
+                onPress={() => {
+                  this.navigateHandler("ForgotPassword");
+                }}
+              >
+                <Text style={styles.textFree}>FORGOT PASSWORD?</Text>
+              </Pressable>
+              <Pressable
+                style={styles.touchableTextFree}
+                onPress={this.showVideoTutorialHandler}
+              >
+                <Text style={styles.textFree}>VIDEO APP TUTORIAL</Text>
+              </Pressable>
             </View>
             <View style={[styles.viewSection, styles.viewSectionFooter]}>
               <View style={styles.switchButtons}>
                 <Pressable
                   onPress={this.showTutorialHandler}
-                  style={[styles.roundButton, styles.roundButtonSwitchLeft]}
+                  style={styles.roundButtonSwitchLeft}
                 >
                   <Text style={styles.textButton}>TAKE A TOUR</Text>
                 </Pressable>
                 <Pressable
-                  onPress={() => this.props.navigation.navigate("Register")}
-                  style={[styles.roundButton, styles.roundButtonSwitchRight]}
+                  onPress={() => this.navigateHandler("Register")}
+                  style={styles.roundButtonSwitchRight}
                 >
                   <Text style={styles.textButton}>SIGN UP</Text>
                 </Pressable>
@@ -276,25 +251,6 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    marginTop: -40
-  },
-  mainView: {
-    width: "100%",
-    height: "100%",
-    backgroundColor: "rgba(0, 0, 0, 0.2)",
-  },
-  imageView: {
-    width: "100%",
-    alignItems: "center"
-  },
-  SectionStyle: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    width: "95%",
-    borderBottomWidth: 0.5,
-    borderBottomColor: WhiteColor,
-    marginTop: "android" === Platform.OS ? 10 : 25,
   },
   ImageStyle: {
     height: 30,
@@ -354,12 +310,23 @@ const styles = StyleSheet.create({
     color: WhiteColor,
   },
   roundButtonSwitchLeft: {
+    borderRadius: 50,
+    justifyContent: "center",
+    backgroundColor: WhiteColor,
+    alignItems: "center",
+    height: 40,
     width: "47%",
     borderTopRightRadius: 0,
     borderBottomRightRadius: 0,
     backgroundColor: GreenFitrecColor,
   },
   roundButtonSwitchRight: {
+    width: "95%",
+    borderRadius: 50,
+    justifyContent: "center",
+    backgroundColor: WhiteColor,
+    alignItems: "center",
+    height: 40,
     width: "47%",
     borderTopLeftRadius: 0,
     borderBottomLeftRadius: 0,

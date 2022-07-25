@@ -88,7 +88,7 @@ class Blocks extends Component {
     })
   }
 
-  onLockHandler = () => {
+  onLockHandler = (item) => {
     this.setState({
       bShowQuestion: true,
       nQuestionId: item.id,
@@ -127,7 +127,7 @@ class Blocks extends Component {
                   </View>
                   <View style={styles.sectionButton}>
                     <Pressable
-                      onPress={this.onLockHandler}
+                      onPress={() => this.onLockHandler(item)}
                       style={styles.removeButton}
                       activeOpacity={0.8}
                     >
@@ -159,8 +159,19 @@ class Blocks extends Component {
           <TextInput
             placeholder={"Search"}
             value={this.state.search}
-            onChangeText={(sValue) => this.setState({ search: sValue })}
-            style={styles.textInput}
+            onChangeText={(sValue) => {
+              this.setState({ search: sValue });
+            }}
+            style={{
+              backgroundColor: WhiteColor,
+              width: "auto",
+              padding: 7,
+              borderRadius: 5,
+              margin: 10,
+              marginTop: 20,
+              borderWidth: 0.5,
+              borderColor: "#777777",
+            }}
           />
         </View>
         <ScrollView
@@ -186,15 +197,33 @@ class Blocks extends Component {
         <ToastQuestionGeneric
           visible={this.state.bShowQuestion}
           titleBig="Unblock User"
-          title={"Are you sure you want to unblock " + this.state.sQuestionName + "?"}
+          title={
+            "Are you sure you want to unblock " + this.state.sQuestionName + "?"
+          }
           options={
             <View style={ToastQuestionStyles.viewButtons}>
               <Pressable
-                onPress={this.onCancleHandler}
-                style={styles.button}>
+                onPress={() =>
+                  this.setState({
+                    bShowQuestion: false,
+                    nQuestionId: null,
+                    sQuestionName: null,
+                  })
+                }
+                style={[
+                  ToastQuestionStyles.button,
+                  { backgroundColor: GreenFitrecColor, marginRight: 10 },
+                ]}
+              >
                 <Text style={ToastQuestionStyles.textButton}>Cancel</Text>
               </Pressable>
-              <Pressable onPress={this.unblock} style={styles.buttonUnblock}>
+              <Pressable
+                onPress={() => this.unblock()}
+                style={[
+                  ToastQuestionStyles.button,
+                  { backgroundColor: SignUpColor },
+                ]}
+              >
                 <Text style={ToastQuestionStyles.textButton}>Ok</Text>
               </Pressable>
             </View>
@@ -220,16 +249,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     padding: 10,
     paddingLeft: 15,
-  },
-  textInput: {
-    backgroundColor: WhiteColor,
-    width: "auto",
-    padding: 7,
-    borderRadius: 5,
-    margin: 10,
-    marginTop: 20,
-    borderWidth: 0.5,
-    borderColor: "#777777",
   },
   containerRow: {
     width: "100%",
@@ -275,15 +294,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: "20%",
   },
-  button: {
-    ...ToastQuestionStyles.button,
-    backgroundColor: GreenFitrecColor,
-    marginRight: 10,
-  },
-  buttonUnblock: {
-    ...ToastQuestionStyles.button,
-    backgroundColor: SignUpColor
-  }
 });
 
 const mapStateToProps = (state) => ({

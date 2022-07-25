@@ -117,39 +117,6 @@ class Followers extends Component {
       );
   };
 
-  onTrashHandler = () => {
-    this.setState({
-      questionUnfollow: true,
-      questionId: item.id_follow,
-      questionName: item.name,
-    })
-  }
-
-  onTrashFollowersHandler = () => {
-    this.setState({
-      questionRemove: true,
-      questionId: item.id_follow,
-      questionName: item.name,
-    })
-  }
-
-  onCancleHandler = () => {
-    this.setState({
-      questionUnfollow: false,
-      questionId: null,
-      questionName: null,
-    })
-  }
-
-  onCancleQuestionHandler = () => {
-    this.setState({
-      questionRemove: false,
-      questionId: null,
-      questionName: null,
-    })
-
-  }
-
   renderFollowing = () => {
     return (
       <>
@@ -184,7 +151,17 @@ class Followers extends Component {
                     <Text style={styles.textUsername}>@{item.username}</Text>
                   </Pressable>
                   <View style={styles.sectionButton}>
-                    <Pressable onPress={this.onTrashHandler} style={styles.removeButton}>
+                    <Pressable
+                      onPress={() =>
+                        this.setState({
+                          questionUnfollow: true,
+                          questionId: item.id_follow,
+                          questionName: item.name,
+                        })
+                      }
+                      style={styles.removeButton}
+                      activeOpacity={0.8}
+                    >
                       <Icon
                         name="trash"
                         size={24}
@@ -242,7 +219,17 @@ class Followers extends Component {
                     <Text style={styles.textUsername}>@{item.username}</Text>
                   </Pressable>
                   <View style={styles.sectionButton}>
-                    <Pressable onPress={this.onTrashFollowersHandler} style={styles.removeButton}>
+                    <Pressable
+                      onPress={() =>
+                        this.setState({
+                          questionRemove: true,
+                          questionId: item.id_follow,
+                          questionName: item.name,
+                        })
+                      }
+                      style={styles.removeButton}
+                      activeOpacity={0.8}
+                    >
                       <Icon
                         name="trash"
                         size={24}
@@ -314,9 +301,28 @@ class Followers extends Component {
             onChangeText={(sValue) => {
               this.setState({ search: sValue });
             }}
-            style={styles.textInput}
+            style={{
+              backgroundColor: WhiteColor,
+              width: "auto",
+              padding: 7,
+              borderRadius: 5,
+              margin: 10,
+              marginTop: 20,
+              borderWidth: 0.5,
+              borderColor: "#777777",
+            }}
           />
         </View>
+        {/* {
+                    this.state.activeTab ?
+                        <View style={styles.containerTitle}>
+                            <Text style={styles.title}>Followers</Text>
+                        </View>
+                        :
+                        <View style={styles.containerTitle}>
+                            <Text style={styles.title}>Following</Text>
+                        </View>
+                } */}
         <ScrollView
           refreshControl={
             <RefreshControl
@@ -347,10 +353,28 @@ class Followers extends Component {
           }
           options={
             <View style={ToastQuestionStyles.viewButtons}>
-              <Pressable onPress={this.onCancleHandler} style={styles.button}>
+              <Pressable
+                onPress={() =>
+                  this.setState({
+                    questionUnfollow: false,
+                    questionId: null,
+                    questionName: null,
+                  })
+                }
+                style={[
+                  ToastQuestionStyles.button,
+                  { backgroundColor: GreenFitrecColor, marginRight: 10 },
+                ]}
+              >
                 <Text style={ToastQuestionStyles.textButton}>Cancel</Text>
               </Pressable>
-              <Pressable onPress={this.unfollow} style={styles.buttonUnblock}>
+              <Pressable
+                onPress={() => this.unfollow()}
+                style={[
+                  ToastQuestionStyles.button,
+                  { backgroundColor: SignUpColor },
+                ]}
+              >
                 <Text style={ToastQuestionStyles.textButton}>Ok</Text>
               </Pressable>
             </View>
@@ -366,10 +390,28 @@ class Followers extends Component {
           }
           options={
             <View style={ToastQuestionStyles.viewButtons}>
-              <Pressable onPress={this.onCancleQuestionHandler} style={styles.button}>
+              <Pressable
+                onPress={() =>
+                  this.setState({
+                    questionRemove: false,
+                    questionId: null,
+                    questionName: null,
+                  })
+                }
+                style={[
+                  ToastQuestionStyles.button,
+                  { backgroundColor: GreenFitrecColor, marginRight: 10 },
+                ]}
+              >
                 <Text style={ToastQuestionStyles.textButton}>Cancel</Text>
               </Pressable>
-              <Pressable onPress={() => this.remove()} style={styles.buttonUnblock}>
+              <Pressable
+                onPress={() => this.remove()}
+                style={[
+                  ToastQuestionStyles.button,
+                  { backgroundColor: SignUpColor },
+                ]}
+              >
                 <Text style={ToastQuestionStyles.textButton}>Ok</Text>
               </Pressable>
             </View>
@@ -440,25 +482,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: "20%",
   },
-  textInput: {
-    backgroundColor: WhiteColor,
-    width: "auto",
-    padding: 7,
-    borderRadius: 5,
-    margin: 10,
-    marginTop: 20,
-    borderWidth: 0.5,
-    borderColor: "#777777",
-  },
-  button: {
-    ...ToastQuestionStyles.button,
-    backgroundColor: GreenFitrecColor,
-    marginRight: 10,
-  },
-  buttonUnblock: {
-    ...ToastQuestionStyles.button,
-    backgroundColor: SignUpColor
-  }
 });
 
 const mapStateToProps = (state) => ({

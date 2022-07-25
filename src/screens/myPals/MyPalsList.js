@@ -427,15 +427,19 @@ class MyPalsList extends Component {
             style={[
               GlobalTabs.tabLeft,
               this.state.tabSelectPals && GlobalTabs.tabActive,
-            ]}>
-            <Text
-              style={
-                this.state.tabSelectPals
-                  ? GlobalTabs.tabsTextActive
-                  : GlobalTabs.tabsText
-              }>
-              Pals
-            </Text>
+            ]}
+          >
+            <View>
+              <Text
+                style={
+                  this.state.tabSelectPals
+                    ? GlobalTabs.tabsTextActive
+                    : GlobalTabs.tabsText
+                }
+              >
+                Pals
+              </Text>
+            </View>
           </Pressable>
           <Pressable
             onPress={() => this.changeTab(false)}
@@ -444,15 +448,17 @@ class MyPalsList extends Component {
               !this.state.tabSelectPals && GlobalTabs.tabActive,
             ]}
           >
-            <Text
-              style={
-                !this.state.tabSelectPals
-                  ? GlobalTabs.tabsTextActive
-                  : GlobalTabs.tabsText
-              }
-            >
-              Requests
-            </Text>
+            <View>
+              <Text
+                style={
+                  !this.state.tabSelectPals
+                    ? GlobalTabs.tabsTextActive
+                    : GlobalTabs.tabsText
+                }
+              >
+                Requests
+              </Text>
+            </View>
           </Pressable>
         </View>
         {this.state.tabSelectPals ? (
@@ -491,12 +497,16 @@ class MyPalsList extends Component {
                     extraData={this.state.refresh}
                     renderItem={({ item }) => (
                       <Pressable
-                        style={styles.imagePressable}
+                        style={{
+                          flexDirection: "row",
+                          width: "100%",
+                          padding: 10,
+                        }}
                         onPress={() => this.redirectionViewProfile(item.id)}
                       >
                         {undefined === item.image || null === item.image ? (
                           <Image
-                            style={styles.profileImage}
+                            style={{ height: 80, width: 80 }}
                             source={require("../../assets/imgProfileReadOnly2.png")}
                           />
                         ) : (
@@ -1094,7 +1104,7 @@ const styles = StyleSheet.create({
     width: "100%",
     padding: 10,
   },
-  imageProfile: {
+  profileImage: {
     height: 80,
     width: 80
   },

@@ -68,8 +68,8 @@ class ListMessages extends Component {
     this.oConversationRows = [];
   }
 
-  componentDidMount = () => {
-    this.setState({
+  componentDidMount = async () => {
+    await this.setState({
       loading: true,
     });
     this.props.getListMessages(this.props.session.account.key);
@@ -80,15 +80,15 @@ class ListMessages extends Component {
       this.props.getFriends(this.props.session.account.key);
   };
 
-  redirectNewMessage = () => {
+  redirectNewMessage = async () => {
     this.props.navigation.navigate("NewEditMessage");
-    this.setState({
+    await this.setState({
       showOptions: false,
     });
   };
 
-  setShowDelete = () => {
-    this.setState({ showDelete: true, showOptions: false });
+  setShowDelete = async () => {
+    await this.setState({ showDelete: true, showOptions: false });
   };
 
   showConversation = async (conversation) => {
@@ -102,14 +102,14 @@ class ListMessages extends Component {
     this.props.navigation.navigate("Messages");
   };
 
-  componentWillReceiveProps = (nextProps) => {
+  componentWillReceiveProps = async (nextProps) => {
     if (null !== this.state.conversationSelect) {
       for (var i = 0; i < nextProps.messages.messages.length; i++) {
         if (
           nextProps.messages.messages[i].key ===
           this.state.conversationSelect.key
         ) {
-          this.setState({
+          await this.setState({
             conversationSelect: nextProps.messages.messages[i],
           });
         }
@@ -122,7 +122,7 @@ class ListMessages extends Component {
       });
       this.props.cleanNavigation();
     }
-    this.setState({
+    await this.setState({
       loading: false,
       refreshing: false,
       refresh: !this.state.refresh,
@@ -144,8 +144,8 @@ class ListMessages extends Component {
     }, 2000);
   };
 
-  onRefresh = () => {
-    this.setState({
+  onRefresh = async () => {
+    await this.setState({
       refreshing: true,
     });
     this.props.getListMessages(this.props.session.account.key);
@@ -166,8 +166,8 @@ class ListMessages extends Component {
     });
   };
 
-  deleteConversation = (oConversation) => {
-    this.setState({ loading: true });
+  deleteConversation = async (oConversation) => {
+    await this.setState({ loading: true });
     this.props.deleteConversation(
       this.props.session.account.key,
       oConversation.key,
@@ -189,18 +189,18 @@ class ListMessages extends Component {
     }
   };
 
-  closePeopleList = () => {
+  closePeopleList = async () => {
     this.clearPeopleSelect();
-    this.setState({ showListPals: false });
+    await this.setState({ showListPals: false });
   };
 
-  clearPeopleSelect = () => {
+  clearPeopleSelect = async () => {
     this.props.palsProps.myFriends.forEach((oPal) => {
       oPal.selected = false;
     });
   };
 
-  confirmMembers = () => {
+  confirmMembers = async () => {
     var aMembers = [];
     this.props.palsProps.myFriends.forEach((oPal) => {
       if (oPal.selected) aMembers.push({ key: oPal.key, id: oPal.id });
@@ -210,7 +210,7 @@ class ListMessages extends Component {
         key: this.props.session.account.key,
         id: this.props.session.account.id,
       });
-      this.setState({
+      await this.setState({
         membersNewChatGroup: aMembers,
         showNameNewChatGroup: true,
       });
@@ -219,7 +219,7 @@ class ListMessages extends Component {
       if (aMembers.length == 1) this.redirectNewMessage();
     }
     this.clearPeopleSelect();
-    this.setState({
+    await this.setState({
       showListPals: false,
     });
   };
@@ -232,7 +232,7 @@ class ListMessages extends Component {
         this.props.session.account.name,
         this.state.membersNewChatGroup
       );
-      this.setState({
+      await this.setState({
         nameChatGroup: "",
         membersNewChatGroup: [],
         showNameNewChatGroup: false,
@@ -269,7 +269,9 @@ class ListMessages extends Component {
             data={this.searchPeople(this.state.search)}
             extraData={this.state.refresh}
             renderItem={({ item }) => (
-              <View style={styles.viewMessageItem}>
+              <View
+                style={[styles.viewMessageItem, { backgroundColor: "white" }]}
+              >
                 <Swipeable
                   renderRightActions={() => (
                     <Pressable
@@ -301,7 +303,10 @@ class ListMessages extends Component {
                         {1 === item.type ? (
                           null !== item.image ? (
                             <FastImage
-                              style={styles.viewMessageItemImageProfile}
+                              style={[
+                                styles.viewMessageItemImageProfile,
+                                { borderRadius: 100 },
+                              ]}
                               source={{
                                 uri: item.image,
                                 priority: FastImage.priority.high,
@@ -310,13 +315,19 @@ class ListMessages extends Component {
                             />
                           ) : (
                             <Image
-                              style={styles.viewMessageItemImageProfile}
+                              style={[
+                                styles.viewMessageItemImageProfile,
+                                { borderRadius: 100 },
+                              ]}
                               source={require("../../assets/imgProfileReadOnly.png")}
                             />
                           )
                         ) : (
                           <Image
-                            style={styles.viewMessageItemImageProfile}
+                            style={[
+                              styles.viewMessageItemImageProfile,
+                              { borderRadius: 100 },
+                            ]}
                             source={require("../../assets/imgGroup.png")}
                           />
                         )}
@@ -365,7 +376,12 @@ class ListMessages extends Component {
         ) : (
           <View style={{ alignItems: "center" }}>
             <Text
-              style={styles.findChatText}
+              style={[
+                styles.textCenter,
+                styles.textGray,
+                styles.pd10,
+                styles.fontBold,
+              ]}
             >
               Here you will find the chats with other users
             </Text>
@@ -474,7 +490,6 @@ const styles = StyleSheet.create({
   viewMessageItem: {
     borderBottomColor: PlaceholderColor,
     borderBottomWidth: 1,
-    backgroundColor: "white"
   },
   viewMessageItemDetails: {
     padding: 10,
@@ -483,7 +498,6 @@ const styles = StyleSheet.create({
   viewMessageItemImageProfile: {
     width: 80,
     height: 80,
-    borderRadius: 100,
   },
   viewMessageData: {
     justifyContent: "center",
@@ -540,12 +554,6 @@ const styles = StyleSheet.create({
   },
   fontBold: {
     fontWeight: "bold",
-  },
-  findChatText: {
-    textAlign: "center",
-    color: PlaceholderColor,
-    padding: 10,
-    fontWeight: 'bold',
   },
   textCenter: {
     textAlign: "center",

@@ -655,14 +655,14 @@ class MessagesGroup extends Component {
         {bShowMap && (
           <View
             style={[
-              GlobalModal.viewContent, oStyles.mgT0,
-              { borderTopLeftRadius: 0, borderTopRightRadius: 0 },
+              GlobalModal.viewContent,
+              { marginTop: 0, borderTopLeftRadius: 0, borderTopRightRadius: 0 },
             ]}
           >
             <ScrollView>
               <MapView
                 provider={this.props.provider}
-                style={[oStyles.height300, oStyles.w100, oStyles.mgT20]} //TODO: need to adjust the map height with device aspect ratio
+                style={{ height: 300, width: "100%", marginTop: 20 }}
                 onPress={(e) =>
                   this.setState({ oMarker: e.nativeEvent.coordinate })
                 }
@@ -673,7 +673,7 @@ class MessagesGroup extends Component {
                 )}
               </MapView>
               <View style={[oStyles.viewSection, oStyles.viewSectionButtons]}>
-                <View style={[oStyles.w50CenterAlign]}>
+                <View style={[oStyles.w50, oStyles.alignCenter]}>
                   <Pressable
                     onPress={() =>
                       this.setState({ bShowMap: false, oMarker: null })
@@ -688,7 +688,7 @@ class MessagesGroup extends Component {
                     </Text>
                   </Pressable>
                 </View>
-                <View style={[oStyles.w50CenterAlign]}>
+                <View style={[oStyles.w50, oStyles.alignCenter]}>
                   <Pressable
                     onPress={() =>
                       this.sendMessage(SEND_MESSAGE_TYPES.LOCATION)
@@ -703,8 +703,7 @@ class MessagesGroup extends Component {
               </View>
             </ScrollView>
           </View>
-        )
-        }
+        )}
       </>
     );
   };
@@ -733,12 +732,6 @@ const oStyles = StyleSheet.create({
   textGray: {
     color: PlaceholderColor,
   },
-  mgT0: {
-    marginTop: 0,
-  },
-  mgT20: {
-    marginTop: 20,
-  },
   mgR5: {
     marginRight: 5,
   },
@@ -751,9 +744,6 @@ const oStyles = StyleSheet.create({
   pdT2: {
     paddingTop: 2,
   },
-  pdT20: {
-    paddingTop: 20,
-  },
   pd10: {
     padding: 10,
   },
@@ -765,13 +755,6 @@ const oStyles = StyleSheet.create({
   },
   w50: {
     width: "50%",
-  },
-  w100: {
-    width: "100%",
-  },
-  w50CenterAlign: {
-    width: "50%",
-    alignItems: "center",
   },
   userImage: {
     width: 60,
@@ -839,9 +822,6 @@ const oStyles = StyleSheet.create({
   height200: {
     height: 200,
   },
-  height300: {
-    height: 300,
-  }
 });
 
 const mapStateToProps = (state) => ({
