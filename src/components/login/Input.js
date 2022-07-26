@@ -8,7 +8,7 @@ export default class Input extends Component {
   }
 
   render() {
-    const { ref, onSubmitEditing, iconSource, onChangeText, value, textContentType, returnKeyType, secureTextEntry, autoCapitalize, autoCompleteType } = this.props;
+    const { ref, onSubmitEditing, iconSource, onChangeText, value, textContentType, returnKeyType, secureTextEntry, autoCapitalize, autoCompleteType, placeholder, style } = this.props;
     return (
       <View style={styles.SectionStyle}>
         {iconSource &&
@@ -19,13 +19,14 @@ export default class Input extends Component {
         }
         <TextInput
           ref={ref}
+          placeholder={placeholder}
           onSubmitEditing={onSubmitEditing}
           secureTextEntry={secureTextEntry}
           autoCapitalize={autoCapitalize}
           autoCompleteType={autoCompleteType}
           returnKeyType={returnKeyType}
           textContentType={textContentType}
-          style={styles.textInput}
+          style={[styles.textInput, style]}
           value={value}
           onChangeText={onChangeText}
         />

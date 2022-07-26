@@ -16,6 +16,7 @@ import { Toast } from "../../components/shared/Toast";
 import { connect } from "react-redux";
 import { actionUserForgotPassword } from "../../redux/actions/UserActions";
 import { LoadingSpinner } from "../../components/shared/LoadingSpinner";
+import { Input } from "../../components";
 
 class ForgotPassword extends Component {
   constructor(props) {
@@ -42,14 +43,14 @@ class ForgotPassword extends Component {
     }, 2000);
   };
 
-  forgotPassword = async () => {
+  forgotPassword = () => {
     this.props.forgotPassword(this.state.email);
-    await this.setState({
+    this.setState({
       loading: true,
     });
   };
 
-  componentWillReceiveProps = async (nextProps) => {
+  componentWillReceiveProps = (nextProps) => {
     if (
       !nextProps.screenProps.success &&
       "" !== nextProps.screenProps.messageError
@@ -61,7 +62,7 @@ class ForgotPassword extends Component {
         () => this.props.navigation.navigate("Login")
       );
     }
-    await this.setState({
+    this.setState({
       loading: false,
     });
   };
@@ -73,7 +74,7 @@ class ForgotPassword extends Component {
           Enter your email address you use to sign in to FitRec
         </Text>
         <View style={styles.viewSection}>
-          <TextInput
+          <Input
             style={styles.textInput}
             placeholder="Email address"
             placeholderTextColor={PlaceholderColor}

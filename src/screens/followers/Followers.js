@@ -301,28 +301,9 @@ class Followers extends Component {
             onChangeText={(sValue) => {
               this.setState({ search: sValue });
             }}
-            style={{
-              backgroundColor: WhiteColor,
-              width: "auto",
-              padding: 7,
-              borderRadius: 5,
-              margin: 10,
-              marginTop: 20,
-              borderWidth: 0.5,
-              borderColor: "#777777",
-            }}
+            style={styles.textInput}
           />
         </View>
-        {/* {
-                    this.state.activeTab ?
-                        <View style={styles.containerTitle}>
-                            <Text style={styles.title}>Followers</Text>
-                        </View>
-                        :
-                        <View style={styles.containerTitle}>
-                            <Text style={styles.title}>Following</Text>
-                        </View>
-                } */}
         <ScrollView
           refreshControl={
             <RefreshControl
@@ -363,7 +344,7 @@ class Followers extends Component {
                 }
                 style={[
                   ToastQuestionStyles.button,
-                  { backgroundColor: GreenFitrecColor, marginRight: 10 },
+                  styles.buttonDefault,
                 ]}
               >
                 <Text style={ToastQuestionStyles.textButton}>Cancel</Text>
@@ -400,7 +381,7 @@ class Followers extends Component {
                 }
                 style={[
                   ToastQuestionStyles.button,
-                  { backgroundColor: GreenFitrecColor, marginRight: 10 },
+                  styles.buttonDefault,
                 ]}
               >
                 <Text style={ToastQuestionStyles.textButton}>Cancel</Text>
@@ -481,6 +462,20 @@ const styles = StyleSheet.create({
     fontWeight: "300",
     textAlign: "center",
     marginTop: "20%",
+  },
+  textInput: {
+    backgroundColor: WhiteColor,
+    width: "auto",
+    padding: 7,
+    borderRadius: 5,
+    margin: 10,
+    marginTop: 20,
+    borderWidth: 0.5,
+    borderColor: "#777777",
+  },
+  buttonDefault: {
+    backgroundColor: GreenFitrecColor,
+    marginRight: 10
   },
 });
 

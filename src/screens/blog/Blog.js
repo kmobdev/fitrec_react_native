@@ -13,16 +13,16 @@ export default class Blog extends Component {
     };
   }
 
-  hideLoading = async () => {
-    await this.setState({
+  hideLoading = () => {
+    this.setState({
       loading: false,
       refreshing: false,
     });
   };
 
-  onRefresh = async (webViewRef) => {
+  onRefresh = (webViewRef) => {
     webViewRef && webViewRef.reload();
-    await this.setState({
+    this.setState({
       loading: false,
       refreshing: true,
     });

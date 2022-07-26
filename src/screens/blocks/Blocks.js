@@ -26,6 +26,7 @@ import {
   actionGetBlocks,
   actionUnblockUser,
 } from "../../redux/actions/BlockActions";
+import { Input } from "../../components";
 
 class Blocks extends Component {
   constructor(props) {
@@ -105,42 +106,40 @@ class Blocks extends Component {
             keyExtractor={(item, index) => index.toString()}
             extraData={this.state.refresh}
             renderItem={({ item }) => (
-              <>
-                <View style={styles.containerRow}>
-                  <View style={{ flex: 3 }}>
-                    {item.image != null ? (
-                      <FastImage
-                        style={GlobalStyles.photoProfileCardList}
-                        source={{ uri: item.image }}
-                        resizeMode="cover"
-                      />
-                    ) : (
-                      <Image
-                        style={GlobalStyles.photoProfileCardList}
-                        source={require("../../assets/imgProfileReadOnly2.png")}
-                      />
-                    )}
-                  </View>
-                  <View style={styles.sectionText}>
-                    <Text style={styles.textName}>{item.name}</Text>
-                    <Text style={styles.textUsername}>@{item.username}</Text>
-                  </View>
-                  <View style={styles.sectionButton}>
-                    <Pressable
-                      onPress={() => this.onLockHandler(item)}
-                      style={styles.removeButton}
-                      activeOpacity={0.8}
-                    >
-                      <Icon
-                        name="lock-open"
-                        size={24}
-                        color={SignUpColor}
-                        style={styles.textCenter}
-                      />
-                    </Pressable>
-                  </View>
+              <View style={styles.containerRow}>
+                <View style={{ flex: 3 }}>
+                  {item.image != null ? (
+                    <FastImage
+                      style={GlobalStyles.photoProfileCardList}
+                      source={{ uri: item.image }}
+                      resizeMode="cover"
+                    />
+                  ) : (
+                    <Image
+                      style={GlobalStyles.photoProfileCardList}
+                      source={require("../../assets/imgProfileReadOnly2.png")}
+                    />
+                  )}
                 </View>
-              </>
+                <View style={styles.sectionText}>
+                  <Text style={styles.textName}>{item.name}</Text>
+                  <Text style={styles.textUsername}>@{item.username}</Text>
+                </View>
+                <View style={styles.sectionButton}>
+                  <Pressable
+                    onPress={() => this.onLockHandler(item)}
+                    style={styles.removeButton}
+                    activeOpacity={0.8}
+                  >
+                    <Icon
+                      name="lock-open"
+                      size={24}
+                      color={SignUpColor}
+                      style={styles.textCenter}
+                    />
+                  </Pressable>
+                </View>
+              </View>
             )}
           />
         ) : this.props.oBlocks.blocks.length > 0 ? (
@@ -155,23 +154,14 @@ class Blocks extends Component {
   render = () => {
     return (
       <View style={styles.container}>
-        <View>
-          <TextInput
+        <View style={styles.inputContainer}>
+          <Input
             placeholder={"Search"}
             value={this.state.search}
             onChangeText={(sValue) => {
               this.setState({ search: sValue });
             }}
-            style={{
-              backgroundColor: WhiteColor,
-              width: "auto",
-              padding: 7,
-              borderRadius: 5,
-              margin: 10,
-              marginTop: 20,
-              borderWidth: 0.5,
-              borderColor: "#777777",
-            }}
+            style={styles.textInput}
           />
         </View>
         <ScrollView
@@ -294,6 +284,19 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: "20%",
   },
+  textInput: {
+    backgroundColor: WhiteColor,
+    width: "auto",
+    padding: 7,
+    borderRadius: 5,
+    marginTop: 20,
+    borderWidth: 0.5,
+    borderColor: "#777777",
+    width: '97%',
+  },
+  inputContainer: {
+    alignItems: 'center'
+  }
 });
 
 const mapStateToProps = (state) => ({

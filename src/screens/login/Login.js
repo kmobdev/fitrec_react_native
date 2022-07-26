@@ -4,14 +4,11 @@ import {
   ImageBackground,
   View,
   Image,
-  TextInput,
   StyleSheet,
   Pressable,
   Platform,
-  Keyboard,
   ScrollView,
 } from "react-native";
-import Icon from "react-native-vector-icons/Ionicons";
 import {
   GreenFitrecColor,
   WhiteColor,
@@ -125,20 +122,12 @@ class Login extends Component {
 
   render() {
     return (
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+      <ScrollView contentContainerStyle={GlobalStyles.container}>
         <ImageBackground
           source={require("../../assets/loginBackground.png")}
           style={GlobalStyles.fullImage}
         >
-          <View
-            style={[
-              {
-                width: "100%",
-                height: "100%",
-                backgroundColor: "rgba(0, 0, 0, 0.2)",
-              },
-              this.getKeyboardOffsetStyle(),
-            ]}>
+          <View style={styles.mainContainer}>
             <View style={styles.imageView}>
               <Image
                 source={require("../../assets/logoWithName.png")}
@@ -151,7 +140,6 @@ class Login extends Component {
                 autoCapitalize={"none"}
                 autoCompleteType={"username"}
                 textContentType={"username"}
-                // style={styles.textInput}
                 value={this.state.username}
                 onChangeText={(text) => this.setState({ username: text })}
                 onSubmitEditing={() => {
@@ -247,6 +235,10 @@ class Login extends Component {
 }
 
 const styles = StyleSheet.create({
+  mainContainer: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.2)",
+  },
   Content: {
     flex: 1,
     alignItems: "center",
@@ -331,6 +323,9 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 0,
     borderBottomLeftRadius: 0,
     backgroundColor: SignUpColor,
+  },
+  imageView: {
+    alignItems: 'center'
   },
 });
 

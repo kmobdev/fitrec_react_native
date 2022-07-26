@@ -89,10 +89,10 @@ class Home extends Component {
     // Listeners for notifications onignal
     // Comment at the customer's request, the comment will be kept for the doubts of a rollback - Leandro Curbelo 03/11/2020
     // OneSignal.addEventListener('received', this.onReceived);
-    //        OneSignal.addEventListener('opened', this.onOpened);
+    // OneSignal.addEventListener('opened', this.onOpened);
   }
   // METHOD OPEN NOTIFICATION
-  onOpened = async (oData) => {
+  onOpened = (oData) => {
     // Action when the notification opens
     var oNotification = oData.notification.payload.additionalData;
     const { account: oAccount } = this.props.session;
@@ -171,7 +171,7 @@ class Home extends Component {
     }
   };
 
-  getUserHome = async () => {
+  getUserHome = () => {
     let aActivities =
       this.state.filters.activity.length > 0
         ? this.state.filters.activity
@@ -185,9 +185,9 @@ class Home extends Component {
     this.props.getUserHome(aActivities, sGarder, aGyms, sRange);
   };
 
-  componentWillReceiveProps = async (nextProps) => {
+  componentWillReceiveProps = (nextProps) => {
     if (nextProps.homeProps.status) {
-      await this.setState({
+      this.setState({
         activities: nextProps.homeProps.activities,
         refresh: !this.state.refresh,
       });
@@ -208,31 +208,31 @@ class Home extends Component {
       }
     }
     if (nextProps.activity.activities.length > 0) {
-      await this.setState({
+      this.setState({
         activitiesFilter: nextProps.activity.activities,
       });
     }
     if (nextProps.activity.gyms.length > 0 && this.state.gyms.length === 0)
-      await this.setState({
+      this.setState({
         gyms: nextProps.activity.gyms,
       });
     if (this.props.blockProps.status)
-      await this.setState({ showActivity: false });
+      this.setState({ showActivity: false });
 
     if (nextProps.homeProps.bNavigationHome) {
       if (this.oSwiperRef) this.oSwiperRef.scrollTo(0, true);
       this.props.cleanNavigation();
     }
 
-    await this.setState({
+    this.setState({
       loading: false,
       refreshing: false,
       refresh: !this.state.refresh,
     });
   };
 
-  sharedOption = async () => {
-    await Share.share({
+  sharedOption = () => {
+    Share.share({
       message:
         this.props.session.account.name +
         " has just invited you to check out a hot new Social Fitness application called, " +
@@ -242,7 +242,7 @@ class Home extends Component {
     });
   };
 
-  showToast = async (sText, callback = null) => {
+  showToast = (sText, callback = null) => {
     this.setState({
       toastText: sText,
       loading: false,
@@ -257,8 +257,8 @@ class Home extends Component {
     }, 2000);
   };
 
-  onRefresh = async () => {
-    await this.setState({
+  onRefresh = () => {
+    this.setState({
       refreshing: true,
     });
     this.getUserHome();
@@ -282,7 +282,7 @@ class Home extends Component {
     }
   }
 
-  openActivity = async (lItem) => {
+  openActivity = (lItem) => {
     this.setState({
       selectActivity: lItem,
       showActivity: true,
@@ -290,8 +290,8 @@ class Home extends Component {
     });
   };
 
-  sendMessage = async (message) => {
-    await this.setState({
+  sendMessage = (message) => {
+    this.setState({
       loading: true,
     });
     var sendUsers = [];
@@ -309,7 +309,7 @@ class Home extends Component {
     });
   };
 
-  setFilters = async (data, bIsDefault = false) => {
+  setFilters = (data, bIsDefault = false) => {
     if (bIsDefault) {
       this.state.activitiesFilter.forEach((oActivity) => {
         oActivity.selected = false;
@@ -318,7 +318,7 @@ class Home extends Component {
         oGym.selected = false;
       });
     }
-    await this.setState({
+    this.setState({
       filters: {
         activity: data.activity,
         range: data.range,
@@ -330,12 +330,12 @@ class Home extends Component {
     this.getUserHome();
   };
 
-  applyActivityFilter = async () => {
+  applyActivityFilter = () => {
     var aActivitiesIds = [];
     this.state.activitiesFilter.forEach((oActivity) => {
       if (oActivity.selected === true) aActivitiesIds.push(oActivity);
     });
-    await this.setState({
+    this.setState({
       filters: {
         ...this.state.filters,
         activity: aActivitiesIds,
@@ -345,12 +345,12 @@ class Home extends Component {
     this.setFilters(this.state.filters);
   };
 
-  applyGymFilter = async () => {
+  applyGymFilter = () => {
     var aGymIds = [];
     this.state.gyms.forEach((oGym) => {
       if (oGym.selected === true) aGymIds.push(oGym);
     });
-    await this.setState({
+    this.setState({
       filters: {
         ...this.state.filters,
         gyms: aGymIds,
