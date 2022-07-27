@@ -68,8 +68,8 @@ class ListMessages extends Component {
     this.oConversationRows = [];
   }
 
-  componentDidMount = async () => {
-    await this.setState({
+  componentDidMount = () => {
+    this.setState({
       loading: true,
     });
     this.props.getListMessages(this.props.session.account.key);
@@ -80,18 +80,18 @@ class ListMessages extends Component {
       this.props.getFriends(this.props.session.account.key);
   };
 
-  redirectNewMessage = async () => {
+  redirectNewMessage = () => {
     this.props.navigation.navigate("NewEditMessage");
-    await this.setState({
+    this.setState({
       showOptions: false,
     });
   };
 
-  setShowDelete = async () => {
-    await this.setState({ showDelete: true, showOptions: false });
+  setShowDelete = () => {
+    this.setState({ showDelete: true, showOptions: false });
   };
 
-  showConversation = async (conversation) => {
+  showConversation = (conversation) => {
     let oConversation = {
       key: conversation.key,
       type: conversation.type,
@@ -102,14 +102,14 @@ class ListMessages extends Component {
     this.props.navigation.navigate("Messages");
   };
 
-  componentWillReceiveProps = async (nextProps) => {
+  componentWillReceiveProps = (nextProps) => {
     if (null !== this.state.conversationSelect) {
       for (var i = 0; i < nextProps.messages.messages.length; i++) {
         if (
           nextProps.messages.messages[i].key ===
           this.state.conversationSelect.key
         ) {
-          await this.setState({
+          this.setState({
             conversationSelect: nextProps.messages.messages[i],
           });
         }
@@ -122,14 +122,14 @@ class ListMessages extends Component {
       });
       this.props.cleanNavigation();
     }
-    await this.setState({
+    this.setState({
       loading: false,
       refreshing: false,
       refresh: !this.state.refresh,
     });
   };
 
-  showToast = async (sText, callback = null) => {
+  showToast = (sText, callback = null) => {
     this.setState({
       toastText: sText,
       loading: false,
@@ -144,8 +144,8 @@ class ListMessages extends Component {
     }, 2000);
   };
 
-  onRefresh = async () => {
-    await this.setState({
+  onRefresh = () => {
+    this.setState({
       refreshing: true,
     });
     this.props.getListMessages(this.props.session.account.key);
@@ -166,8 +166,8 @@ class ListMessages extends Component {
     });
   };
 
-  deleteConversation = async (oConversation) => {
-    await this.setState({ loading: true });
+  deleteConversation = (oConversation) => {
+    this.setState({ loading: true });
     this.props.deleteConversation(
       this.props.session.account.key,
       oConversation.key,
@@ -189,18 +189,18 @@ class ListMessages extends Component {
     }
   };
 
-  closePeopleList = async () => {
+  closePeopleList = () => {
     this.clearPeopleSelect();
-    await this.setState({ showListPals: false });
+    this.setState({ showListPals: false });
   };
 
-  clearPeopleSelect = async () => {
+  clearPeopleSelect = () => {
     this.props.palsProps.myFriends.forEach((oPal) => {
       oPal.selected = false;
     });
   };
 
-  confirmMembers = async () => {
+  confirmMembers = () => {
     var aMembers = [];
     this.props.palsProps.myFriends.forEach((oPal) => {
       if (oPal.selected) aMembers.push({ key: oPal.key, id: oPal.id });
@@ -210,7 +210,7 @@ class ListMessages extends Component {
         key: this.props.session.account.key,
         id: this.props.session.account.id,
       });
-      await this.setState({
+      this.setState({
         membersNewChatGroup: aMembers,
         showNameNewChatGroup: true,
       });
@@ -219,12 +219,12 @@ class ListMessages extends Component {
       if (aMembers.length == 1) this.redirectNewMessage();
     }
     this.clearPeopleSelect();
-    await this.setState({
+    this.setState({
       showListPals: false,
     });
   };
 
-  crateNewChatGroup = async () => {
+  crateNewChatGroup = () => {
     if ("" !== this.state.nameChatGroup) {
       this.props.createChatGroup(
         this.state.nameChatGroup,
@@ -232,7 +232,7 @@ class ListMessages extends Component {
         this.props.session.account.name,
         this.state.membersNewChatGroup
       );
-      await this.setState({
+      this.setState({
         nameChatGroup: "",
         membersNewChatGroup: [],
         showNameNewChatGroup: false,

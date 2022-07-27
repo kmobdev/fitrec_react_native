@@ -94,7 +94,7 @@ class ShowDetailsGroup extends Component {
     this.state = { ...oInitialState, nMessageCount: null };
   }
 
-  componentDidMount = async () => {
+  componentDidMount = () => {
     this.props.navigation.setParams({ goBack: this.goBack, messages: null });
     this.oKeyboardListenerWillShow = Keyboard.addListener(
       "keyboardWillShow",
@@ -152,7 +152,7 @@ class ShowDetailsGroup extends Component {
     this.props.navigation.goBack();
   };
 
-  expandImage = async (sUrlToImage) => {
+  expandImage = (sUrlToImage) => {
     this.props.expandImage(sUrlToImage);
   };
 
@@ -192,14 +192,14 @@ class ShowDetailsGroup extends Component {
     return false;
   };
 
-  addImageGroup = async (sType) => {
+  addImageGroup = (sType) => {
     const { oGroup } = this.props.groupProps;
-    await this.setState({
+    this.setState({
       bShowGroupPhoto: false,
     });
     if ("camera" === sType) {
       ImagePicker.openCamera(OPTIONS_IMAGE_CROP_PROFILE)
-        .then(async (oResponse) => {
+        .then((oResponse) => {
           let nGroupKey = oGroup.key,
             sImage = oResponse.data;
           this.props.changeInformtaion(nGroupKey, null, null, sImage);
@@ -210,7 +210,7 @@ class ShowDetailsGroup extends Component {
         });
     } else {
       ImagePicker.openPicker(OPTIONS_IMAGE_CROP_PROFILE)
-        .then(async (oResponse) => {
+        .then((oResponse) => {
           let nGroupKey = oGroup.key,
             sImage = oResponse.data;
           this.props.changeInformtaion(nGroupKey, null, null, sImage);
@@ -405,7 +405,7 @@ class ShowDetailsGroup extends Component {
     return aParticipants.filter((oParticipant) => !oParticipant.isCaptain);
   };
 
-  updateCaptain = async (oCaptain) => {
+  updateCaptain = (oCaptain) => {
     const { captain: sMainCaptainKey } = this.props.groupProps.oGroup;
     if (!oCaptain.isCaptain && this.getCaptainsList().length > 2)
       return this.props.message(`Only three captains are allowed per group`);
@@ -416,7 +416,7 @@ class ShowDetailsGroup extends Component {
       (oParticipant) => oParticipant.key === oCaptain.key
     );
     if (oUser.length > 0) oUser[0].isCaptain = !oUser[0].isCaptain;
-    await this.setState({ aParticipants: aParticipants });
+    this.setState({ aParticipants: aParticipants });
   };
 
   filterParticipants = (aParticipants) => {
@@ -438,7 +438,7 @@ class ShowDetailsGroup extends Component {
     this.setState({ sSearch: "" });
   };
 
-  sendNotification = async () => {
+  sendNotification = () => {
     let { sTextNotification } = this.state;
     const { account: oAccount } = this.props.session;
     const { oGroup } = this.props.groupProps;
@@ -460,7 +460,7 @@ class ShowDetailsGroup extends Component {
     this.handleOnCancel();
   };
 
-  confirmChangeInformation = async () => {
+  confirmChangeInformation = () => {
     const { nEditInformationType, sEditInformationValue } = this.state;
     const { oGroup } = this.props.groupProps;
     if (
@@ -476,7 +476,7 @@ class ShowDetailsGroup extends Component {
           sDescription =
             2 === nEditInformationType ? sEditInformationValue.trim() : null;
         this.props.changeInformtaion(nGroupKey, sName, sDescription, null);
-        await this.setState({
+        this.setState({
           bShowOptions: false,
           bChangeInformation: false,
           bShowEditInformationInput: false,
@@ -487,13 +487,13 @@ class ShowDetailsGroup extends Component {
         if (1 === nEditInformationType)
           this.props.message("The group name cannot be empty.");
         else this.props.message("The group description cannot be empty.");
-        await this.setState({
+        this.setState({
           sEditInformationValue:
             1 === nEditInformationType ? oGroup.name : oGroup.description,
         });
       }
     } else {
-      await this.setState({
+      this.setState({
         bShowOptions: false,
         bChangeInformation: false,
         bShowEditInformationInput: false,
@@ -503,12 +503,12 @@ class ShowDetailsGroup extends Component {
     }
   };
 
-  updateCaptiansList = async (bValue = true) => {
+  updateCaptiansList = (bValue = true) => {
     const { oGroup } = this.props.groupProps;
     let aCaptains = oGroup.participants.filter(
       (oParticipant) => oParticipant.isCaptain
     );
-    await this.setState({
+    this.setState({
       bShowOptions: false,
       bChangeCaptains: bValue,
       aLastCaptains: JSON.parse(JSON.stringify(aCaptains)),
@@ -516,16 +516,16 @@ class ShowDetailsGroup extends Component {
     });
   };
 
-  updateRemoveMembers = async () => {
+  updateRemoveMembers = () => {
     const { oGroup } = this.props.groupProps;
-    await this.setState({
+    this.setState({
       bShowOptions: false,
       bRemoveMembers: true,
       aParticipants: JSON.parse(JSON.stringify(oGroup.participants)),
     });
   };
 
-  assignCaptain = async () => {
+  assignCaptain = () => {
     const { oGroup } = this.props.groupProps;
     let aParticipants = JSON.parse(JSON.stringify(oGroup.participants));
     let aOtherParticipants = aParticipants.filter(
@@ -538,14 +538,14 @@ class ShowDetailsGroup extends Component {
       );
     if (aOtherParticipants.length === 0)
       return this.props.message("You are the only member of the group");
-    await this.setState({
+    this.setState({
       bShowQuestionLeavePrincipalCaptain: false,
       bShowAssignCaptain: true,
       aParticipants: aOtherParticipants,
     });
   };
 
-  selectMemberToRemove = async (oMember) => {
+  selectMemberToRemove = (oMember) => {
     if (oMember.isCaptain)
       return this.props.message(
         `Not is possible remove at captain of the group`
@@ -559,10 +559,10 @@ class ShowDetailsGroup extends Component {
       oUser.isSelected =
         oUser.isSelected !== undefined ? !oUser.isSelected : true;
     }
-    await this.setState({ aParticipants: aParticipants });
+    this.setState({ aParticipants: aParticipants });
   };
 
-  selectMemberToCaptain = async (oMember) => {
+  selectMemberToCaptain = (oMember) => {
     const { aParticipants } = this.state;
     let aUser = aParticipants.filter(
       (oParticipant) => oParticipant.key === oMember.key
@@ -575,15 +575,15 @@ class ShowDetailsGroup extends Component {
       oUser.isSelected =
         oUser.isSelected !== undefined ? !oUser.isSelected : true;
     }
-    await this.setState({ aParticipants: aParticipants });
+    this.setState({ aParticipants: aParticipants });
   };
 
-  viewProfile = async (oUser) => {
+  viewProfile = (oUser) => {
     this.props.getProfile(oUser.id);
     this.props.navigation.navigate("ProfileViewDetailsHome");
   };
 
-  selectMemberToAdd = async (oMember) => {
+  selectMemberToAdd = (oMember) => {
     const { oGroup } = this.props.groupProps;
     if (
       oMember.invitationsGroup &&
@@ -602,11 +602,11 @@ class ShowDetailsGroup extends Component {
       let aMembers = aNewMembers.filter(
         (oParticipant) => oParticipant.key !== oMember.key
       );
-      await this.setState({ aNewMembers: aMembers });
+      this.setState({ aNewMembers: aMembers });
     } else {
       oMember.isSelected = true;
       let aMembers = [...aNewMembers, oMember];
-      await this.setState({ aNewMembers: aMembers });
+      this.setState({ aNewMembers: aMembers });
     }
   };
 

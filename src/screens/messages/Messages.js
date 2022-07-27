@@ -81,7 +81,7 @@ class Messages extends Component {
     };
   }
 
-  componentDidUpdate = async (oPrevProps) => {
+  componentDidUpdate = (oPrevProps) => {
     if (this.getIsGroupChat() && !this.state.bAsignMessageFunction) {
       this.props.navigation.setParams({
         goBack: this.goBack,
@@ -98,7 +98,7 @@ class Messages extends Component {
     this.props.cleanMessages();
   };
 
-  componentDidMount = async () => {
+  componentDidMount = () => {
     this.props.navigation.setParams({
       goBack: this.goBack,
       bShowPeople: this.state.bShowPeople,
@@ -142,7 +142,7 @@ class Messages extends Component {
     return nType === 2;
   };
 
-  expandImage = async (sUrlToImage) => {
+  expandImage = (sUrlToImage) => {
     this.props.expandImage(sUrlToImage);
   };
 
@@ -160,7 +160,7 @@ class Messages extends Component {
     this.setState({ sSearch: "" });
   };
 
-  viewProfile = async (sUserKey) => {
+  viewProfile = (sUserKey) => {
     const { users: aUsers } = this.props.oMessageProps.oConversation;
     let aUser = aUsers.filter((oUser) => oUser.key === sUserKey);
     if (aUser.length > 0) {
@@ -179,7 +179,7 @@ class Messages extends Component {
     });
   };
 
-  sendMessage = async (sType = SEND_MESSAGE_TYPES.TEXT, oGif = null) => {
+  sendMessage = (sType = SEND_MESSAGE_TYPES.TEXT, oGif = null) => {
     const { oConversation } = this.props.oMessageProps;
     const { sText, sImage, oMarker, bShowGifsStickers } = this.state;
     const { key: sUserKey, name: sUserName } = this.props.session.account;
@@ -240,13 +240,13 @@ class Messages extends Component {
     this.resetState();
   };
 
-  addImage = async (sType = OPTION_GALLERY) => {
+  addImage = (sType = OPTION_GALLERY) => {
     switch (sType) {
       case OPTION_CAMERA:
         ImagePicker.openCamera(OPTIONS_IMAGE_CROP_CONVERSATION)
-          .then(async (oResponse) => {
+          .then((oResponse) => {
             var sImageB64 = oResponse.data;
-            await this.setState({
+            this.setState({
               sImage: sImageB64,
             });
             this.sendMessage(SEND_MESSAGE_TYPES.IMAGE);
@@ -262,9 +262,9 @@ class Messages extends Component {
       case OPTION_GALLERY:
       default:
         ImagePicker.openPicker(OPTIONS_IMAGE_CROP_CONVERSATION)
-          .then(async (oResponse) => {
+          .then((oResponse) => {
             var sImageB64 = oResponse.data;
-            await this.setState({
+            this.setState({
               sImage: sImageB64,
             });
             this.sendMessage(SEND_MESSAGE_TYPES.IMAGE);
@@ -308,10 +308,10 @@ class Messages extends Component {
     );
   };
 
-  handlePressOptions = async (sOptionName) => {
+  handlePressOptions = (sOptionName) => {
     Keyboard.dismiss();
     if (sOptionName === "bShowGifsModal") this.props.getGiphy("");
-    await this.setState({
+    this.setState({
       [sOptionName]: true,
     });
   };

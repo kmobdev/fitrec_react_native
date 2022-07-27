@@ -25,13 +25,13 @@ class NewEditMessage extends Component {
     };
   }
 
-  componentDidMount = async () => {
+  componentDidMount = () => {
     this.props.getUserFriends({
       accountId: this.props.session.account.key,
     });
   };
 
-  componentWillReceiveProps = async (nextProps) => {
+  componentWillReceiveProps = (nextProps) => {
     if (
       nextProps.friendsProps.friends.length > 0 &&
       null !== this.state.conversationSelect
@@ -41,7 +41,7 @@ class NewEditMessage extends Component {
           nextProps.friendsProps.friends[i].userFriendKey ===
           this.state.conversationSelect.userFriendKey
         ) {
-          await this.setState({
+          this.setState({
             conversationSelect: nextProps.friendsProps.friends[i],
           });
         }
@@ -49,7 +49,7 @@ class NewEditMessage extends Component {
     }
   };
 
-  showConversation = async (oFriend) => {
+  showConversation = (oFriend) => {
     let oConversation = {
       key: oFriend.conversation,
       type: 1,

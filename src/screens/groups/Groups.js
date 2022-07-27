@@ -118,8 +118,8 @@ class Groups extends Component {
     this.getGroupNearMe(null);
   };
 
-  componentWillReceiveProps = async (nextProps) => {
-    await this.setState({
+  componentWillReceiveProps = (nextProps) => {
+    this.setState({
       loading: false,
       refreshing: false,
     });
@@ -206,25 +206,25 @@ class Groups extends Component {
     }
   };
 
-  openGroup = async (sGroupKey) => {
+  openGroup = (sGroupKey) => {
     this.props.getGroup(sGroupKey, this.props.session.account.key);
     this.props.navigation.navigate("DetailsGroup");
   };
 
-  onRefresh = async () => {
-    await this.setState({
+  onRefresh = () => {
+    this.setState({
       refreshing: true,
     });
     this.listGroup();
   };
 
-  listGroup = async (nType = null) => {
+  listGroup = (nType = null) => {
     const { tabSelectMy: bIsMyTab } = this.state;
     this.props.getGroupsInvitation({
       accountId: this.props.session.account.key,
     });
     if (!bIsMyTab) {
-      await this.setState({
+      this.setState({
         loading: true,
         showToastQuestion: false,
       });
@@ -285,13 +285,13 @@ class Groups extends Component {
     }
   };
 
-  addParticipant = async (oElement) => {
+  addParticipant = (oElement) => {
     if (
       this.state.newParticipants.filter(
         (element) => element.key === oElement.key
       ).length == 0
     ) {
-      await this.setState({
+      this.setState({
         newParticipants: [...this.state.newParticipants, oElement],
       });
     } else {
@@ -305,8 +305,8 @@ class Groups extends Component {
     }
   };
 
-  addMember = async () => {
-    await this.setState({
+  addMember = () => {
+    this.setState({
       isAddParticipant: !this.state.isAddParticipant,
       newParticipants: [],
       search: "",
@@ -315,7 +315,7 @@ class Groups extends Component {
     });
   };
 
-  confirmAddMember = async () => {
+  confirmAddMember = () => {
     // TODO: Look at the group blocked users
     if (this.state.newParticipants.length > 0) {
       let nGroupId = this.state.group.id,
@@ -323,7 +323,7 @@ class Groups extends Component {
         sGroupName = this.state.group.name,
         sGroupImage = this.state.group.image,
         aMembers = this.state.newParticipants;
-      await this.setState({
+      this.setState({
         isAddParticipant: !this.state.isAddParticipant,
         newParticipants: [],
       });
@@ -338,8 +338,8 @@ class Groups extends Component {
     }
   };
 
-  acceptRequest = async (oRequest) => {
-    await this.setState({
+  acceptRequest = (oRequest) => {
+    this.setState({
       loading: true,
     });
     let sGroupKey = this.state.group.key,
@@ -349,8 +349,8 @@ class Groups extends Component {
     this.props.acceptRequestGroup(sGroupKey, sCapitanKey, sUserKey, sUserName);
   };
 
-  cancelRequest = async (oRequest) => {
-    await this.setState({
+  cancelRequest = (oRequest) => {
+    this.setState({
       loading: true,
     });
     this.props.rejectRequestGroup({
@@ -360,8 +360,8 @@ class Groups extends Component {
     });
   };
 
-  changeTabSelect = async (bValueSelect) => {
-    await this.setState({ tabSelectMy: bValueSelect });
+  changeTabSelect = (bValueSelect) => {
+    this.setState({ tabSelectMy: bValueSelect });
     this.props.navigation.setParams({ tabSelectMy: bValueSelect });
   };
 
@@ -370,17 +370,17 @@ class Groups extends Component {
     this.setState({ showToastQuestion: !this.state.showToastQuestion });
   };
 
-  openRequestModal = async (oGroup) => {
-    await this.setState({
+  openRequestModal = (oGroup) => {
+    this.setState({
       showUserRequestGroupDetails: true,
       usersRequest: oGroup.usersRequest,
       group: oGroup,
     });
   };
 
-  requestJoinGroup = async (oGroup) => {
+  requestJoinGroup = (oGroup) => {
     if (!this.state.loading) {
-      await this.setState({
+      this.setState({
         loading: true,
       });
       var sGroupKey = oGroup.key,
@@ -404,14 +404,14 @@ class Groups extends Component {
     }
   };
 
-  viewProfile = async (oUser) => {
+  viewProfile = (oUser) => {
     if (oUser.sender !== undefined) {
       if (oUser.sender === this.state.lastUserViewProfile.key) {
         this.props.getProfile(this.state.lastUserViewProfile.id);
       } else {
-        GetUserAccount(oUser.sender).then(async (userAccountSnapshot) => {
+        GetUserAccount(oUser.sender).then((userAccountSnapshot) => {
           var oUserAccount = userAccountSnapshot.val();
-          await this.setState({
+          this.setState({
             lastUserViewProfile: {
               id: oUserAccount.id,
               key: oUser.sender,
@@ -431,7 +431,7 @@ class Groups extends Component {
     this.showToast("Function not yet implemented");
   };
 
-  showToast = async (sText) => {
+  showToast = (sText) => {
     this.setState({
       toastText: sText,
       loading: false,
@@ -443,8 +443,8 @@ class Groups extends Component {
     }, 2000);
   };
 
-  rejectInvitation = async (groupKey) => {
-    await this.setState({
+  rejectInvitation = (groupKey) => {
+    this.setState({
       loading: true,
     });
     this.props.rejectInvitationGroup({
@@ -453,8 +453,8 @@ class Groups extends Component {
     });
   };
 
-  acceptInvitation = async (sGroupKey, nGroupId) => {
-    await this.setState({
+  acceptInvitation = (sGroupKey, nGroupId) => {
+    this.setState({
       loading: true,
     });
     let nUserId = this.props.session.account.id,
@@ -469,15 +469,15 @@ class Groups extends Component {
     );
   };
 
-  searchUsers = async (sSearch) => {
+  searchUsers = (sSearch) => {
     if ("" === sSearch) {
-      await this.setState({
+      this.setState({
         friends: this.state.friendsBack,
         searchPeople: "",
       });
     } else {
       this.props.getPeople(sSearch);
-      await this.setState({
+      this.setState({
         loading: true,
         searchPeople: sSearch,
       });

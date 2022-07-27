@@ -89,7 +89,7 @@ class ShowJourney extends Component {
 
   componentWillReceiveProps = async (nextProps) => {
     if (!this.props.journeyProps.status) this.goBack();
-    await this.setState({
+    this.setState({
       refreshing: false,
       refresh: !this.state.refresh,
     });
@@ -114,7 +114,7 @@ class ShowJourney extends Component {
 
   showLikes = async (nJourneyId) => {
     this.props.showLikes(nJourneyId);
-    await this.setState({
+    this.setState({
       showLikes: true,
     });
   };
@@ -131,7 +131,7 @@ class ShowJourney extends Component {
   }
 
   deleteJourney = async () => {
-    await this.setState({
+    this.setState({
       showQuestionDeleteJourney: false,
     });
     this.props.deleteJourney(
@@ -186,14 +186,14 @@ class ShowJourney extends Component {
     if ("camera" === sType) {
       ImagePicker.openCamera(oOptions).then(
         async (image) => {
-          await this.setState({
+          this.setState({
             newImage: image.data,
             showQuestionChangeImage: true,
             changePhoto: false,
           });
         },
         async () => {
-          await this.setState({
+          this.setState({
             changePhoto: false,
           });
         }
@@ -201,14 +201,14 @@ class ShowJourney extends Component {
     } else {
       ImagePicker.openPicker(oOptions).then(
         async (image) => {
-          await this.setState({
+          this.setState({
             newImage: image.data,
             showQuestionChangeImage: true,
             changePhoto: false,
           });
         },
         async () => {
-          await this.setState({
+          this.setState({
             changePhoto: false,
           });
         }
@@ -237,7 +237,7 @@ class ShowJourney extends Component {
   };
 
   setTagUser = async () => {
-    await this.setState({
+    this.setState({
       showQuestionAddTag: false,
     });
     if (
@@ -250,7 +250,7 @@ class ShowJourney extends Component {
         "The tag already exists, you must remove the current tag to add a new tag"
       );
     } else {
-      await this.setState({
+      this.setState({
         showFriends: false,
       });
       var nJourneyId = this.props.journeyProps.journey.id,
@@ -280,7 +280,7 @@ class ShowJourney extends Component {
     var nTagId = this.state.userTag.id,
       nJourneyId = this.props.journeyProps.journey.id,
       nUserId = this.props.session.account.id;
-    await this.setState({
+    this.setState({
       showQuestionRemoveTag: false,
       userTag: null,
     });
@@ -288,7 +288,7 @@ class ShowJourney extends Component {
   };
 
   handlePress = async (evt) => {
-    await this.setState({
+    this.setState({
       top: (evt.nativeEvent.locationY * 100) / screenHeight,
       left: (evt.nativeEvent.locationX * 100) / screenWidth,
     });
@@ -323,10 +323,10 @@ class ShowJourney extends Component {
                 this.state.player = ref;
               }}
               onLoadStart={async () => {
-                await this.setState({
+                this.setState({
                   muted: !this.state.muted,
                 });
-                await this.setState({
+                this.setState({
                   muted: !this.state.muted,
                 });
               }}
