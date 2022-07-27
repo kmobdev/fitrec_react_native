@@ -135,34 +135,41 @@ class Login extends Component {
               />
             </View>
             <View style={styles.Content}>
-              <Input
-                iconSource={"" === this.state.username && require("../../assets/user.png")}
-                autoCapitalize={"none"}
-                autoCompleteType={"username"}
-                textContentType={"username"}
-                value={this.state.username}
-                onChangeText={(text) => this.setState({ username: text })}
-                onSubmitEditing={() => {
-                  this.secondTextInput.focus();
-                }}
-                blurOnSubmit={false}
-              />
-              <Input
-                ref={(input) => {
-                  this.secondTextInput = input;
-                }}
-                onSubmitEditing={() => {
-                  this.login();
-                }}
-                iconSource={"" === this.state.password && require("../../assets/password.png")}
-                secureTextEntry={true}
-                autoCapitalize={"none"}
-                returnKeyType={"done"}
-                textContentType={"password"}
-                style={styles.textInput}
-                value={this.state.password}
-                onChangeText={(text) => this.setState({ password: text })}
-              />
+              <View style={styles.SectionStyle}>
+                <Input
+                  iconSource={"" === this.state.username && require("../../assets/user.png")}
+                  autoCapitalize={"none"}
+                  autoCompleteType={"username"}
+                  textContentType={"username"}
+                  value={this.state.username}
+                  onChangeText={(text) => this.setState({ username: text })}
+                  onSubmitEditing={() => {
+                    this.secondTextInput.focus();
+                  }}
+                  blurOnSubmit={false}
+                  inputStyle={styles.textInput}
+                />
+              </View>
+
+              <View style={styles.SectionStyle}>
+                <Input
+                  ref={(input) => {
+                    this.secondTextInput = input;
+                  }}
+                  onSubmitEditing={() => {
+                    this.login();
+                  }}
+                  iconSource={"" === this.state.password && require("../../assets/password.png")}
+                  secureTextEntry={true}
+                  autoCapitalize={"none"}
+                  returnKeyType={"done"}
+                  textContentType={"password"}
+                  style={styles.textInput}
+                  value={this.state.password}
+                  onChangeText={(text) => this.setState({ password: text })}
+                  inputStyle={styles.textInput}
+                />
+              </View>
               <Button
                 onPress={() => this.login()}
                 title={'LOGIN NOW'}
@@ -243,6 +250,15 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
+  },
+  SectionStyle: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    width: "95%",
+    borderBottomWidth: 0.5,
+    borderBottomColor: WhiteColor,
+    marginTop: "android" === Platform.OS ? 10 : 25,
   },
   ImageStyle: {
     height: 30,

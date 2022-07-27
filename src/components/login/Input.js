@@ -8,9 +8,9 @@ export default class Input extends Component {
   }
 
   render() {
-    const { ref, onSubmitEditing, iconSource, onChangeText, value, textContentType, returnKeyType, secureTextEntry, autoCapitalize, autoCompleteType, placeholder, style } = this.props;
+    const { ref, onSubmitEditing, iconSource, onChangeText, value, textContentType, returnKeyType, secureTextEntry, autoCapitalize, autoCompleteType, placeholder, inputStyle } = this.props;
     return (
-      <View style={styles.SectionStyle}>
+      <>
         {iconSource &&
           <Image
             source={iconSource}
@@ -26,33 +26,16 @@ export default class Input extends Component {
           autoCompleteType={autoCompleteType}
           returnKeyType={returnKeyType}
           textContentType={textContentType}
-          style={[styles.textInput, style]}
+          style={inputStyle}
           value={value}
           onChangeText={onChangeText}
         />
-      </View>
+      </>
     )
   }
 }
 
 const styles = StyleSheet.create({
-  SectionStyle: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    width: "95%",
-    borderBottomWidth: 0.5,
-    borderBottomColor: WhiteColor,
-    marginTop: "android" === Platform.OS ? 10 : 25,
-  },
-  textInput: {
-    backgroundColor: "transparent",
-    fontSize: 20,
-    color: WhiteColor,
-    width: "95%",
-    textAlign: "center",
-    paddingBottom: 10,
-  },
   ImageStyle: {
     height: 30,
     width: 150,
