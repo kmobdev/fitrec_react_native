@@ -4,6 +4,8 @@
 This is the most recent code for the mobile app. Still under development and not yet deployed
 
   For the code relating to the FitRec mobile app found on [Google Play](https://play.google.com/store/apps/details?id=com.fitrecApp) and [Apple App Store](https://apps.apple.com/us/app/fitrec/id1183833997), see [this code base](https://bitbucket.org/dynamiadevelopment/fitrec_app/src/master/)
+  
+  Spreadsheet with info on logins for integrations as well as environment variables [here](https://docs.google.com/spreadsheets/d/1CvFgbtMvmq8yYRkGd4xm1KVt0Wa1X9K8iySVb1Uixho/edit#gid=0) [email fitrecapp.config@gmail.com for access]
 
 ## Main Technologies Used
 
