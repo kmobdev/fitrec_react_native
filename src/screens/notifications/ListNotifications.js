@@ -103,8 +103,8 @@ class ListNotifications extends Component {
     }
   };
 
-  componentWillReceiveProps = async (nextProps) => {
-    await this.setState({
+  componentWillReceiveProps = (nextProps) => {
+    this.setState({
       refreshing: false,
       loading: false,
     });
@@ -135,7 +135,7 @@ class ListNotifications extends Component {
     }
   };
 
-  showToast = async (sText, callback = null) => {
+  showToast = (sText, callback = null) => {
     this.setState({
       toastText: sText,
       loading: false,
@@ -150,16 +150,16 @@ class ListNotifications extends Component {
     }, 2000);
   };
 
-  refreshNotifications = async () => {
+  refreshNotifications = () => {
     this.props.getNotifications();
     this.props.getJourneyList();
-    await this.setState({
+    this.setState({
       loading: true,
       refreshing: true,
     });
   };
 
-  openNotification = async (oNotification) => {
+  openNotification = (oNotification) => {
     if (!this.state.loading) {
       this.props.viewNotification(oNotification.id);
       switch (oNotification.type) {
@@ -181,7 +181,7 @@ class ListNotifications extends Component {
           this.openRequestGroup(oNotification.group.key);
           break;
         case NOTIFICATION_CAPITAN_MESSAGE_GROUP:
-          await this.setState({
+          this.setState({
             showNotificationGroup: true,
             notificationText: oNotification.description,
             capitanName: oNotification.user.name,
@@ -205,7 +205,7 @@ class ListNotifications extends Component {
     }
   };
 
-  openRequestGroup = async (groupId) => {
+  openRequestGroup = (groupId) => {
     this.props.openGroupNotification(groupId, this.props.session.account.key);
   };
 
@@ -214,7 +214,7 @@ class ListNotifications extends Component {
     this.props.navigation.navigate("DetailsGroup");
   };
 
-  showToast = async (sText) => {
+  showToast = (sText) => {
     this.setState({
       toastText: sText,
       loading: false,
@@ -226,8 +226,8 @@ class ListNotifications extends Component {
     }, 2000);
   };
 
-  rejectRequest = async () => {
-    await this.setState({
+  rejectRequest = () => {
+    this.setState({
       loading: true,
     });
     this.props.rejectInvitationGroup({
@@ -236,8 +236,8 @@ class ListNotifications extends Component {
     });
   };
 
-  acceptRequest = async () => {
-    await this.setState({
+  acceptRequest = () => {
+    this.setState({
       loading: true,
     });
     let nGroupId = this.state.group.id,
@@ -254,24 +254,24 @@ class ListNotifications extends Component {
     );
   };
 
-  deleteNotification = async (oNotification) => {
-    await this.setState({
+  deleteNotification = (oNotification) => {
+    this.setState({
       loading: true,
     });
     this.props.deleteNotification(oNotification.id);
     this.oNotificationRows[oNotification.id].close();
   };
 
-  deleteAllNotificationsQuestion = async () => {
+  deleteAllNotificationsQuestion = () => {
     this.props.notificationProps.notifications.length > 0
-      ? await this.setState({
+      ? this.setState({
         showQuestionDeleteAll: true,
       })
       : this.showToast("You have no notifications to delete");
   };
 
-  deleteAllNotifications = async () => {
-    await this.setState({
+  deleteAllNotifications = () => {
+    this.setState({
       loading: true,
       showQuestionDeleteAll: false,
     });
@@ -291,9 +291,30 @@ class ListNotifications extends Component {
     );
   };
 
-  expandImage = async (sUrlToImage) => {
+  expandImage = (sUrlToImage) => {
     this.props.expandImage(sUrlToImage);
   };
+
+  onCancleHandler = () => {
+    this.setState({
+      showNotificationGroup: false,
+      capitanName: "",
+      notificationText: "",
+      groupName: "",
+      groupKey: "",
+    })
+  }
+
+  onViewGroupHandler = () => {
+    this.navigateGroup(this.state.groupKey);
+    this.setState({
+      showNotificationGroup: false,
+      capitanName: "",
+      notificationText: "",
+      groupName: "",
+      groupKey: "",
+    });
+  }
 
   render = () => {
     return (
@@ -325,42 +346,28 @@ class ListNotifications extends Component {
                     <View
                       style={[
                         styles.viewNotificaton,
-                        1 == item.view
-                          ? { backgroundColor: WhiteColor }
-                          : { backgroundColor: "#EDEDED" },
+                        { backgroundColor: 1 == item.view ? WhiteColor : "#EDEDED" }
                       ]}
                     >
                       {null !== item.image ? (
                         <Image
-                          style={[
-                            { height: 60, width: 60 },
-                            { borderRadius: 100 },
-                          ]}
+                          style={styles.notificationImage}
                           source={{ uri: item.image }}
                         />
                       ) : (
                         <Image
-                          style={[
-                            { height: 60, width: 60 },
-                            { borderRadius: 100 },
-                          ]}
+                          style={styles.notificationImage}
                           source={require("../../assets/imgProfileReadOnly.png")}
                         />
                       )}
-                      <View
-                        style={{
-                          justifyContent: "center",
-                          marginLeft: 10,
-                          marginRight: 100,
-                        }}
-                      >
+                      <View style={styles.userNameMain} >
                         <Text
                           style={styles.textUserReference}
                           numberOfLines={1}
                         >
                           {item.user.name}(@{item.user.username})
                         </Text>
-                        <View style={{ flexDirection: "row", marginBottom: 5 }}>
+                        <View style={styles.iconMainView}>
                           {item.type == NOTIFICATION_SEND_REQUEST ||
                             item.type == NOTIFICATION_REQUEST_GROUP ||
                             item.type == NOTIFICATION_TYPE_NEW_FOLLOWER ? (
@@ -420,8 +427,8 @@ class ListNotifications extends Component {
               <Text style={ToastQuestionGenericStyles.textToast}>
                 Are you sure you want to delete all notifications?
               </Text>
-              <View style={{ flexDirection: "row" }}>
-                <View style={{ width: "50%" }}>
+              <View style={styles.flexRow}>
+                <View style={styles.width50}>
                   <Pressable
                     style={ToastQuestionGenericStyles.buttonCancel}
                     onPress={() =>
@@ -433,7 +440,7 @@ class ListNotifications extends Component {
                     </Text>
                   </Pressable>
                 </View>
-                <View style={{ width: "50%" }}>
+                <View style={styles.width50}>
                   <Pressable
                     style={ToastQuestionGenericStyles.buttonConfirm}
                     onPress={() => this.deleteAllNotifications()}
@@ -476,38 +483,21 @@ class ListNotifications extends Component {
               <Text style={ToastQuestionGenericStyles.textToast}>
                 {this.state.notificationText}
               </Text>
-              <View style={{ flexDirection: "row" }}>
-                <View style={{ width: "45%", marginRight: 5 }}>
+              <View style={styles.flexRow}>
+                <View style={styles.cancleButtonView}>
                   <Pressable
                     style={GlobalStyles.buttonCancel}
-                    onPress={() =>
-                      this.setState({
-                        showNotificationGroup: false,
-                        capitanName: "",
-                        notificationText: "",
-                        groupName: "",
-                        groupKey: "",
-                      })
-                    }
+                    onPress={this.onCancleHandler}
                   >
                     <Text style={ToastQuestionGenericStyles.buttonText}>
                       Cancel
                     </Text>
                   </Pressable>
                 </View>
-                <View style={{ width: "45%", marginLeft: 5 }}>
+                <View style={styles.groupButtonView}>
                   <Pressable
                     style={GlobalStyles.buttonConfirm}
-                    onPress={() => {
-                      this.navigateGroup(this.state.groupKey);
-                      this.setState({
-                        showNotificationGroup: false,
-                        capitanName: "",
-                        notificationText: "",
-                        groupName: "",
-                        groupKey: "",
-                      });
-                    }}
+                    onPress={this.onViewGroupHandler}
                   >
                     <Text style={ToastQuestionGenericStyles.buttonText}>
                       View Group
@@ -568,6 +558,34 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     height: "100%",
+  },
+  notificationImage: {
+    height: 60,
+    width: 60,
+    borderRadius: 100
+  },
+  userNameMain: {
+    justifyContent: "center",
+    marginLeft: 10,
+    marginRight: 100,
+  },
+  flexRow: {
+    flexDirection: "row"
+  },
+  cancleButtonView: {
+    width: "45%",
+    marginRight: 5
+  },
+  groupButtonView: {
+    width: "45%",
+    marginLeft: 5
+  },
+  width50: {
+    width: "50%"
+  },
+  iconMainView: {
+    flexDirection: "row",
+    marginBottom: 5
   },
 });
 

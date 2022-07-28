@@ -283,7 +283,7 @@ class Register extends Component {
     };
     if ("camera" === sType) {
       ImagePicker.openCamera(oOptions).then(
-        async (image) => {
+        (image) => {
           this.setState({
             user: {
               ...this.state.user,
@@ -291,30 +291,25 @@ class Register extends Component {
             },
             loadingImage: false,
           });
-        },
-        async (cancel) => {
+        }).catch((error) => {
           this.setState({
             loadingImage: false,
           });
-        }
-      );
+        })
     } else {
-      ImagePicker.openPicker(oOptions)
-        .then((image) => {
-          this.setState({
-            user: {
-              ...this.state.user,
-              background: image.data,
-            },
-            loadingImage: false,
-          });
-        },
-          (cancel) => {
-            this.setState({
-              loadingImage: false,
-            });
-          }
-        );
+      ImagePicker.openPicker(oOptions).then((image) => {
+        this.setState({
+          user: {
+            ...this.state.user,
+            background: image.data,
+          },
+          loadingImage: false,
+        });
+      }).catch((error) => {
+        this.setState({
+          loadingImage: false,
+        });
+      })
     }
   };
 

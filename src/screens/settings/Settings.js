@@ -70,7 +70,7 @@ class Settings extends Component {
 
   render() {
     return (
-      <View style={{ flex: 1, backgroundColor: WhiteColor }}>
+      <View style={styles.container}>
         <ScrollView>
           <View style={styles.viewOptionBorder}>
             <Pressable
@@ -78,7 +78,7 @@ class Settings extends Component {
             >
               <View style={styles.viewOption}>
                 <View style={styles.viewLeft}>
-                  <Text style={{ fontSize: 16 }}>Contact us</Text>
+                  <Text style={styles.text16}>Contact us</Text>
                 </View>
                 <View style={styles.viewRight}>
                   <Icon
@@ -96,7 +96,7 @@ class Settings extends Component {
             >
               <View style={styles.viewOption}>
                 <View style={styles.viewLeft}>
-                  <Text style={{ fontSize: 16 }}>Terms & conditions</Text>
+                  <Text style={styles.text16}>Terms & conditions</Text>
                 </View>
                 <View style={styles.viewRight}>
                   <Icon
@@ -114,7 +114,7 @@ class Settings extends Component {
             >
               <View style={styles.viewOption}>
                 <View style={styles.viewLeft}>
-                  <Text style={{ fontSize: 16 }}>App tutorial</Text>
+                  <Text style={styles.text16}>App tutorial</Text>
                 </View>
                 <View style={styles.viewRight}>
                   <Icon
@@ -132,7 +132,7 @@ class Settings extends Component {
             >
               <View style={styles.viewOption}>
                 <View style={styles.viewLeft}>
-                  <Text style={{ fontSize: 16 }}>Video app tutorial</Text>
+                  <Text style={styles.text16}>Video app tutorial</Text>
                 </View>
                 <View style={styles.viewRight}>
                   <Icon
@@ -149,7 +149,7 @@ class Settings extends Component {
                         <Pressable onPress={() => this.showToast("Function not yet implemented")}>
                             <View style={styles.viewOption}>
                                 <View style={styles.viewLeft}>
-                                    <Text style={{ fontSize: 16 }}>Blocked users</Text>
+                                    <Text style={styles.text16}>Blocked users</Text>
                                 </View>
                                 <View style={styles.viewRight}>
                                     <Icon name="ios-arrow-forward" size={30} color={PlaceholderColor} />
@@ -164,7 +164,7 @@ class Settings extends Component {
             >
               <View style={styles.viewOption}>
                 <View style={styles.viewLeft}>
-                  <Text style={{ fontSize: 16 }}>Deactivate user account</Text>
+                  <Text style={styles.text16}>Deactivate user account</Text>
                 </View>
                 <View style={styles.viewRight}>
                   <Icon
@@ -253,6 +253,10 @@ class Settings extends Component {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: WhiteColor
+  },
   viewOptionBorder: {
     borderBottomWidth: 1,
     borderColor: PlaceholderColor,
@@ -306,6 +310,9 @@ const styles = StyleSheet.create({
     bottom: 0,
     right: 10,
   },
+  text16: {
+    fontSize: 16
+  }
 });
 
 const mapStateToProps = (state) => ({

@@ -1,30 +1,31 @@
-import React, { Component } from "react";
+import React from "react";
+
 import { Text, Pressable, StyleSheet } from "react-native";
+
 import { GreenFitrecColor, WhiteColor } from "../../Styles";
+
 import Icon from "react-native-vector-icons/Ionicons";
 
-export default class Button extends Component {
-  constructor(props) {
-    super(props);
-  }
+const Button = (props) => {
 
-  render() {
-    const { onPress, title, } = this.props;
-    return (
-      <Pressable
-        onPress={onPress}
-        style={[styles.roundButton, styles.loginButton]}
-      >
-        <Text style={styles.loginText}>{title}</Text>
-        <Icon
-          name="arrow-forward"
-          color={GreenFitrecColor}
-          size={22}
-        />
-      </Pressable>
-    )
-  }
+  const { onPress, title, } = props;
+
+  return (
+    <Pressable
+      onPress={onPress}
+      style={[styles.roundButton, styles.loginButton]}
+    >
+      <Text style={styles.loginText}>{title}</Text>
+      <Icon
+        name="arrow-forward"
+        color={GreenFitrecColor}
+        size={22}
+      />
+    </Pressable>
+  )
 }
+
+export default Button;
 
 const styles = StyleSheet.create({
   loginButton: {

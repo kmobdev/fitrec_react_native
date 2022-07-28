@@ -192,7 +192,7 @@ export default class CarouselTutorial extends Component {
         </View>
       );
     } else {
-      this.setDisplayImageOne();
+      this.setDisplayImageOne;
       return null;
     }
   }
