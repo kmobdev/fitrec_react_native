@@ -120,8 +120,8 @@ class JourneyCreate extends Component {
       this.props.getJourneyList();
   };
 
-  navigateBack = async () => {
-    await this.setState({
+  navigateBack = () => {
+    this.setState({
       showPhoto: true,
       files: [],
       text: "",
@@ -135,8 +135,8 @@ class JourneyCreate extends Component {
     this.props.navigation.navigate("JourneyList");
   };
 
-  addImage = async (sType) => {
-    await this.setState({
+  addImage = (sType) => {
+    this.setState({
       showPhoto: false,
       loading: true,
     });
@@ -151,13 +151,13 @@ class JourneyCreate extends Component {
       case "camera":
         oOptions.mediaType = "image";
         ImagePicker.openCamera(oOptions)
-          .then(async (oFile) => {
+          .then((oFile) => {
             ImagePicker.openCropper({
               path: oFile.path,
               width: 800,
               height: 800,
             })
-              .then(async (oImage) => {
+              .then((oImage) => {
                 let oFileItem = {
                   type: "",
                   uri: oImage.path,
@@ -171,7 +171,7 @@ class JourneyCreate extends Component {
                 oFileItem.type = POST_TYPE_IMAGE;
                 oFileItem.name = "fitrec_photo.jpeg";
                 aFiles.push(oFileItem);
-                await this.setState({
+                this.setState({
                   files: aFiles,
                   showPhoto: false,
                   loading: false,
@@ -185,8 +185,8 @@ class JourneyCreate extends Component {
                 });
               });
           })
-          .catch(async (cancel) => {
-            await this.setState({
+          .catch((cancel) => {
+            this.setState({
               showPhoto: true,
               loading: false,
             });
@@ -195,7 +195,7 @@ class JourneyCreate extends Component {
       case "video":
         ImagePickerVideo.launchCamera(
           { mediaType: "video", videoQuality: "high", durationLimit: 60 },
-          async (oResponse) => {
+          (oResponse) => {
             if (!oResponse.didCancel && !oResponse.error) {
               let sPath = oResponse.path ? oResponse.path : oResponse.uri,
                 sName,
@@ -219,7 +219,7 @@ class JourneyCreate extends Component {
                   sTemporalPath +
                   sName
                 )
-                  .then(async (result) => {
+                  .then((result) => {
                     let oFileItem = {
                       type: POST_TYPE_VIDEO,
                       uri: sTemporalPath + sName,
@@ -230,7 +230,7 @@ class JourneyCreate extends Component {
                       tags: [],
                     };
                     aFiles.push(oFileItem);
-                    await this.setState({
+                    this.setState({
                       files: aFiles,
                       showPhoto: false,
                       loading: false,
@@ -247,7 +247,7 @@ class JourneyCreate extends Component {
                     );
                   });
               } else {
-                await this.setState({
+                this.setState({
                   showPhoto: true,
                   loading: false,
                 });
@@ -267,11 +267,11 @@ class JourneyCreate extends Component {
         oOptions.multiple = true;
         oOptions.maxFiles = 4;
         ImagePicker.openPicker(oOptions)
-          .then(async (oFiles) => {
+          .then((oFiles) => {
             let aFiles = [],
               nCount = 0,
               nOrder = 1;
-            oFiles.forEach(async (oFile) => {
+            oFiles.forEach((oFile) => {
               let oFileItem = {
                 type: "",
                 uri: "",
@@ -307,7 +307,7 @@ class JourneyCreate extends Component {
                   sTemporalPath +
                   sName
                 )
-                  .then(async (result) => {
+                  .then((result) => {
                     oFileItem.type = POST_TYPE_VIDEO;
                     oFileItem.uri = sTemporalPath + sName;
                     oFileItem.realPath = sTemporalPath + sName;
@@ -320,7 +320,7 @@ class JourneyCreate extends Component {
                         if (oFileA.order > oFileB.order) return 1;
                         return -1;
                       });
-                      await this.setState({
+                      this.setState({
                         files: aFiles,
                         showPhoto: false,
                         loading: false,
@@ -350,7 +350,7 @@ class JourneyCreate extends Component {
                   if (oFileA.order > oFileB.order) return 1;
                   return -1;
                 });
-                await this.setState({
+                this.setState({
                   files: aFiles,
                   showPhoto: false,
                   loading: false,
@@ -359,8 +359,8 @@ class JourneyCreate extends Component {
               }
             });
           })
-          .catch(async (cancel) => {
-            await this.setState({
+          .catch((cancel) => {
+            this.setState({
               showPhoto: true,
               loading: false,
             });
@@ -369,7 +369,7 @@ class JourneyCreate extends Component {
     }
   };
 
-  createJourney = async () => {
+  createJourney = () => {
     let nLongitude = null,
       nLatitude = null,
       nUserId = this.props.session.account.id,
@@ -416,7 +416,7 @@ class JourneyCreate extends Component {
     }
   };
 
-  componentWillReceiveProps = async (nextProps) => {
+  componentWillReceiveProps = (nextProps) => {
     if (
       nextProps.journeyProps !== this.props.journeyProps &&
       null !== nextProps.journeyProps.statusCreated &&
@@ -424,13 +424,13 @@ class JourneyCreate extends Component {
     ) {
       this.navigateBack();
     }
-    await this.setState({
+    this.setState({
       loading: false,
     });
   };
 
-  handlePress = async (evt) => {
-    await this.setState({
+  handlePress = (evt) => {
+    this.setState({
       top: (evt.nativeEvent.locationY * 100) / screenHeight,
       left: (evt.nativeEvent.locationX * 100) / screenWidth,
     });
@@ -441,13 +441,13 @@ class JourneyCreate extends Component {
     }, 200);
   };
 
-  setTagUser = async (lItem) => {
+  setTagUser = (lItem) => {
     if (
       this.state.files[this.state.index].tags.filter(
         (element) => element.key === lItem.key
       ).length > 0
     ) {
-      await this.removeUser(lItem);
+      this.removeUser(lItem);
     }
     let oTag = {
       x: this.state.left,
@@ -458,7 +458,7 @@ class JourneyCreate extends Component {
     };
     let aFiles = this.state.files;
     aFiles[this.state.index].tags.push(oTag);
-    await this.setState({
+    this.setState({
       showFriends: false,
       files: aFiles,
     });
@@ -475,7 +475,7 @@ class JourneyCreate extends Component {
     };
   }
 
-  removeUser = async (user) => {
+  removeUser = (user) => {
     let aTags = this.state.files[this.state.index].tags;
     for (let i = 0; i < aTags.length; i++) {
       if (aTags[i].key === user.key) {
@@ -486,7 +486,7 @@ class JourneyCreate extends Component {
     let oFileItem = aFiles[this.state.index];
     oFileItem.tags = aTags;
     aFiles[this.state.index] = oFileItem;
-    await this.setState({ files: aFiles });
+    this.setState({ files: aFiles });
   };
 
   resize = (oImage) => {
@@ -496,14 +496,14 @@ class JourneyCreate extends Component {
       width: 800,
       height: 800,
     })
-      .then(async (oFile) => {
+      .then((oFile) => {
         let oFileItem = oImage,
           aFiles = [];
         oFileItem.type = POST_TYPE_IMAGE;
         oFileItem.uri = oFile.path;
         aFiles = this.state.files;
         aFiles[this.state.index] = oFileItem;
-        await this.setState({
+        this.setState({
           aFiles: aFiles,
           loading: false,
         });

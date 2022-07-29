@@ -104,22 +104,22 @@ class JourneyList extends Component {
     this.setState({ muted: true });
   };
 
-  getJourneyList = async () => {
+  getJourneyList = () => {
     this.props.getJourneyList();
     this.props.getStories();
   };
 
-  onRefresh = async () => {
-    await this.setState({
+  onRefresh = () => {
+    this.setState({
       refreshing: true,
       muted: true,
     });
     this.getJourneyList();
   };
 
-  componentWillReceiveProps = async (nextProps) => {
+  componentWillReceiveProps = (nextProps) => {
     if (this.props.journeyProps.journeys.length > 0)
-      await this.setState({
+      this.setState({
         loadingListJourney: false,
       });
     if (nextProps.journeyProps.bNavigationJourney) {
@@ -129,14 +129,14 @@ class JourneyList extends Component {
         this.setState({ index: 1 });
       }
     }
-    await this.setState({
+    this.setState({
       loading: false,
       refreshing: false,
       refresh: !this.state.refresh,
     });
   };
 
-  addUnLike = async (oJourney, bAddLike) => {
+  addUnLike = (oJourney, bAddLike) => {
     let oDataNotification =
       this.props.session.account.id !== oJourney.user.id
         ? {
@@ -164,15 +164,15 @@ class JourneyList extends Component {
     };
   }
 
-  showLikes = async (nJourneyId) => {
+  showLikes = (nJourneyId) => {
     this.props.showLikes(nJourneyId);
-    await this.setState({
+    this.setState({
       showLikes: true,
     });
   };
 
-  deleteJourney = async () => {
-    await this.setState({
+  deleteJourney = () => {
+    this.setState({
       loading: true,
       showQuestionDeleteJourney: false,
     });
@@ -206,8 +206,8 @@ class JourneyList extends Component {
     });
   };
 
-  addImage = async (sType) => {
-    await this.setState({
+  addImage = (sType) => {
+    this.setState({
       showPhoto: false,
       loading: true,
     });
@@ -226,9 +226,9 @@ class JourneyList extends Component {
     switch (sType) {
       case "camera":
         ImagePicker.openCamera(oOptions).then(
-          async (image) => {
+          (image) => {
             if (this.state.newStory) {
-              await this.setState({
+              this.setState({
                 newStory: false,
                 loading: false,
               });
@@ -261,15 +261,15 @@ class JourneyList extends Component {
                   });
               }
             } else
-              await this.setState({
+              this.setState({
                 newImage: image.data,
                 loading: false,
                 showQuestionChangeImage: true,
                 changePhoto: false,
               });
           },
-          async (cancel) => {
-            await this.setState({
+          (cancel) => {
+            this.setState({
               loading: false,
               changePhoto: false,
               journey: null,
@@ -281,7 +281,7 @@ class JourneyList extends Component {
       case "video":
         ImagePickerVideo.launchCamera(
           { mediaType: "video", videoQuality: "high", durationLimit: 30 },
-          async (oResponse) => {
+          (oResponse) => {
             if (!oResponse.didCancel && !oResponse.error) {
               let sPath = oResponse.path ? oResponse.path : oResponse.uri,
                 sName,
@@ -304,8 +304,8 @@ class JourneyList extends Component {
                   sTemporalPath +
                   sName
                 )
-                  .then(async (result) => {
-                    await this.setState({
+                  .then((result) => {
+                    this.setState({
                       newStory: false,
                       loading: false,
                     });
@@ -321,7 +321,7 @@ class JourneyList extends Component {
                     );
                   });
               } else {
-                await this.setState({
+                this.setState({
                   loading: false,
                   changePhoto: false,
                   journey: null,
@@ -331,7 +331,7 @@ class JourneyList extends Component {
               }
             } else {
               if (oResponse.error) this.showToast(MESSAGE_ERROR);
-              await this.setState({
+              this.setState({
                 loading: false,
                 changePhoto: false,
                 journey: null,
@@ -343,7 +343,7 @@ class JourneyList extends Component {
         break;
       case "gallery":
         ImagePicker.openPicker(oOptions).then(
-          async (image) => {
+          (image) => {
             if (this.state.newStory) {
               if (image.mime.indexOf("video") !== -1) {
                 let sName = "",
@@ -362,8 +362,8 @@ class JourneyList extends Component {
                   sTemporalPath +
                   sName
                 )
-                  .then(async (result) => {
-                    await this.setState({
+                  .then((result) => {
+                    this.setState({
                       newStory: false,
                       loading: false,
                     });
@@ -384,7 +384,7 @@ class JourneyList extends Component {
                         this.props.message(
                           "There was a problem selecting the video"
                         );
-                        await this.setState({
+                        this.setState({
                           loading: false,
                           changePhoto: false,
                           journey: null,
@@ -399,7 +399,7 @@ class JourneyList extends Component {
                     );
                   });
               } else if (image.mime.indexOf("image") !== -1) {
-                await this.setState({
+                this.setState({
                   newStory: false,
                   loading: false,
                 });
@@ -425,15 +425,15 @@ class JourneyList extends Component {
                   });
               } else this.props.message("Unsupported file type");
             } else
-              await this.setState({
+              this.setState({
                 newImage: image.data,
                 loading: false,
                 showQuestionChangeImage: true,
                 changePhoto: false,
               });
           },
-          async (cancel) => {
-            await this.setState({
+          (cancel) => {
+            this.setState({
               loading: false,
               changePhoto: false,
               journey: null,
@@ -556,11 +556,11 @@ class JourneyList extends Component {
               ref={(ref) => {
                 this.state.player = ref;
               }}
-              onLoadStart={async () => {
-                await this.setState({
+              onLoadStart={() => {
+                this.setState({
                   muted: !this.state.muted,
                 });
-                await this.setState({
+                this.setState({
                   muted: !this.state.muted,
                 });
               }}

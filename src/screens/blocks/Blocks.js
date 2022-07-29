@@ -26,6 +26,7 @@ import {
   actionGetBlocks,
   actionUnblockUser,
 } from "../../redux/actions/BlockActions";
+import { Input } from "../../components";
 
 class Blocks extends Component {
   constructor(props) {
@@ -88,7 +89,7 @@ class Blocks extends Component {
     })
   }
 
-  onLockHandler = () => {
+  onLockHandler = (item) => {
     this.setState({
       bShowQuestion: true,
       nQuestionId: item.id,
@@ -105,42 +106,40 @@ class Blocks extends Component {
             keyExtractor={(item, index) => index.toString()}
             extraData={this.state.refresh}
             renderItem={({ item }) => (
-              <>
-                <View style={styles.containerRow}>
-                  <View style={{ flex: 3 }}>
-                    {item.image != null ? (
-                      <FastImage
-                        style={GlobalStyles.photoProfileCardList}
-                        source={{ uri: item.image }}
-                        resizeMode="cover"
-                      />
-                    ) : (
-                      <Image
-                        style={GlobalStyles.photoProfileCardList}
-                        source={require("../../assets/imgProfileReadOnly2.png")}
-                      />
-                    )}
-                  </View>
-                  <View style={styles.sectionText}>
-                    <Text style={styles.textName}>{item.name}</Text>
-                    <Text style={styles.textUsername}>@{item.username}</Text>
-                  </View>
-                  <View style={styles.sectionButton}>
-                    <Pressable
-                      onPress={this.onLockHandler}
-                      style={styles.removeButton}
-                      activeOpacity={0.8}
-                    >
-                      <Icon
-                        name="lock-open"
-                        size={24}
-                        color={SignUpColor}
-                        style={styles.textCenter}
-                      />
-                    </Pressable>
-                  </View>
+              <View style={styles.containerRow}>
+                <View style={{ flex: 3 }}>
+                  {item.image != null ? (
+                    <FastImage
+                      style={GlobalStyles.photoProfileCardList}
+                      source={{ uri: item.image }}
+                      resizeMode="cover"
+                    />
+                  ) : (
+                    <Image
+                      style={GlobalStyles.photoProfileCardList}
+                      source={require("../../assets/imgProfileReadOnly2.png")}
+                    />
+                  )}
                 </View>
-              </>
+                <View style={styles.sectionText}>
+                  <Text style={styles.textName}>{item.name}</Text>
+                  <Text style={styles.textUsername}>@{item.username}</Text>
+                </View>
+                <View style={styles.sectionButton}>
+                  <Pressable
+                    onPress={() => this.onLockHandler(item)}
+                    style={styles.removeButton}
+                    activeOpacity={0.8}
+                  >
+                    <Icon
+                      name="lock-open"
+                      size={24}
+                      color={SignUpColor}
+                      style={styles.textCenter}
+                    />
+                  </Pressable>
+                </View>
+              </View>
             )}
           />
         ) : this.props.oBlocks.blocks.length > 0 ? (
@@ -155,11 +154,13 @@ class Blocks extends Component {
   render = () => {
     return (
       <View style={styles.container}>
-        <View>
-          <TextInput
+        <View style={styles.inputContainer}>
+          <Input
             placeholder={"Search"}
             value={this.state.search}
-            onChangeText={(sValue) => this.setState({ search: sValue })}
+            onChangeText={(sValue) => {
+              this.setState({ search: sValue });
+            }}
             style={styles.textInput}
           />
         </View>
@@ -186,15 +187,33 @@ class Blocks extends Component {
         <ToastQuestionGeneric
           visible={this.state.bShowQuestion}
           titleBig="Unblock User"
-          title={"Are you sure you want to unblock " + this.state.sQuestionName + "?"}
+          title={
+            "Are you sure you want to unblock " + this.state.sQuestionName + "?"
+          }
           options={
             <View style={ToastQuestionStyles.viewButtons}>
               <Pressable
-                onPress={this.onCancleHandler}
-                style={styles.button}>
+                onPress={() =>
+                  this.setState({
+                    bShowQuestion: false,
+                    nQuestionId: null,
+                    sQuestionName: null,
+                  })
+                }
+                style={[
+                  ToastQuestionStyles.button,
+                  { backgroundColor: GreenFitrecColor, marginRight: 10 },
+                ]}
+              >
                 <Text style={ToastQuestionStyles.textButton}>Cancel</Text>
               </Pressable>
-              <Pressable onPress={this.unblock} style={styles.buttonUnblock}>
+              <Pressable
+                onPress={() => this.unblock()}
+                style={[
+                  ToastQuestionStyles.button,
+                  { backgroundColor: SignUpColor },
+                ]}
+              >
                 <Text style={ToastQuestionStyles.textButton}>Ok</Text>
               </Pressable>
             </View>
@@ -220,16 +239,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     padding: 10,
     paddingLeft: 15,
-  },
-  textInput: {
-    backgroundColor: WhiteColor,
-    width: "auto",
-    padding: 7,
-    borderRadius: 5,
-    margin: 10,
-    marginTop: 20,
-    borderWidth: 0.5,
-    borderColor: "#777777",
   },
   containerRow: {
     width: "100%",
@@ -275,14 +284,18 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: "20%",
   },
-  button: {
-    ...ToastQuestionStyles.button,
-    backgroundColor: GreenFitrecColor,
-    marginRight: 10,
+  textInput: {
+    backgroundColor: WhiteColor,
+    width: "auto",
+    padding: 7,
+    borderRadius: 5,
+    marginTop: 20,
+    borderWidth: 0.5,
+    borderColor: "#777777",
+    width: '97%',
   },
-  buttonUnblock: {
-    ...ToastQuestionStyles.button,
-    backgroundColor: SignUpColor
+  inputContainer: {
+    alignItems: 'center'
   }
 });
 

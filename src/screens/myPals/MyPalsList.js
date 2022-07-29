@@ -101,34 +101,34 @@ class MyPalsList extends Component {
     this.setState({ showFilters: !this.state.showFilters });
   };
 
-  getMyFriends = async () => {
-    await this.setState({
+  getMyFriends = () => {
+    this.setState({
       loading: true,
     });
     this.props.getMyFriends();
   };
 
-  getRequests = async () => {
-    await this.setState({
+  getRequests = () => {
+    this.setState({
       loading: true,
     });
     this.props.getRequests(this.props.session.account.key);
   };
 
-  componentWillReceiveProps = async (nextProps) => {
+  componentWillReceiveProps = (nextProps) => {
     if (
       null !== nextProps.myPalsRequest.statusSend &&
       nextProps.myPalsRequest.statusSend
     ) {
       this.props.resetStateRequest();
-      await this.setState({ search: "", filterRequests: "" });
+      this.setState({ search: "", filterRequests: "" });
       this.searchPeople();
       this.showToast("Your request has been sent");
     } else if (
       null !== nextProps.myPalsRequest.statusSend &&
       !nextProps.myPalsRequest.statusSend
     ) {
-      await this.setState({ search: "", filterRequests: "" });
+      this.setState({ search: "", filterRequests: "" });
       this.searchPeople();
       this.showToast(nextProps.myPalsRequest.messageError);
       this.props.resetStateRequest();
@@ -155,7 +155,7 @@ class MyPalsList extends Component {
       this.showToast("Successfully cancel");
     }
     if (nextProps.activity.activities.length > 0) {
-      await this.setState({
+      this.setState({
         activities: nextProps.activity.activities,
       });
     }
@@ -164,26 +164,26 @@ class MyPalsList extends Component {
       nextProps.activity.gyms.forEach((oGym) => {
         aGymsName.push(oGym.name);
       });
-      await this.setState({
+      this.setState({
         gyms: nextProps.activity.gyms,
         gymsName: aGymsName,
       });
     }
 
     if (nextProps.myPals.bRequestNavigation) {
-      await this.setState({ tabSelectPals: false });
+      this.setState({ tabSelectPals: false });
       this.props.cleanNavigation();
     }
 
-    await this.setState({
+    this.setState({
       refresh: !this.state.refresh,
       loading: false,
       refreshing: false,
     });
   };
 
-  searchPeople = async () => {
-    await this.setState({
+  searchPeople = () => {
+    this.setState({
       filterRequests: this.state.search,
     });
     var aActivitiesSelected =
@@ -300,7 +300,7 @@ class MyPalsList extends Component {
     return true;
   };
 
-  showToast = async (sText) => {
+  showToast = (sText) => {
     this.setState({
       toastText: sText,
       loading: false,
@@ -312,8 +312,8 @@ class MyPalsList extends Component {
     }, 2000);
   };
 
-  sendRequest = async (sUserPalKey) => {
-    await this.setState({
+  sendRequest = (sUserPalKey) => {
+    this.setState({
       loading: true,
     });
     this.props.sendRequest(
@@ -324,12 +324,12 @@ class MyPalsList extends Component {
     );
   };
 
-  acceptRequest = async (oPal) => {
+  acceptRequest = (oPal) => {
     this.props.acceptRequest(oPal.id, oPal.key, this.props.session.account.key);
   };
 
-  cancelRequest = async (lFriendItem, sType) => {
-    await this.setState({
+  cancelRequest = (lFriendItem, sType) => {
+    this.setState({
       loading: true,
     });
     this.props.cancelRequest({
@@ -339,26 +339,26 @@ class MyPalsList extends Component {
     });
   };
 
-  refreshFriends = async () => {
-    await this.setState({
+  refreshFriends = () => {
+    this.setState({
       refreshing: true,
     });
     this.getMyFriends();
   };
 
-  refreshRequest = async () => {
-    await this.setState({
+  refreshRequest = () => {
+    this.setState({
       refreshing: true,
     });
     this.getRequests();
   };
 
-  changeTab = async (bValue) => {
+  changeTab = (bValue) => {
     if (bValue) {
-      await this.setState({ search: "", searchPals: "" });
+      this.setState({ search: "", searchPals: "" });
       this.searchPeople();
     }
-    await this.setState({ tabSelectPals: bValue });
+    this.setState({ tabSelectPals: bValue });
   };
 
   redirectionViewProfile = (nIdFitrec) => {
@@ -391,12 +391,12 @@ class MyPalsList extends Component {
       });
   };
 
-  resetFilters = async () => {
+  resetFilters = () => {
     undefined !== this.state.activities &&
       this.state.activities.map((oActivity) => {
         oActivity.selected = false;
       });
-    await this.setState({
+    this.setState({
       ageRange: null,
       ageMax: null,
       ageMin: null,
@@ -427,15 +427,19 @@ class MyPalsList extends Component {
             style={[
               GlobalTabs.tabLeft,
               this.state.tabSelectPals && GlobalTabs.tabActive,
-            ]}>
-            <Text
-              style={
-                this.state.tabSelectPals
-                  ? GlobalTabs.tabsTextActive
-                  : GlobalTabs.tabsText
-              }>
-              Pals
-            </Text>
+            ]}
+          >
+            <View>
+              <Text
+                style={
+                  this.state.tabSelectPals
+                    ? GlobalTabs.tabsTextActive
+                    : GlobalTabs.tabsText
+                }
+              >
+                Pals
+              </Text>
+            </View>
           </Pressable>
           <Pressable
             onPress={() => this.changeTab(false)}
@@ -444,15 +448,17 @@ class MyPalsList extends Component {
               !this.state.tabSelectPals && GlobalTabs.tabActive,
             ]}
           >
-            <Text
-              style={
-                !this.state.tabSelectPals
-                  ? GlobalTabs.tabsTextActive
-                  : GlobalTabs.tabsText
-              }
-            >
-              Requests
-            </Text>
+            <View>
+              <Text
+                style={
+                  !this.state.tabSelectPals
+                    ? GlobalTabs.tabsTextActive
+                    : GlobalTabs.tabsText
+                }
+              >
+                Requests
+              </Text>
+            </View>
           </Pressable>
         </View>
         {this.state.tabSelectPals ? (
@@ -496,12 +502,12 @@ class MyPalsList extends Component {
                       >
                         {undefined === item.image || null === item.image ? (
                           <Image
-                            style={styles.profileImage}
+                            style={styles.dummyImage}
                             source={require("../../assets/imgProfileReadOnly2.png")}
                           />
                         ) : (
                           <FastImage
-                            style={{ height: 80, width: 80, borderRadius: 100 }}
+                            style={styles.userImage}
                             source={{
                               uri: item.image,
                               priority: FastImage.priority.high,
@@ -510,7 +516,7 @@ class MyPalsList extends Component {
                           />
                         )}
                         <View
-                          style={{ justifyContent: "center", marginLeft: 10 }}
+                          style={styles.requestMainView}
                         >
                           <Text style={styles.textUserReference}>
                             {item.name}
@@ -527,11 +533,6 @@ class MyPalsList extends Component {
                     )}
                   />
                 )}
-                {/*These letters are supposed to order the names of friends
-                                        Is commented for future version
-                                    <View style={{ paddingLeft: 10, paddingTop: 10 }}>
-                                        <Text style={{ fontWeight: 'bold', color: PlaceholderColor }}>F</Text>
-                                    </View>*/}
               </ScrollView>
             </View>
             <View style={styles.viewABC}>
@@ -586,20 +587,16 @@ class MyPalsList extends Component {
                       <View style={styles.viewNotificaton}>
                         <Pressable
                           onPress={() => this.redirectionViewProfile(item.id)}
-                          style={{ flexDirection: "row", width: "100%" }}
+                          style={styles.dummyImagePressable}
                         >
                           {null === item.image || undefined === item.image ? (
                             <Image
-                              style={{ height: 80, width: 80 }}
+                              style={styles.dummyImage}
                               source={require("../../assets/imgProfileReadOnly2.png")}
                             />
                           ) : (
                             <FastImage
-                              style={{
-                                height: 80,
-                                width: 80,
-                                borderRadius: 100,
-                              }}
+                              style={styles.userImage}
                               source={{
                                 uri: item.image,
                                 priority: FastImage.priority.high,
@@ -607,13 +604,7 @@ class MyPalsList extends Component {
                               resizeMode={FastImage.resizeMode.cover}
                             />
                           )}
-                          <View
-                            style={{
-                              justifyContent: "center",
-                              marginLeft: 10,
-                              marginRight: 160,
-                            }}
-                          >
+                          <View style={styles.friendRequestsMainView}>
                             <Text
                               style={styles.textUserReference}
                               numberOfLines={1}
@@ -658,18 +649,18 @@ class MyPalsList extends Component {
                     <View style={styles.viewNotificaton}>
                       <Pressable
                         onPress={() => this.redirectionViewProfile(item.id)}
-                        style={{ flexDirection: "row", width: "100%" }}
+                        style={styles.dummyImagePressable}
                       >
                         {undefined === item.image ||
                           null === item.image ||
                           "" === item.image ? (
                           <Image
-                            style={{ height: 80, width: 80 }}
+                            style={styles.dummyImage}
                             source={require("../../assets/imgProfileReadOnly2.png")}
                           />
                         ) : (
                           <FastImage
-                            style={{ height: 80, width: 80, borderRadius: 100 }}
+                            style={styles.userImage}
                             source={{
                               uri: item.image,
                               priority: FastImage.priority.high,
@@ -677,13 +668,7 @@ class MyPalsList extends Component {
                             resizeMode={FastImage.resizeMode.cover}
                           />
                         )}
-                        <View
-                          style={{
-                            justifyContent: "center",
-                            marginLeft: 10,
-                            marginRight: 120,
-                          }}
-                        >
+                        <View style={styles.friendSentRequestsMainView}>
                           <Text
                             style={styles.textUserReference}
                             numberOfLines={1}
@@ -715,16 +700,16 @@ class MyPalsList extends Component {
                   <View style={styles.viewNotificaton}>
                     <Pressable
                       onPress={() => this.redirectionViewProfile(item.id)}
-                      style={{ flexDirection: "row", width: "100%" }}
+                      style={styles.dummyImagePressable}
                     >
                       {null === item.image ? (
                         <Image
-                          style={{ height: 80, width: 80 }}
+                          style={styles.dummyImage}
                           source={require("../../assets/imgProfileReadOnly2.png")}
                         />
                       ) : (
                         <FastImage
-                          style={{ height: 80, width: 80, borderRadius: 100 }}
+                          style={styles.userImage}
                           source={{
                             uri: item.image,
                             priority: FastImage.priority.high,
@@ -733,7 +718,7 @@ class MyPalsList extends Component {
                         />
                       )}
                       <View
-                        style={{ justifyContent: "center", marginLeft: 10 }}
+                        style={styles.requestMainView}
                       >
                         <Text style={styles.textUserReference}>
                           {item.name}
@@ -903,14 +888,14 @@ class MyPalsList extends Component {
                     minimumTrackTintColor={SignUpColor}
                     thumbTintColor={SignUpColor}
                   />
-                  <View style={{ width: "100%", flexDirection: "row" }}>
+                  <View style={styles.dummyImagePressable}>
                     <Text style={[GlobalStyles.textMuted, { width: "50%" }]}>
                       1 Mile
                     </Text>
                     <Text
                       style={[
                         GlobalStyles.textMuted,
-                        { width: "50%", textAlign: "right" },
+                        styles.milesText,
                       ]}
                     >
                       30 Miles
@@ -1094,9 +1079,40 @@ const styles = StyleSheet.create({
     width: "100%",
     padding: 10,
   },
-  imageProfile: {
+  profileImage: {
     height: 80,
     width: 80
+  },
+  dummyImage: {
+    height: 80,
+    width: 80
+  },
+  dummyImagePressable: {
+    flexDirection: "row",
+    width: "100%"
+  },
+  userImage: {
+    height: 80,
+    width: 80,
+    borderRadius: 100,
+  },
+  friendRequestsMainView: {
+    justifyContent: "center",
+    marginLeft: 10,
+    marginRight: 160,
+  },
+  requestMainView: {
+    justifyContent: "center",
+    marginLeft: 10,
+  },
+  milesText: {
+    width: "50%",
+    textAlign: "right"
+  },
+  friendSentRequestsMainView: {
+    justifyContent: "center",
+    marginLeft: 10,
+    marginRight: 120,
   },
 });
 

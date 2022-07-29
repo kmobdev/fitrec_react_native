@@ -26,24 +26,24 @@ export default class CarouselTutorial extends Component {
     };
   }
 
-  setDisplayImageOne = async () => {
-    await this.setState({
+  setDisplayImageOne = () => {
+    this.setState({
       displayImage: 1,
     });
   };
 
-  nextPage = async () => {
+  nextPage = () => {
     if (4 === this.state.displayImage) {
-      await this.setState({ displayImage: 1 });
+      this.setState({ displayImage: 1 });
       this.props.close();
-    } else await this.setState({ displayImage: this.state.displayImage + 1 });
+    } else this.setState({ displayImage: this.state.displayImage + 1 });
   };
 
-  backPage = async () => {
+  backPage = () => {
     if (1 === this.state.displayImage) {
-      await this.setState({ displayImage: 1 });
+      this.setState({ displayImage: 1 });
       this.props.close();
-    } else await this.setState({ displayImage: this.state.displayImage - 1 });
+    } else this.setState({ displayImage: this.state.displayImage - 1 });
   };
 
   onSwipe = (gestureName, gestureState) => {
@@ -192,7 +192,7 @@ export default class CarouselTutorial extends Component {
         </View>
       );
     } else {
-      this.setDisplayImageOne();
+      this.setDisplayImageOne;
       return null;
     }
   }

@@ -79,7 +79,7 @@ class MessagesGroup extends Component {
     this.state = oInitialState;
   }
 
-  componentDidMount = async () => {
+  componentDidMount = () => {
     this.props.navigation.setParams({ goBack: this.goBack });
     this.oKeyboardListenerWillShow = Keyboard.addListener(
       "keyboardWillShow",
@@ -105,14 +105,14 @@ class MessagesGroup extends Component {
     this.props.cleanMessages();
   };
 
-  componentDidUpdate = async (oPrevProps) => { };
+  componentDidUpdate = (oPrevProps) => { };
 
   goBack = () => {
     this.props.cleanMessages();
     this.props.navigation.goBack();
   };
 
-  expandImage = async (sUrlToImage) => {
+  expandImage = (sUrlToImage) => {
     this.props.expandImage(sUrlToImage);
   };
 
@@ -130,7 +130,7 @@ class MessagesGroup extends Component {
     this.setState({ sSearch: "" });
   };
 
-  viewProfile = async (oUserKey) => {
+  viewProfile = (oUserKey) => {
     const { oGroup } = this.props.oGroupProps;
     let aUser = oGroup.participants.filter(
       (oParticipant) => oParticipant.key === oUserKey
@@ -157,7 +157,7 @@ class MessagesGroup extends Component {
     return null;
   };
 
-  sendMessage = async (sType = SEND_MESSAGE_TYPES.TEXT, oGif = null) => {
+  sendMessage = (sType = SEND_MESSAGE_TYPES.TEXT, oGif = null) => {
     const { sText, sImage, oMarker, bShowGifsStickers } = this.state;
     const { key: sGroupKey } = this.props.oGroupProps.oGroup;
     const { key: sSenderKey } = this.props.session.account;
@@ -194,21 +194,21 @@ class MessagesGroup extends Component {
     this.resetState();
   };
 
-  handlePressOptions = async (sOptionName) => {
+  handlePressOptions = (sOptionName) => {
     Keyboard.dismiss();
     if (sOptionName === "bShowGifsModal") this.props.getGiphy("");
-    await this.setState({
+    this.setState({
       [sOptionName]: true,
     });
   };
 
-  addImage = async (sType = OPTION_GALLERY) => {
+  addImage = (sType = OPTION_GALLERY) => {
     switch (sType) {
       case OPTION_CAMERA:
         ImagePicker.openCamera(OPTIONS_IMAGE_CROP_CONVERSATION)
-          .then(async (oResponse) => {
+          .then((oResponse) => {
             var sImageB64 = oResponse.data;
-            await this.setState({
+            this.setState({
               sImage: sImageB64,
             });
             this.sendMessage(SEND_MESSAGE_TYPES.IMAGE);
@@ -220,9 +220,9 @@ class MessagesGroup extends Component {
       case OPTION_GALLERY:
       default:
         ImagePicker.openPicker(OPTIONS_IMAGE_CROP_CONVERSATION)
-          .then(async (oResponse) => {
+          .then((oResponse) => {
             var sImageB64 = oResponse.data;
-            await this.setState({
+            this.setState({
               sImage: sImageB64,
             });
             this.sendMessage(SEND_MESSAGE_TYPES.IMAGE);
@@ -655,14 +655,14 @@ class MessagesGroup extends Component {
         {bShowMap && (
           <View
             style={[
-              GlobalModal.viewContent, oStyles.mgT0,
-              { borderTopLeftRadius: 0, borderTopRightRadius: 0 },
+              GlobalModal.viewContent,
+              { marginTop: 0, borderTopLeftRadius: 0, borderTopRightRadius: 0 },
             ]}
           >
             <ScrollView>
               <MapView
                 provider={this.props.provider}
-                style={[oStyles.height300, oStyles.w100, oStyles.mgT20]} //TODO: need to adjust the map height with device aspect ratio
+                style={{ height: 300, width: "100%", marginTop: 20 }}
                 onPress={(e) =>
                   this.setState({ oMarker: e.nativeEvent.coordinate })
                 }
@@ -673,7 +673,7 @@ class MessagesGroup extends Component {
                 )}
               </MapView>
               <View style={[oStyles.viewSection, oStyles.viewSectionButtons]}>
-                <View style={[oStyles.w50CenterAlign]}>
+                <View style={[oStyles.w50, oStyles.alignCenter]}>
                   <Pressable
                     onPress={() =>
                       this.setState({ bShowMap: false, oMarker: null })
@@ -688,7 +688,7 @@ class MessagesGroup extends Component {
                     </Text>
                   </Pressable>
                 </View>
-                <View style={[oStyles.w50CenterAlign]}>
+                <View style={[oStyles.w50, oStyles.alignCenter]}>
                   <Pressable
                     onPress={() =>
                       this.sendMessage(SEND_MESSAGE_TYPES.LOCATION)
@@ -703,8 +703,7 @@ class MessagesGroup extends Component {
               </View>
             </ScrollView>
           </View>
-        )
-        }
+        )}
       </>
     );
   };
@@ -733,12 +732,6 @@ const oStyles = StyleSheet.create({
   textGray: {
     color: PlaceholderColor,
   },
-  mgT0: {
-    marginTop: 0,
-  },
-  mgT20: {
-    marginTop: 20,
-  },
   mgR5: {
     marginRight: 5,
   },
@@ -751,9 +744,6 @@ const oStyles = StyleSheet.create({
   pdT2: {
     paddingTop: 2,
   },
-  pdT20: {
-    paddingTop: 20,
-  },
   pd10: {
     padding: 10,
   },
@@ -765,13 +755,6 @@ const oStyles = StyleSheet.create({
   },
   w50: {
     width: "50%",
-  },
-  w100: {
-    width: "100%",
-  },
-  w50CenterAlign: {
-    width: "50%",
-    alignItems: "center",
   },
   userImage: {
     width: 60,
@@ -839,9 +822,6 @@ const oStyles = StyleSheet.create({
   height200: {
     height: 200,
   },
-  height300: {
-    height: 300,
-  }
 });
 
 const mapStateToProps = (state) => ({

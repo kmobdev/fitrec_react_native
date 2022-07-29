@@ -21,7 +21,6 @@ import {
   GlobalStyles,
 } from "../../Styles";
 import ImagePicker from "react-native-image-crop-picker";
-// import ImagePicker from 'react-native-image-picker';
 import { ToastQuestion } from "../../components/shared/ToastQuestion";
 import { GlobalCheckBox } from "../../components/shared/GlobalCheckBox";
 import { connect } from "react-redux";
@@ -31,7 +30,6 @@ import {
   actionUserLoginFB,
 } from "../../redux/actions/UserActions";
 import { Toast } from "../../components/shared/Toast";
-import ReactNativePickerModule from "react-native-picker-module";
 import { UpdateCoverPhoto } from "../../components/shared/UpdateCoverPhoto";
 import { actionGetGyms } from "../../redux/actions/ActivityActions";
 import SelectDropdown from "react-native-select-dropdown";
@@ -105,11 +103,11 @@ class Register extends Component {
   }
 
   handleKeyboardShow = async ({ endCoordinates: { height } }) => {
-    await this.setState({ keyboardOffset: height });
+    this.setState({ keyboardOffset: height });
   };
 
   handleKeyboardHide = async () => {
-    await this.setState({ keyboardOffset: 0 });
+    this.setState({ keyboardOffset: 0 });
   };
 
   scrollToEnd = () => {
@@ -136,7 +134,7 @@ class Register extends Component {
         async (res) => {
           let status = res.info().status;
           if (status == 200) {
-            await this.setState({
+            this.setState({
               user: {
                 ...this.state.user,
                 image: res.base64(),
@@ -148,7 +146,7 @@ class Register extends Component {
     }
   };
 
-  componentWillReceiveProps = async (nextProps) => {
+  componentWillReceiveProps = (nextProps) => {
     if (
       null === nextProps.register.redirectConditions &&
       undefined !== nextProps.register.messageError &&
@@ -176,7 +174,7 @@ class Register extends Component {
       nextProps.activity.gyms.forEach((oGym) => {
         aGymsName.push(oGym.name);
       });
-      await this.setState({
+      this.setState({
         gyms: nextProps.activity.gyms,
         gymsName: aGymsName,
       });
@@ -187,7 +185,7 @@ class Register extends Component {
       nextProps.login.appleAccount === null
     ) {
       let lUserFBData = nextProps.login.userFBData;
-      await this.setState({
+      this.setState({
         showPassword: null !== lUserFBData ? false : true,
         errors: {},
         user: {
@@ -210,8 +208,8 @@ class Register extends Component {
     }
   };
 
-  changeDate = async (sDate) => {
-    await this.setState({
+  changeDate = (sDate) => {
+    this.setState({
       dateSelect: sDate,
       user: {
         ...this.state.user,
@@ -220,8 +218,8 @@ class Register extends Component {
     });
   };
 
-  addImagePerfil = async (sType) => {
-    await this.setState({
+  addImagePerfil = (sType) => {
+    this.setState({
       showProfilePhoto: false,
       loadingImage: true,
     });
@@ -236,7 +234,7 @@ class Register extends Component {
     if ("camera" === sType) {
       ImagePicker.openCamera(oOptions).then(
         async (image) => {
-          await this.setState({
+          this.setState({
             user: {
               ...this.state.user,
               image: image.data,
@@ -245,7 +243,7 @@ class Register extends Component {
           });
         },
         async (cancel) => {
-          await this.setState({
+          this.setState({
             loadingImage: false,
           });
         }
@@ -253,7 +251,7 @@ class Register extends Component {
     } else {
       ImagePicker.openPicker(oOptions).then(
         async (image) => {
-          await this.setState({
+          this.setState({
             user: {
               ...this.state.user,
               image: image.data,
@@ -262,7 +260,7 @@ class Register extends Component {
           });
         },
         async (cancel) => {
-          await this.setState({
+          this.setState({
             loadingImage: false,
           });
         }
@@ -270,8 +268,8 @@ class Register extends Component {
     }
   };
 
-  addImageCover = async (sType) => {
-    await this.setState({
+  addImageCover = (sType) => {
+    this.setState({
       showCoverPhoto: false,
       loading: true,
     });
@@ -285,43 +283,38 @@ class Register extends Component {
     };
     if ("camera" === sType) {
       ImagePicker.openCamera(oOptions).then(
-        async (image) => {
-          await this.setState({
+        (image) => {
+          this.setState({
             user: {
               ...this.state.user,
               background: image.data,
             },
             loadingImage: false,
           });
-        },
-        async (cancel) => {
-          await this.setState({
+        }).catch((error) => {
+          this.setState({
             loadingImage: false,
           });
-        }
-      );
+        })
     } else {
-      ImagePicker.openPicker(oOptions).then(
-        async (image) => {
-          await this.setState({
-            user: {
-              ...this.state.user,
-              background: image.data,
-            },
-            loadingImage: false,
-          });
-        },
-        async (cancel) => {
-          await this.setState({
-            loadingImage: false,
-          });
-        }
-      );
+      ImagePicker.openPicker(oOptions).then((image) => {
+        this.setState({
+          user: {
+            ...this.state.user,
+            background: image.data,
+          },
+          loadingImage: false,
+        });
+      }).catch((error) => {
+        this.setState({
+          loadingImage: false,
+        });
+      })
     }
   };
 
   register = async () => {
-    await this.setState({
+    this.setState({
       user: {
         ...this.state.user,
         name: this.state.user.name.trim(),
@@ -330,7 +323,7 @@ class Register extends Component {
     });
     let lErrors = await this.validate(this.state.user);
     if (lErrors.haveError) {
-      await this.setState({
+      this.setState({
         errors: lErrors,
       });
       if ("" !== lErrors.messageError) {
@@ -435,13 +428,13 @@ class Register extends Component {
   };
 
   showProfilePhoto = async () => {
-    await this.setState({
+    this.setState({
       showProfilePhoto: true,
     });
   };
 
   showCoverPhoto = async () => {
-    await this.setState({
+    this.setState({
       showCoverPhoto: true,
     });
   };
@@ -539,6 +532,16 @@ class Register extends Component {
   handleOnPressLabel = (oRef = null) => {
     if (oRef) oRef.focus();
   };
+
+  onDropdownSelectionHandler = (selectedItem, index) => {
+    this.setState({
+      user: {
+        ...this.state.user,
+        age: selectedItem,
+      },
+    });
+    console.log(selectedItem, index);
+  }
 
   render = () => {
     return (
@@ -784,15 +787,7 @@ class Register extends Component {
             <View style={styles.dropdownSelect}>
               <SelectDropdown
                 data={this.getAgeItems()}
-                onSelect={(selectedItem, index) => {
-                  this.setState({
-                    user: {
-                      ...this.state.user,
-                      age: selectedItem,
-                    },
-                  });
-                  console.log(selectedItem, index);
-                }}
+                onSelect={(selectedItem, index) => this.onDropdownSelectionHandler(selectedItem, index)}
                 buttonTextAfterSelection={(selectedItem, index) => {
                   // text represented after item is selected
                   // if data array is an array of objects then return selectedItem.property to render after item is selected
@@ -804,48 +799,7 @@ class Register extends Component {
                   return item;
                 }}
               />
-
-              {/* <Pressable
-                                    onPress={() => this.pickerAge.show()} style={{ flexDirection: 'row' }}>*/}
-              {/* Line commented since it will be used later - Leandro Curbelo 01/22/2021 */}
-              {/* onPress={() => this.refs.datePicker.onPressDate()} style={{ flexDirection: 'row' }}> */}
-              {/* 
-                                <Text>
-                                        {null !== this.state.user.age ? this.calculateAge() : 'Select here'}
-                                    </Text>
-                                    <Icon name='chevron-down' size={22} style={styles.iconSelect} />
-                                </Pressable>
-                                */}
             </View>
-            {/* <ReactNativePickerModule
-                            pickerRef={e => this.pickerAge = e}
-                            title={'Age'}
-                            items={this.getAgeItems()}
-                            onValueChange={(value) => {
-                                this.setState({
-                                    user: {
-                                        ...this.state.user,
-                                        age: value
-                                    }
-                                })
-                            }} /> */}
-            {/* 
-                            Line commented since it will be used later - Leandro Curbelo 01/22/2021
-                            <DatePicker
-                            style={{ opacity: 0, position: 'absolute' }}
-                            customStyles={{
-                                btnTextConfirm: {
-                                    color: SignUpColor
-                                }
-                            }}
-                            format='YYYY-MM-DD'
-                            confirmBtnText='Set'
-                            cancelBtnText='Close'
-                            ref={'datePicker'}
-                            onDateChange={date => { this.setDate(date) }}
-                            date={this.state.dateSelect}
-                            androidMode='spinner'
-                        /> */}
           </View>
           <View style={[styles.viewSection, styles.displayAge]}>
             <Text style={styles.textLabel}>Display Age?</Text>
@@ -907,29 +861,6 @@ class Register extends Component {
                 }}
               />
             </View>
-            {/* 
-                             <View style={styles.comboSelect}>
-                            <Pressable
-                                onPress={() => this.pickerSex.show()} style={{ flexDirection: 'row' }}>
-                                <Text>
-                                    {null !== this.state.user.sex ? this.getSexLabel() : 'Select here'}
-                                </Text>
-                                <Icon name='chevron-down' size={22} style={styles.iconSelect} />
-                            </Pressable>
-                        </View>
-                        <ReactNativePickerModule
-                            pickerRef={e => this.pickerSex = e}
-                            title={'Sex'}
-                            items={['Male', 'Female']}
-                            onValueChange={(value) => {
-                                this.setState({
-                                    user: {
-                                        ...this.state.user,
-                                        sex: this.getSexValue(value)
-                                    }
-                                })
-                            }} />
-                            */}
           </View>
           <View
             style={[
@@ -964,29 +895,6 @@ class Register extends Component {
                 }}
               />
             </View>
-            {/*
-                            <View style={styles.comboSelect}>
-                            <Pressable
-                                onPress={() => { this.pickerFitnnesLevel.show() }} style={{ flexDirection: 'row' }}>
-                                <Text>
-                                    {null !== this.state.user.level ? this.getlevelLabel() : 'Select here'}
-                                </Text>
-                                <Icon name='chevron-down' size={22} style={styles.iconSelect} />
-                            </Pressable>
-                        </View>
-                        <ReactNativePickerModule
-                            pickerRef={e => this.pickerFitnnesLevel = e}
-                            title={'Fitness level'}
-                            items={['Beginner', 'Intermediate', 'Advance']}
-                            onValueChange={(value) => {
-                                this.setState({
-                                    user: {
-                                        ...this.state.user,
-                                        level: this.getlevelValue(value)
-                                    }
-                                })
-                            }} />
-                             */}
           </View>
           {!this.state.user.newGym && (
             <View
@@ -1021,29 +929,6 @@ class Register extends Component {
                   }}
                 />
               </View>
-              {/*
-                                <View style={styles.comboSelect}>
-                                <Pressable
-                                    onPress={() => { this.pickerGym.show() }} style={{ flexDirection: 'row' }}>
-                                    <Text>
-                                        {null !== this.state.user.gym ? this.state.user.gym : 'None'}
-                                    </Text>
-                                    <Icon name='chevron-down' size={22} style={styles.iconSelect} />
-                                </Pressable>
-                            </View>
-                            <ReactNativePickerModule
-                                pickerRef={e => this.pickerGym = e}
-                                title={'My Gym'}
-                                items={this.state.gymsName}
-                                onValueChange={(value) => {
-                                    this.setState({
-                                        user: {
-                                            ...this.state.user,
-                                            gym: value
-                                        }
-                                    });
-                                }} />
-                                */}
             </View>
           )}
           <View style={[styles.viewSection, styles.displayAge]}>

@@ -10,6 +10,9 @@ export const PlaceholderColor = "#9C9C9C";
 export const BlackColor = "#000000";
 
 export const GlobalStyles = StyleSheet.create({
+  container: {
+    flexGrow: 1,
+  },
   backIcon: {
     paddingRight: 15,
     paddingLeft: 15,
@@ -490,6 +493,7 @@ export const ProfileStyles = StyleSheet.create({
     flexDirection: "row",
     width: "100%",
     height: "100%",
+    alignItems: 'center'
   },
   shadowImage: {
     position: "absolute",

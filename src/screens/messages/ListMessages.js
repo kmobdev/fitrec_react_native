@@ -91,7 +91,7 @@ class ListMessages extends Component {
     this.setState({ showDelete: true, showOptions: false });
   };
 
-  showConversation = async (conversation) => {
+  showConversation = (conversation) => {
     let oConversation = {
       key: conversation.key,
       type: conversation.type,
@@ -129,7 +129,7 @@ class ListMessages extends Component {
     });
   };
 
-  showToast = async (sText, callback = null) => {
+  showToast = (sText, callback = null) => {
     this.setState({
       toastText: sText,
       loading: false,
@@ -224,7 +224,7 @@ class ListMessages extends Component {
     });
   };
 
-  crateNewChatGroup = async () => {
+  crateNewChatGroup = () => {
     if ("" !== this.state.nameChatGroup) {
       this.props.createChatGroup(
         this.state.nameChatGroup,
@@ -269,7 +269,9 @@ class ListMessages extends Component {
             data={this.searchPeople(this.state.search)}
             extraData={this.state.refresh}
             renderItem={({ item }) => (
-              <View style={styles.viewMessageItem}>
+              <View
+                style={[styles.viewMessageItem, { backgroundColor: "white" }]}
+              >
                 <Swipeable
                   renderRightActions={() => (
                     <Pressable
@@ -301,7 +303,10 @@ class ListMessages extends Component {
                         {1 === item.type ? (
                           null !== item.image ? (
                             <FastImage
-                              style={styles.viewMessageItemImageProfile}
+                              style={[
+                                styles.viewMessageItemImageProfile,
+                                { borderRadius: 100 },
+                              ]}
                               source={{
                                 uri: item.image,
                                 priority: FastImage.priority.high,
@@ -310,13 +315,19 @@ class ListMessages extends Component {
                             />
                           ) : (
                             <Image
-                              style={styles.viewMessageItemImageProfile}
+                              style={[
+                                styles.viewMessageItemImageProfile,
+                                { borderRadius: 100 },
+                              ]}
                               source={require("../../assets/imgProfileReadOnly.png")}
                             />
                           )
                         ) : (
                           <Image
-                            style={styles.viewMessageItemImageProfile}
+                            style={[
+                              styles.viewMessageItemImageProfile,
+                              { borderRadius: 100 },
+                            ]}
                             source={require("../../assets/imgGroup.png")}
                           />
                         )}
@@ -365,7 +376,12 @@ class ListMessages extends Component {
         ) : (
           <View style={{ alignItems: "center" }}>
             <Text
-              style={styles.findChatText}
+              style={[
+                styles.textCenter,
+                styles.textGray,
+                styles.pd10,
+                styles.fontBold,
+              ]}
             >
               Here you will find the chats with other users
             </Text>
@@ -474,7 +490,6 @@ const styles = StyleSheet.create({
   viewMessageItem: {
     borderBottomColor: PlaceholderColor,
     borderBottomWidth: 1,
-    backgroundColor: "white"
   },
   viewMessageItemDetails: {
     padding: 10,
@@ -483,7 +498,6 @@ const styles = StyleSheet.create({
   viewMessageItemImageProfile: {
     width: 80,
     height: 80,
-    borderRadius: 100,
   },
   viewMessageData: {
     justifyContent: "center",
@@ -540,12 +554,6 @@ const styles = StyleSheet.create({
   },
   fontBold: {
     fontWeight: "bold",
-  },
-  findChatText: {
-    textAlign: "center",
-    color: PlaceholderColor,
-    padding: 10,
-    fontWeight: 'bold',
   },
   textCenter: {
     textAlign: "center",

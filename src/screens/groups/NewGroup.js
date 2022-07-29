@@ -86,8 +86,8 @@ class NewGroup extends Component {
     this.props.navigation.setParams({ createGroup: this.createGroup });
   };
 
-  searchUsers = async () => {
-    await this.setState({
+  searchUsers = () => {
+    this.setState({
       friends: [],
       loading: true,
     });
@@ -102,7 +102,7 @@ class NewGroup extends Component {
           });
         }
       });
-      await this.setState({
+      this.setState({
         loading: false,
       });
     } else {
@@ -114,7 +114,7 @@ class NewGroup extends Component {
     }
   };
 
-  createGroup = async () => {
+  createGroup = () => {
     if (!this.state.loadingCreate) {
       this.setState({ loadingCreate: true });
       const {
@@ -142,7 +142,7 @@ class NewGroup extends Component {
         is_capitan: true,
       };
       let aUsers = [aCreator];
-      await this.state.participants.forEach((user) => {
+      this.state.participants.forEach((user) => {
         aUsers.push(user);
       });
       let sUserKey = this.props.session.account.key,
@@ -202,9 +202,9 @@ class NewGroup extends Component {
     }
   };
 
-  componentWillReceiveProps = async (nextProps) => {
+  componentWillReceiveProps = (nextProps) => {
     if (nextProps.grupProps.status) {
-      await this.setState({
+      this.setState({
         search: "",
         groupName: "",
         groupDescription: "",
@@ -226,14 +226,14 @@ class NewGroup extends Component {
         })
         : this.props.navigation.navigate("Groups");
     } else
-      await this.setState({
+      this.setState({
         loading: false,
       });
     if (
       this.state.search !== "" &&
       nextProps.myPalsRequest.peopleFitrec !== this.state.usersFilter
     ) {
-      await this.setState({
+      this.setState({
         friends: nextProps.myPalsRequest.peopleFitrec,
         loading: false,
         usersFilter: nextProps.myPalsRequest.peopleFitrec,
@@ -252,14 +252,14 @@ class NewGroup extends Component {
       });
   };
 
-  addImageGroup = async (sType) => {
-    await this.setState({
+  addImageGroup = (sType) => {
+    this.setState({
       showGroupPhoto: false,
       loadingImage: true,
     });
     if ("camera" === sType) {
       ImagePicker.openCamera(OPTIONS_IMAGE_CROP_PROFILE)
-        .then(async (oResponse) => {
+        .then((oResponse) => {
           let sImageB64 = oResponse.data;
           this.setState({
             imgGroup: sImageB64,
@@ -277,7 +277,7 @@ class NewGroup extends Component {
         });
     } else {
       ImagePicker.openPicker(OPTIONS_IMAGE_CROP_PROFILE)
-        .then(async (oResponse) => {
+        .then((oResponse) => {
           let sImageB64 = oResponse.data;
           this.setState({
             imgGroup: sImageB64,
@@ -296,8 +296,8 @@ class NewGroup extends Component {
     }
   };
 
-  addParticipant = async (participant) => {
-    await this.setState({
+  addParticipant = (participant) => {
+    this.setState({
       participants: [...this.state.participants, participant],
     });
     let array = [];
@@ -305,22 +305,22 @@ class NewGroup extends Component {
       if (friend.key !== participant.key) array.push(friend);
     });
     this.state.refresh = !this.state.refresh;
-    await this.setState({
+    this.setState({
       friends: array,
       refresh: !this.state.refresh,
     });
   };
 
-  removeParticipant = async (participant) => {
+  removeParticipant = (participant) => {
     participant.is_capitan = false;
-    await this.setState({
+    this.setState({
       friends: [...this.state.friends, participant],
     });
     let array = [];
     this.state.participants.forEach((friend) => {
       if (friend.key !== participant.key) array.push(friend);
     });
-    await this.setState({
+    this.setState({
       participants: array,
       refresh: !this.state.refresh,
     });
@@ -340,49 +340,49 @@ class NewGroup extends Component {
     });
   };
 
-  selectCapitan = async (user) => {
+  selectCapitan = (user) => {
     let participants = [],
       nCount = 0;
-    await this.state.participants.map(function (participant) {
+    this.state.participants.map(function (participant) {
       if (participant.is_capitan) nCount++;
     });
     if (nCount < 2) {
-      await this.state.participants.forEach((participant) => {
+      this.state.participants.forEach((participant) => {
         if (participant.key === user.key) participant.is_capitan = true;
         participants.push(participant);
       });
-      await this.setState({
+      this.setState({
         participants: participants,
         refresh: !this.state.refresh,
       });
     } else this.showToast("Only two captains can be added in addition to you");
   };
 
-  removeCapitanSelected = async (user) => {
+  removeCapitanSelected = (user) => {
     let participants = [];
-    await this.state.participants.forEach((participant) => {
+    this.state.participants.forEach((participant) => {
       if (participant.key === user.key) participant.is_capitan = false;
       participants.push(participant);
     });
-    await this.setState({
+    this.setState({
       participants: participants,
       refresh: !this.state.refresh,
     });
   };
 
-  changeTextName = async (text) => {
-    await this.setState({
+  changeTextName = (text) => {
+    this.setState({
       groupName: text,
     });
   };
 
-  changeTextDescription = async (text) => {
-    await this.setState({
+  changeTextDescription = (text) => {
+    this.setState({
       groupDescription: text,
     });
   };
 
-  showToast = async (sText) => {
+  showToast = (sText) => {
     this.setState({
       toastText: sText,
       loading: false,
@@ -394,9 +394,9 @@ class NewGroup extends Component {
     }, 2000);
   };
 
-  showGroupPhoto = async () => {
+  showGroupPhoto = () => {
     Keyboard.dismiss();
-    await this.setState({
+    this.setState({
       showGroupPhoto: true,
     });
   };
