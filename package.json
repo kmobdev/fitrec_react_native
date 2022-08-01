@@ -40,7 +40,7 @@
     "react-native-image-picker": "^4.8.3",
     "react-native-maps": "^0.31.1",
     "react-native-modal": "^13.0.1",
-    "react-native-onesignal": "^4.3.10",
+    "react-native-onesignal": "^4.3.11",
     "react-native-picker-module": "^2.0.4",
     "react-native-reanimated": "npm:react-native-reanimated-v1@1.13.5",
     "react-native-safe-area-context": "^3.1.9",

@@ -102,6 +102,7 @@ export const actionUserLoginFirebase = (oUser) => {
           .once("value", async function (oAccountSnap) {
             if (oAccountSnap.exists()) {
               let oAccount = oAccountSnap.val();
+              console.log('oAccount ========>>>>> ', oAccount);
               let oAccountData = {
                 key: "",
                 email: "",

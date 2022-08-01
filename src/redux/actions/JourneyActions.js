@@ -155,15 +155,13 @@ export const actionCreateJourney = (
                       },
                       include_player_ids: [sIdPush.val()],
                     };
-                    OneSignal.postNotification(
-                      {
-                        en:
-                          "You have been tagged, " + sUsername + " tagged you",
-                      },
-                      {},
-                      [sIdPush.val()],
-                      oDataNotification
-                    );
+                    const jsonString = JSON.stringify(oDataNotification);
+
+                    OneSignal.postNotification(jsonString, (success) => {
+                      console.log("Success:", success);
+                    }, (error) => {
+                      console.log("Error:", error);
+                    });
                   }
                 });
               });
@@ -268,12 +266,13 @@ export const actionAddTagUser = (
               data: { type: NOTIFICATION_JOURNEY_TAG, id: oSuccess.data.id },
               include_player_ids: [sIdPush.val()],
             };
-            OneSignal.postNotification(
-              { en: "You have been tagged, " + sUsername + " tagged you" },
-              {},
-              [sIdPush.val()],
-              oDataNotification
-            );
+            const jsonString = JSON.stringify(oDataNotification);
+
+            OneSignal.postNotification(jsonString, (success) => {
+              console.log("Success:", success);
+            }, (error) => {
+              console.log("Error:", error);
+            });
           }
         });
         dispatch(actionAddTagUserSuccess());

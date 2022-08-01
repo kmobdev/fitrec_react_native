@@ -129,7 +129,7 @@ export const actionOpenGroupNotification = (sGroupKey, sKeyUser) => {
                                               GetDataUser(
                                                 sKeyUser,
                                                 "groupsInvitations/" +
-                                                  aNodoGroup.key
+                                                aNodoGroup.key
                                               ).then((bIsRequestPending) => {
                                                 aNodoGroup.participants =
                                                   aParticipants;
@@ -225,11 +225,10 @@ export const actionSendPushNotification = (
       data: aData,
       include_player_ids: [sIdPushDestination],
     };
-    OneSignal.postNotification(
-      { en: sDescription },
-      {},
-      [sIdPushDestination],
-      oDataNotification
-    );
+    const jsonString = JSON.stringify(oDataNotification);
+    OneSignal.postNotification(jsonString, (success) => {
+    }, (error) => {
+      console.log("Error :", error);
+    });
   };
 };

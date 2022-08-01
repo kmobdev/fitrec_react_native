@@ -164,6 +164,7 @@ class Home extends Component {
   };
 
   checkOneSignalCode = () => {
+    console.log('this.props.session.account ====>>>> ', this.props.session.account);
     if (null !== this.props.session.account) {
       this.props.checkOneSignalCode({
         accountId: this.props.session.account.key,
