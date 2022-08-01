@@ -16,7 +16,7 @@ OneSignal.setAppId("8ca46953-1fae-474e-85e6-fe65e7ca2523");
 OneSignal.promptForPushNotificationsWithUserResponse(response => {
   console.log("Prompt response  :", response);
 });
-
+LogBox.ignoreAllLogs()
 
 const App = () => {
   const analytics = initSegment()
