@@ -6,7 +6,7 @@ import {
   ScrollView,
   Text,
   Image,
-  FlatList
+  FlatList,
 } from "react-native";
 import {
   GlobalStyles,
@@ -85,18 +85,18 @@ export default class PeopleList extends Component {
                         this.props.pals.filter(
                           (element) => element.selected === true
                         ).length &&
-                        null !==
+                      null !==
                         this.props.pals.filter(
                           (element) => element.selected === true
                         ).length &&
-                        this.props.pals.filter(
-                          (element) => element.selected === true
-                        ).length > 0
+                      this.props.pals.filter(
+                        (element) => element.selected === true
+                      ).length > 0
                         ? " (" +
-                        this.props.pals
-                          .filter((element) => element.selected === true)
-                          .length.toString() +
-                        ")"
+                          this.props.pals
+                            .filter((element) => element.selected === true)
+                            .length.toString() +
+                          ")"
                         : ""}
                     </Text>
                   </View>

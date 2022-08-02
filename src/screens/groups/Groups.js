@@ -9,7 +9,7 @@ import {
   FlatList,
   RefreshControl,
   Keyboard,
-  ScrollView
+  ScrollView,
 } from "react-native";
 import {
   GlobalStyles,
@@ -706,8 +706,8 @@ class Groups extends Component {
               }
             >
               {null !== this.props.grupProps.listGroupNearMe &&
-                undefined !== this.props.grupProps.listGroupNearMe &&
-                this.props.grupProps.listGroupNearMe.length > 0 ? (
+              undefined !== this.props.grupProps.listGroupNearMe &&
+              this.props.grupProps.listGroupNearMe.length > 0 ? (
                 <FlatList
                   data={this.props.grupProps.listGroupNearMe}
                   keyExtractor={(item, index) => index.toString()}
@@ -836,7 +836,7 @@ class Groups extends Component {
         />
         <Toast toastText={this.state.toastText} />
         {this.state.showGroupInvitations &&
-          this.props.session.groupInvitations.length > 0 ? (
+        this.props.session.groupInvitations.length > 0 ? (
           <View style={GlobalModal.viewContent}>
             <View style={GlobalModal.viewHead}>
               <Text style={GlobalModal.headTitle}>Group Invitations</Text>
@@ -865,10 +865,10 @@ class Groups extends Component {
                           }}
                         >
                           {null !== item.group &&
-                            null !== item.group.image &&
-                            undefined !== item.group.image &&
-                            "" !== item.group.image &&
-                            "img/group.png" !== item.group.image ? (
+                          null !== item.group.image &&
+                          undefined !== item.group.image &&
+                          "" !== item.group.image &&
+                          "img/group.png" !== item.group.image ? (
                             <Image
                               style={[
                                 { height: 60, width: 60 },

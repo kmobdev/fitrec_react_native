@@ -8,8 +8,8 @@ import Icon from "react-native-vector-icons/Ionicons";
 import FastImage from "react-native-fast-image";
 
 const FollowerCard = (props) => {
-
-  const { onPressSection, name, username, onPressUnfollow, profileImage } = props;
+  const { onPressSection, name, username, onPressUnfollow, profileImage } =
+    props;
 
   return (
     <View style={styles.containerRow}>
@@ -27,10 +27,7 @@ const FollowerCard = (props) => {
           />
         )}
       </View>
-      <Pressable
-        onPress={onPressSection}
-        style={styles.sectionText}
-      >
+      <Pressable onPress={onPressSection} style={styles.sectionText}>
         <Text style={styles.textName}>{name}</Text>
         <Text style={styles.textUsername}>@{username}</Text>
       </Pressable>
@@ -49,8 +46,8 @@ const FollowerCard = (props) => {
         </Pressable>
       </View>
     </View>
-  )
-}
+  );
+};
 
 export default FollowerCard;
 

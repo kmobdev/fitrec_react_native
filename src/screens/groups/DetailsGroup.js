@@ -432,7 +432,7 @@ class ShowDetailsGroup extends Component {
     this.setState({ sSearch: sText });
   };
 
-  handleFocusSearch = () => { };
+  handleFocusSearch = () => {};
 
   handleCleanSearch = () => {
     this.setState({ sSearch: "" });
@@ -657,9 +657,7 @@ class ShowDetailsGroup extends Component {
               ) : oGroup.image === null ? (
                 <Image style={oStyles.groupImage} source={GroupImageDefault} />
               ) : (
-                <Pressable
-                  onPress={() => this.expandImage(oGroup.image)}
-                >
+                <Pressable onPress={() => this.expandImage(oGroup.image)}>
                   <FastImage
                     style={oStyles.groupImage}
                     source={{
@@ -713,17 +711,17 @@ class ShowDetailsGroup extends Component {
           </View>
           {this.renderButtons(oGroup)}
           {!bChangeCaptains &&
-            !bRemoveMembers &&
-            !bIsAddParticipants &&
-            !bShowAssignCaptain
+          !bRemoveMembers &&
+          !bIsAddParticipants &&
+          !bShowAssignCaptain
             ? this.renderParticipants(oGroup)
             : bChangeCaptains
-              ? this.renderChangeCaptains()
-              : bRemoveMembers
-                ? this.renderRemoveMembers()
-                : bShowAssignCaptain
-                  ? this.renderAssignCaptain()
-                  : this.renderAddMembers()}
+            ? this.renderChangeCaptains()
+            : bRemoveMembers
+            ? this.renderRemoveMembers()
+            : bShowAssignCaptain
+            ? this.renderAssignCaptain()
+            : this.renderAddMembers()}
         </ScrollView>
       </View>
     );
@@ -767,9 +765,9 @@ class ShowDetailsGroup extends Component {
         {(bIsCaptain || (bIsParticipant && oGroup.type === GROUP_PUBLIC)) && (
           <>
             {!bIsAddParticipants &&
-              !bChangeCaptains &&
-              !bRemoveMembers &&
-              !bShowAssignCaptain ? (
+            !bChangeCaptains &&
+            !bRemoveMembers &&
+            !bShowAssignCaptain ? (
               <Pressable
                 onPress={() => this.setState({ bIsAddParticipants: true })}
               >
@@ -1344,9 +1342,7 @@ class ShowDetailsGroup extends Component {
                   </Text>
                 </View>
               </Pressable>
-              <Pressable
-                onPress={() => this.setState({ bShowOptions: false })}
-              >
+              <Pressable onPress={() => this.setState({ bShowOptions: false })}>
                 <View
                   style={[
                     ToastQuestionGenericStyles.viewButtonOption,
@@ -1631,9 +1627,9 @@ class ShowDetailsGroup extends Component {
       <>
         {bIsParticipant ? (
           !bChangeCaptains &&
-            !bRemoveMembers &&
-            !bIsAddParticipants &&
-            !bShowAssignCaptain ? (
+          !bRemoveMembers &&
+          !bIsAddParticipants &&
+          !bShowAssignCaptain ? (
             <Pressable
               onPress={() => this.setState({ bShowConfirmLeaveGroup: true })}
             >
@@ -1676,9 +1672,7 @@ class ShowDetailsGroup extends Component {
             </View>
           )
         ) : (
-          <Pressable
-            onPress={() => this.setState({ bShowConfirmJoin: true })}
-          >
+          <Pressable onPress={() => this.setState({ bShowConfirmJoin: true })}>
             <View
               style={{
                 backgroundColor: GreenFitrecColor,

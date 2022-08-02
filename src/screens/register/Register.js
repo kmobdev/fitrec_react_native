@@ -50,14 +50,14 @@ class Register extends Component {
           null !== lUserFBData
             ? lUserFBData.name.replace(" ", "")
             : aAppleData !== null
-              ? aAppleData.name
-              : "",
+            ? aAppleData.name
+            : "",
         email:
           null !== lUserFBData
             ? lUserFBData.email
             : aAppleData !== null
-              ? aAppleData.email
-              : "",
+            ? aAppleData.email
+            : "",
         password:
           null !== lUserFBData
             ? lUserFBData.id.replace(0, "z").replace(2, "A")
@@ -282,8 +282,8 @@ class Register extends Component {
       includeBase64: true,
     };
     if ("camera" === sType) {
-      ImagePicker.openCamera(oOptions).then(
-        (image) => {
+      ImagePicker.openCamera(oOptions)
+        .then((image) => {
           this.setState({
             user: {
               ...this.state.user,
@@ -291,25 +291,28 @@ class Register extends Component {
             },
             loadingImage: false,
           });
-        }).catch((error) => {
+        })
+        .catch((error) => {
           this.setState({
             loadingImage: false,
           });
-        })
+        });
     } else {
-      ImagePicker.openPicker(oOptions).then((image) => {
-        this.setState({
-          user: {
-            ...this.state.user,
-            background: image.data,
-          },
-          loadingImage: false,
+      ImagePicker.openPicker(oOptions)
+        .then((image) => {
+          this.setState({
+            user: {
+              ...this.state.user,
+              background: image.data,
+            },
+            loadingImage: false,
+          });
+        })
+        .catch((error) => {
+          this.setState({
+            loadingImage: false,
+          });
         });
-      }).catch((error) => {
-        this.setState({
-          loadingImage: false,
-        });
-      })
     }
   };
 
@@ -541,7 +544,7 @@ class Register extends Component {
       },
     });
     console.log(selectedItem, index);
-  }
+  };
 
   render = () => {
     return (
@@ -675,7 +678,7 @@ class Register extends Component {
               <View
                 style={[
                   this.state.errors.showPasswordError &&
-                  GlobalStyles.errorBorder,
+                    GlobalStyles.errorBorder,
                   styles.row,
                 ]}
               >
@@ -710,7 +713,7 @@ class Register extends Component {
               <View
                 style={[
                   this.state.errors.showConfirmPasswordError &&
-                  GlobalStyles.errorBorder,
+                    GlobalStyles.errorBorder,
                   styles.row,
                 ]}
               >
@@ -787,7 +790,9 @@ class Register extends Component {
             <View style={styles.dropdownSelect}>
               <SelectDropdown
                 data={this.getAgeItems()}
-                onSelect={(selectedItem, index) => this.onDropdownSelectionHandler(selectedItem, index)}
+                onSelect={(selectedItem, index) =>
+                  this.onDropdownSelectionHandler(selectedItem, index)
+                }
                 buttonTextAfterSelection={(selectedItem, index) => {
                   // text represented after item is selected
                   // if data array is an array of objects then return selectedItem.property to render after item is selected

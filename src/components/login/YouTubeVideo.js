@@ -36,7 +36,7 @@ export default class YouTubeVideo extends Component {
               <YouTube
                 videoId={
                   this.props.url.split("/")[
-                  this.props.url.split("/").length - 1
+                    this.props.url.split("/").length - 1
                   ]
                 }
                 style={{ alignSelf: "stretch", height: 250, width: "100%" }}

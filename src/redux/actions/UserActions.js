@@ -15,7 +15,7 @@ import {
   database,
   GetUserAccount,
 } from "../services/FirebaseServices";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   AccessToken,
   LoginManager,
@@ -102,7 +102,7 @@ export const actionUserLoginFirebase = (oUser) => {
           .once("value", async function (oAccountSnap) {
             if (oAccountSnap.exists()) {
               let oAccount = oAccountSnap.val();
-              console.log('oAccount ========>>>>> ', oAccount);
+              console.log("oAccount ========>>>>> ", oAccount);
               let oAccountData = {
                 key: "",
                 email: "",
@@ -128,11 +128,11 @@ export const actionUserLoginFirebase = (oUser) => {
                 await setLoginDataLocalStorage({
                   account: oAccountData,
                 });
-              } catch (oError) { }
+              } catch (oError) {}
               database
                 .ref(
                   Constants.FIREBASE_CONFIG.NODE_ACCOUNTS_DB +
-                  oSuccessLogin.user.uid
+                    oSuccessLogin.user.uid
                 )
                 .update({
                   active: 1,
@@ -181,13 +181,13 @@ export const actionUserLoginFirebase = (oUser) => {
                 .ref()
                 .child(
                   Constants.FIREBASE_CONFIG.NODE_ACCOUNTS_DB +
-                  oSuccessLogin.user.uid
+                    oSuccessLogin.user.uid
                 )
                 .set(oUserFirebase)
                 .then(async (oSuccess) => {
                   UpdateKeyProfile(oSuccessLogin.user.uid)
-                    .then(() => { })
-                    .catch(() => { });
+                    .then(() => {})
+                    .catch(() => {});
                   dispatch(actionResultCreateAccount(oSuccessLogin.user.uid));
                 })
                 .catch(() => {
@@ -206,8 +206,8 @@ export const actionUserLoginFirebase = (oUser) => {
         else dispatch(actionMessage(MESSAGE_ERROR));
         if (oError.code === "auth/invalid-email")
           DeleteAccount(oUser.email)
-            .then(() => { })
-            .catch(() => { });
+            .then(() => {})
+            .catch(() => {});
         dispatch(
           actionDispatch(Actions.USER_LOGIN_ERROR, { messageError: "" })
         );
@@ -331,7 +331,7 @@ export const actionUserLoginApple = () => {
         ],
       })
       .then(async (oSuccessApple) => {
-        console.log('oSuccessApple =====>>>> ', oSuccessApple);
+        console.log("oSuccessApple =====>>>> ", oSuccessApple);
         try {
           const sUserAppleId = oSuccessApple.user;
           if (sUserAppleId !== null) {
@@ -357,7 +357,7 @@ export const actionUserLoginApple = () => {
                           database
                             .ref(
                               Constants.FIREBASE_CONFIG.NODE_ACCOUNTS_DB +
-                              oLoginSuccess.user.uid
+                                oLoginSuccess.user.uid
                             )
                             .once("value", async function (oAccountSnap) {
                               if (oAccountSnap.exists()) {
@@ -389,7 +389,7 @@ export const actionUserLoginApple = () => {
                                 database
                                   .ref(
                                     Constants.FIREBASE_CONFIG.NODE_ACCOUNTS_DB +
-                                    oLoginSuccess.user.uid
+                                      oLoginSuccess.user.uid
                                   )
                                   .update({
                                     active: 1,
@@ -422,10 +422,10 @@ export const actionUserLoginApple = () => {
                                           : "",
                                       name:
                                         oSuccessApple.fullName.givenName !==
-                                          null
+                                        null
                                           ? oSuccessApple.fullName.givenName +
-                                          " " +
-                                          oSuccessApple.fullName.familyName
+                                            " " +
+                                            oSuccessApple.fullName.familyName
                                           : "",
                                     }
                                   )
@@ -453,8 +453,8 @@ export const actionUserLoginApple = () => {
                               name:
                                 oSuccessApple.fullName.givenName !== null
                                   ? oSuccessApple.fullName.givenName +
-                                  " " +
-                                  oSuccessApple.fullName.familyName
+                                    " " +
+                                    oSuccessApple.fullName.familyName
                                   : "",
                             })
                           );
@@ -674,8 +674,8 @@ export const actionSetObservable = (data) => ({
 export const actionUpdateChanges = (data) => {
   return (dispatch) => {
     let oObservableAccountChange = database.ref(
-      Constants.FIREBASE_CONFIG.NODE_ACCOUNTS_DB + "/" + data.accountId
-    ),
+        Constants.FIREBASE_CONFIG.NODE_ACCOUNTS_DB + "/" + data.accountId
+      ),
       oObservableAccountAdded = database.ref(
         Constants.FIREBASE_CONFIG.NODE_ACCOUNTS_DB + "/" + data.accountId
       );
@@ -777,7 +777,7 @@ export const actionUpdateChanges = (data) => {
           dispatch(actionGetGroups(data.accountId));
         }
       },
-      (oError) => { }
+      (oError) => {}
     );
     oObservableAccountAdded.on(
       "child_added",
@@ -877,7 +877,7 @@ export const actionUpdateChanges = (data) => {
           dispatch(actionGetGroupInvitations({ accountId: data.accountId }));
         }
       },
-      (oError) => { }
+      (oError) => {}
     );
     let aObservables = [];
     aObservables.push(oObservableAccountChange);
@@ -1063,8 +1063,8 @@ export const actionCheckOneSignalCode = (data) => {
                 });
           });
         SaveOneSignalCode(sPushId)
-          .then(() => { })
-          .catch(() => { });
+          .then(() => {})
+          .catch(() => {});
       }
     });
   };
@@ -1091,8 +1091,8 @@ const getIdOneSignalCode = async () => {
 export const actionSetGeoLocation = (nLongitude, nLatitude) => {
   return async (dispatch) => {
     SetLocation(nLongitude, nLatitude)
-      .then(() => { })
-      .catch(() => { });
+      .then(() => {})
+      .catch(() => {});
   };
 };
 
@@ -1114,7 +1114,7 @@ export const actionGetNotifications = () => {
           })
         );
       })
-      .catch(() => { });
+      .catch(() => {});
   };
 };
 /**
@@ -1156,7 +1156,7 @@ export const actionViewNotification = (nNotificationId) => {
       .then(() => {
         dispatch(actionGetNotifications());
       })
-      .catch(() => { });
+      .catch(() => {});
   };
 };
 

@@ -298,11 +298,11 @@ class RegisterFinalStep extends Component {
                     onChangeText={(text) => {
                       +text < 1000
                         ? this.setState({
-                          user: { ...this.state.user, weight: text },
-                        })
+                            user: { ...this.state.user, weight: text },
+                          })
                         : this.setState({
-                          user: { ...this.state.user, weight: "1000" },
-                        });
+                            user: { ...this.state.user, weight: "1000" },
+                          });
                     }}
                   />
                 </View>
@@ -341,7 +341,7 @@ class RegisterFinalStep extends Component {
                 styles.checkInput,
                 { alignItems: "flex-end", borderBottomWidth: 0 },
                 this.state.errors.showActivitiesError &&
-                GlobalStyles.errorBorder,
+                  GlobalStyles.errorBorder,
               ]}
             >
               <Text style={styles.textLabel}>Activities</Text>

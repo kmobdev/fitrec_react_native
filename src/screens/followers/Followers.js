@@ -118,16 +118,16 @@ class Followers extends Component {
       questionUnfollow: true,
       questionId: item.id_follow,
       questionName: item.name,
-    })
-  }
+    });
+  };
 
   removeFollowerHandler = (item) => {
     this.setState({
       questionRemove: true,
       questionId: item.id_follow,
       questionName: item.name,
-    })
-  }
+    });
+  };
 
   cancleHandler = (type) => {
     if (type === 1) {
@@ -135,21 +135,21 @@ class Followers extends Component {
         questionUnfollow: false,
         questionId: null,
         questionName: null,
-      })
+      });
     } else {
       this.setState({
         questionRemove: false,
         questionId: null,
         questionName: null,
-      })
+      });
     }
-  }
+  };
 
   renderFollowing = () => {
     return (
       <>
         {this.props.oFollowers.following.length > 0 &&
-          this.getData(1).length > 0 ? (
+        this.getData(1).length > 0 ? (
           <FlatList
             data={this.getData(1)}
             keyExtractor={(item, index) => index.toString()}
@@ -179,7 +179,7 @@ class Followers extends Component {
     return (
       <>
         {this.props.oFollowers.followers.length > 0 &&
-          this.getData(2).length > 0 ? (
+        this.getData(2).length > 0 ? (
           <FlatList
             data={this.getData(2)}
             keyExtractor={(item, index) => index.toString()}
@@ -262,10 +262,7 @@ class Followers extends Component {
             <View style={ToastQuestionStyles.viewButtons}>
               <Pressable
                 onPress={() => this.cancleHandler(1)}
-                style={[
-                  ToastQuestionStyles.button,
-                  styles.buttonDefault,
-                ]}
+                style={[ToastQuestionStyles.button, styles.buttonDefault]}
               >
                 <Text style={ToastQuestionStyles.textButton}>Cancel</Text>
               </Pressable>
@@ -293,10 +290,7 @@ class Followers extends Component {
             <View style={ToastQuestionStyles.viewButtons}>
               <Pressable
                 onPress={() => this.cancleHandler(2)}
-                style={[
-                  ToastQuestionStyles.button,
-                  styles.buttonDefault,
-                ]}
+                style={[ToastQuestionStyles.button, styles.buttonDefault]}
               >
                 <Text style={ToastQuestionStyles.textButton}>Cancel</Text>
               </Pressable>
@@ -391,7 +385,7 @@ const styles = StyleSheet.create({
   },
   buttonDefault: {
     backgroundColor: GreenFitrecColor,
-    marginRight: 10
+    marginRight: 10,
   },
 });
 

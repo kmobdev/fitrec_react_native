@@ -1,11 +1,5 @@
 import React, { Component } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TextInput,
-  Pressable,
-} from "react-native";
+import { View, Text, StyleSheet, TextInput, Pressable } from "react-native";
 import {
   GreenFitrecColor,
   PlaceholderColor,
@@ -83,10 +77,7 @@ class ForgotPassword extends Component {
             autoCapitalize="none"
           />
         </View>
-        <Pressable
-          style={styles.button}
-          onPress={() => this.forgotPassword()}
-        >
+        <Pressable style={styles.button} onPress={() => this.forgotPassword()}>
           <Text style={{ color: WhiteColor }}>NEXT</Text>
         </Pressable>
         <Toast toastText={this.state.toastText} />

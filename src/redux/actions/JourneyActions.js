@@ -157,11 +157,15 @@ export const actionCreateJourney = (
                     };
                     const jsonString = JSON.stringify(oDataNotification);
 
-                    OneSignal.postNotification(jsonString, (success) => {
-                      console.log("Success:", success);
-                    }, (error) => {
-                      console.log("Error:", error);
-                    });
+                    OneSignal.postNotification(
+                      jsonString,
+                      (success) => {
+                        console.log("Success:", success);
+                      },
+                      (error) => {
+                        console.log("Error:", error);
+                      }
+                    );
                   }
                 });
               });
@@ -268,11 +272,15 @@ export const actionAddTagUser = (
             };
             const jsonString = JSON.stringify(oDataNotification);
 
-            OneSignal.postNotification(jsonString, (success) => {
-              console.log("Success:", success);
-            }, (error) => {
-              console.log("Error:", error);
-            });
+            OneSignal.postNotification(
+              jsonString,
+              (success) => {
+                console.log("Success:", success);
+              },
+              (error) => {
+                console.log("Error:", error);
+              }
+            );
           }
         });
         dispatch(actionAddTagUserSuccess());

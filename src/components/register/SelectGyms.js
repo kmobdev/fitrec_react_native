@@ -22,7 +22,7 @@ export default class SelectGyms extends Component {
       item.selected ||
       undefined === this.props.maxSelect ||
       this.props.gyms.filter((oGym) => oGym.selected === true).length <
-      this.props.maxSelect
+        this.props.maxSelect
     ) {
       item.selected = !item.selected;
       this.setState({ refresh: !this.state.refresh });
@@ -45,7 +45,7 @@ export default class SelectGyms extends Component {
         <View style={GlobalModal.viewContent}>
           <View style={GlobalModal.viewHead}>
             {this.props.gyms.filter((element) => element.selected).length >
-              0 ? (
+            0 ? (
               <Pressable
                 style={GlobalModal.buttonLeft}
                 onPress={() => this.clear()}

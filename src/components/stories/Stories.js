@@ -7,7 +7,7 @@ import {
   FlatList,
   Image,
   Dimensions,
-  ScrollView
+  ScrollView,
 } from "react-native";
 import FastImage from "react-native-fast-image";
 import { connect } from "react-redux";
@@ -73,7 +73,7 @@ class Stories extends Component {
       await this.setState({ index: nIndex, story: oStory });
       if (this.state.index <= aStories.length - 1) {
         let sProfileImage =
-          oStory.image !== null ? oStory.image : sNoProfileImage,
+            oStory.image !== null ? oStory.image : sNoProfileImage,
           sUsername = oStory.username,
           sLevel = oStory.level;
         FastImage.preload([{ uri: aStories[this.state.index].image }]);

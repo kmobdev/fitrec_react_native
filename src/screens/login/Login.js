@@ -110,15 +110,15 @@ class Login extends Component {
 
   showTutorialHandler = () => {
     this.setState({ showTutorial: true });
-  }
+  };
 
   showVideoTutorialHandler = () => {
     this.setState({ showVideoTutorial: true });
-  }
+  };
 
   navigateHandler = (route) => {
-    this.props.navigation.navigate(route)
-  }
+    this.props.navigation.navigate(route);
+  };
 
   render() {
     return (
@@ -137,7 +137,10 @@ class Login extends Component {
             <View style={styles.Content}>
               <View style={styles.SectionStyle}>
                 <Input
-                  iconSource={"" === this.state.username && require("../../assets/user.png")}
+                  iconSource={
+                    "" === this.state.username &&
+                    require("../../assets/user.png")
+                  }
                   autoCapitalize={"none"}
                   autoCompleteType={"username"}
                   textContentType={"username"}
@@ -159,7 +162,10 @@ class Login extends Component {
                   onSubmitEditing={() => {
                     this.login();
                   }}
-                  iconSource={"" === this.state.password && require("../../assets/password.png")}
+                  iconSource={
+                    "" === this.state.password &&
+                    require("../../assets/password.png")
+                  }
                   secureTextEntry={true}
                   autoCapitalize={"none"}
                   returnKeyType={"done"}
@@ -170,10 +176,7 @@ class Login extends Component {
                   inputStyle={styles.textInput}
                 />
               </View>
-              <Button
-                onPress={() => this.login()}
-                title={'LOGIN NOW'}
-              />
+              <Button onPress={() => this.login()} title={"LOGIN NOW"} />
               <ButtonFacebook
                 onPress={() => this.loginFB()}
                 login={true}
@@ -341,7 +344,7 @@ const styles = StyleSheet.create({
     backgroundColor: SignUpColor,
   },
   imageView: {
-    alignItems: 'center'
+    alignItems: "center",
   },
 });
 

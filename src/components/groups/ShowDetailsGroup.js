@@ -7,7 +7,7 @@ import {
   Text,
   Image,
   FlatList,
-  TextInput
+  TextInput,
 } from "react-native";
 import {
   GlobalStyles,
@@ -692,11 +692,11 @@ class ShowDetailsGroup extends Component {
                               Confirm{" "}
                               {undefined !==
                                 this.props.newParticipants.length &&
-                                null !== this.props.newParticipants.length &&
-                                this.props.newParticipants.length > 0
+                              null !== this.props.newParticipants.length &&
+                              this.props.newParticipants.length > 0
                                 ? " (" +
-                                this.props.newParticipants.length.toString() +
-                                ")"
+                                  this.props.newParticipants.length.toString() +
+                                  ")"
                                 : ""}
                             </Text>
                           </View>
@@ -731,11 +731,11 @@ class ShowDetailsGroup extends Component {
                           <Text style={GlobalStyles.textButton}>
                             Confirm{" "}
                             {undefined !== this.props.newParticipants.length &&
-                              null !== this.props.newParticipants.length &&
-                              this.props.newParticipants.length > 0
+                            null !== this.props.newParticipants.length &&
+                            this.props.newParticipants.length > 0
                               ? "(" +
-                              this.props.newParticipants.length.toString() +
-                              ")"
+                                this.props.newParticipants.length.toString() +
+                                ")"
                               : ""}
                           </Text>
                         </View>
@@ -913,16 +913,16 @@ class ShowDetailsGroup extends Component {
                                     {this.props.newParticipants.filter(
                                       (element) => element.key === item.key
                                     ).length > 0 && (
-                                        <View style={styles.viewIconRight}>
-                                          <View style={{ flexDirection: "row" }}>
-                                            <Icon
-                                              name="md-checkmark-circle"
-                                              size={24}
-                                              color={SignUpColor}
-                                            />
-                                          </View>
+                                      <View style={styles.viewIconRight}>
+                                        <View style={{ flexDirection: "row" }}>
+                                          <Icon
+                                            name="md-checkmark-circle"
+                                            size={24}
+                                            color={SignUpColor}
+                                          />
                                         </View>
-                                      )}
+                                      </View>
+                                    )}
                                   </Pressable>
                                 );
                               }}
@@ -956,62 +956,62 @@ class ShowDetailsGroup extends Component {
                               {!this.props.newParticipants.filter(
                                 (element) => element.key === item.key
                               ).length > 0 && (
-                                  <Pressable
-                                    onPress={() =>
-                                      this.props.addParticipant(item)
-                                    }
+                                <Pressable
+                                  onPress={() =>
+                                    this.props.addParticipant(item)
+                                  }
+                                  style={{
+                                    flexDirection: "row",
+                                    width: "100%",
+                                  }}
+                                >
+                                  <View style={{ margin: 10 }}>
+                                    {null !== item.image ? (
+                                      <FastImage
+                                        style={
+                                          GlobalStyles.photoProfileCardList
+                                        }
+                                        source={{
+                                          uri: item.image,
+                                          priority: FastImage.priority.high,
+                                        }}
+                                        resizeMode={FastImage.resizeMode.cover}
+                                      />
+                                    ) : (
+                                      <Image
+                                        style={
+                                          GlobalStyles.photoProfileCardList
+                                        }
+                                        source={require("../../assets/imgGroup.png")}
+                                      />
+                                    )}
+                                  </View>
+                                  <View
                                     style={{
-                                      flexDirection: "row",
-                                      width: "100%",
+                                      justifyContent: "center",
+                                      marginLeft: 10,
                                     }}
                                   >
-                                    <View style={{ margin: 10 }}>
-                                      {null !== item.image ? (
-                                        <FastImage
-                                          style={
-                                            GlobalStyles.photoProfileCardList
-                                          }
-                                          source={{
-                                            uri: item.image,
-                                            priority: FastImage.priority.high,
-                                          }}
-                                          resizeMode={FastImage.resizeMode.cover}
+                                    <Text style={styles.textUserReference}>
+                                      {item.name}
+                                    </Text>
+                                    <Text>@{item.username}</Text>
+                                  </View>
+                                  {this.props.newParticipants.filter(
+                                    (element) => element.key === item.key
+                                  ).length > 0 && (
+                                    <View style={styles.viewIconRight}>
+                                      <View style={{ flexDirection: "row" }}>
+                                        <Icon
+                                          name="md-checkmark-circle"
+                                          size={24}
+                                          color={SignUpColor}
                                         />
-                                      ) : (
-                                        <Image
-                                          style={
-                                            GlobalStyles.photoProfileCardList
-                                          }
-                                          source={require("../../assets/imgGroup.png")}
-                                        />
-                                      )}
+                                      </View>
                                     </View>
-                                    <View
-                                      style={{
-                                        justifyContent: "center",
-                                        marginLeft: 10,
-                                      }}
-                                    >
-                                      <Text style={styles.textUserReference}>
-                                        {item.name}
-                                      </Text>
-                                      <Text>@{item.username}</Text>
-                                    </View>
-                                    {this.props.newParticipants.filter(
-                                      (element) => element.key === item.key
-                                    ).length > 0 && (
-                                        <View style={styles.viewIconRight}>
-                                          <View style={{ flexDirection: "row" }}>
-                                            <Icon
-                                              name="md-checkmark-circle"
-                                              size={24}
-                                              color={SignUpColor}
-                                            />
-                                          </View>
-                                        </View>
-                                      )}
-                                  </Pressable>
-                                )}
+                                  )}
+                                </Pressable>
+                              )}
                             </View>
                           ) : this.props.group.users.includes(item.key) ? (
                             <View
@@ -1155,7 +1155,7 @@ class ShowDetailsGroup extends Component {
                     change={(text) => {
                       this.setState({ searchCapitan: text });
                     }}
-                    blur={() => { }}
+                    blur={() => {}}
                     clean={() => {
                       this.setState({ searchCapitan: "" });
                     }}
@@ -1191,7 +1191,7 @@ class ShowDetailsGroup extends Component {
                             >
                               <View>
                                 {item.image === null ||
-                                  item.image === undefined ? (
+                                item.image === undefined ? (
                                   <Image
                                     style={GlobalStyles.photoProfileCardList}
                                     source={require("../../assets/imgGroup.png")}
@@ -1627,7 +1627,7 @@ class ShowDetailsGroup extends Component {
                   </View>
                 </Pressable>
                 {this.props.isCapitan &&
-                  this.props.group.userCreated === this.props.userLoginKey ? (
+                this.props.group.userCreated === this.props.userLoginKey ? (
                   <Pressable
                     onPress={() => {
                       this.setState({
