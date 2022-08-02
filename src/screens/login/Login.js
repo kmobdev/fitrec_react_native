@@ -321,6 +321,6 @@ const styles = StyleSheet.create({
     backgroundColor: SignUpColor,
   },
   imageView: {
-    alignItems: 'center'
+    alignItems: "center",
   },
 });

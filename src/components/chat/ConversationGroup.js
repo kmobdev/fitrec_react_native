@@ -380,7 +380,7 @@ class ConversationGroup extends Component {
                           />
                         </View>
                         {item.imageProfile !== null &&
-                          item.imageProfile !== undefined ? (
+                        item.imageProfile !== undefined ? (
                           <FastImage
                             style={chatStyles.viewMessageItemImageProfile}
                             source={{
@@ -408,11 +408,9 @@ class ConversationGroup extends Component {
                           marginBottom: 10,
                         }}
                       >
-                        <Pressable
-                          onPress={() => this.props.viewProfile(item)}
-                        >
+                        <Pressable onPress={() => this.props.viewProfile(item)}>
                           {item.imageProfile !== null &&
-                            item.imageProfile !== undefined ? (
+                          item.imageProfile !== undefined ? (
                             <FastImage
                               style={chatStyles.viewMessageItemImageProfile}
                               source={{
@@ -583,8 +581,8 @@ class ConversationGroup extends Component {
             style={[styles.viewWriteMessage, this.getKeyboardOffsetStyle()]}
           >
             {!this.state.showKeyboard ||
-              (this.state.showKeyboard && this.state.messageSend === "") ||
-              this.state.showMoreOptions ? (
+            (this.state.showKeyboard && this.state.messageSend === "") ||
+            this.state.showMoreOptions ? (
               <View
                 style={[
                   styles.viewWriteMessageIcons,
@@ -645,8 +643,8 @@ class ConversationGroup extends Component {
                   ? this.state.messageSend === ""
                     ? {}
                     : !this.state.showMoreOptions
-                      ? { width: "77%" }
-                      : { width: "62%" }
+                    ? { width: "77%" }
+                    : { width: "62%" }
                   : {},
               ]}
             >

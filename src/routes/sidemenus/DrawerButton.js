@@ -25,9 +25,9 @@ class DrawerButton extends Component {
             style={styles.icon}
           />
           {this.props.chatProps.messageRead > 0 ||
-            this.props.chatProps.messageReadGroup > 0 ||
-            (undefined !== this.props.notifications &&
-              this.props.notifications.notificationsUnRead > 0) ? (
+          this.props.chatProps.messageReadGroup > 0 ||
+          (undefined !== this.props.notifications &&
+            this.props.notifications.notificationsUnRead > 0) ? (
             <View
               style={[
                 GlobalMessages.viewGlobalBubble,
@@ -37,28 +37,28 @@ class DrawerButton extends Component {
               <View style={GlobalMessages.viewBubble}>
                 <Text style={GlobalMessages.text}>
                   {this.props.chatProps.messageRead > 0 &&
-                    this.props.chatProps.messageReadGroup > 0 &&
-                    this.props.notifications.notificationsUnRead > 0
+                  this.props.chatProps.messageReadGroup > 0 &&
+                  this.props.notifications.notificationsUnRead > 0
                     ? this.props.chatProps.messageRead +
-                    this.props.chatProps.messageReadGroup +
-                    this.props.notifications.notificationsUnRead
+                      this.props.chatProps.messageReadGroup +
+                      this.props.notifications.notificationsUnRead
                     : this.props.chatProps.messageRead > 0 &&
                       this.props.chatProps.messageReadGroup > 0
-                      ? this.props.chatProps.messageRead +
+                    ? this.props.chatProps.messageRead +
                       this.props.chatProps.messageReadGroup
-                      : this.props.chatProps.messageRead > 0 &&
-                        this.props.notifications.notificationsUnRead > 0
-                        ? this.props.chatProps.messageRead +
-                        this.props.notifications.notificationsUnRead
-                        : this.props.chatProps.messageReadGroup > 0 &&
-                          this.props.notifications.notificationsUnRead > 0
-                          ? this.props.chatProps.messageReadGroup +
-                          this.props.notifications.notificationsUnRead
-                          : this.props.chatProps.messageRead > 0
-                            ? this.props.chatProps.messageRead
-                            : this.props.chatProps.messageReadGroup > 0
-                              ? this.props.chatProps.messageReadGroup
-                              : this.props.notifications.notificationsUnRead}
+                    : this.props.chatProps.messageRead > 0 &&
+                      this.props.notifications.notificationsUnRead > 0
+                    ? this.props.chatProps.messageRead +
+                      this.props.notifications.notificationsUnRead
+                    : this.props.chatProps.messageReadGroup > 0 &&
+                      this.props.notifications.notificationsUnRead > 0
+                    ? this.props.chatProps.messageReadGroup +
+                      this.props.notifications.notificationsUnRead
+                    : this.props.chatProps.messageRead > 0
+                    ? this.props.chatProps.messageRead
+                    : this.props.chatProps.messageReadGroup > 0
+                    ? this.props.chatProps.messageReadGroup
+                    : this.props.notifications.notificationsUnRead}
                 </Text>
               </View>
             </View>

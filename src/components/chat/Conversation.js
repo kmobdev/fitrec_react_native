@@ -163,9 +163,9 @@ class Conversation extends Component {
     }
     const { conversation: oConversation } = this.props;
     const oSender = {
-      key: sUserKey,
-      name: sUserName,
-    },
+        key: sUserKey,
+        name: sUserName,
+      },
       sConversationKey = oConversation.conversation;
     const sFriendKey = oConversation.userFriendKey;
     this.props.sendMessage(
@@ -441,8 +441,8 @@ class Conversation extends Component {
                           />
                         </View>
                         {null !== this.props.conversation.myProfilePic &&
-                          undefined !== this.props.conversation.myProfilePic &&
-                          "" !== this.props.conversation.myProfilePic ? (
+                        undefined !== this.props.conversation.myProfilePic &&
+                        "" !== this.props.conversation.myProfilePic ? (
                           <FastImage
                             style={chatStyles.viewMessageItemImageProfile}
                             source={{
@@ -470,12 +470,10 @@ class Conversation extends Component {
                           marginBottom: 10,
                         }}
                       >
-                        <Pressable
-                          onPress={() => this.props.viewProfile(item)}
-                        >
+                        <Pressable onPress={() => this.props.viewProfile(item)}>
                           {null !== this.props.conversation.image &&
-                            undefined !== this.props.conversation.image &&
-                            "" !== this.props.conversation.image ? (
+                          undefined !== this.props.conversation.image &&
+                          "" !== this.props.conversation.image ? (
                             <FastImage
                               style={chatStyles.viewMessageItemImageProfile}
                               source={{
@@ -597,8 +595,8 @@ class Conversation extends Component {
             style={[styles.viewWriteMessage, this.getKeyboardOffsetStyle()]}
           >
             {!this.state.showKeyboard ||
-              (this.state.showKeyboard && this.state.sText === "") ||
-              this.state.showMoreOptions ? (
+            (this.state.showKeyboard && this.state.sText === "") ||
+            this.state.showMoreOptions ? (
               <View
                 style={[
                   styles.viewWriteMessageIcons,
@@ -655,8 +653,8 @@ class Conversation extends Component {
                   ? this.state.sText === ""
                     ? {}
                     : !this.state.showMoreOptions
-                      ? { width: "77%" }
-                      : { width: "57%" }
+                    ? { width: "77%" }
+                    : { width: "57%" }
                   : {},
               ]}
             >

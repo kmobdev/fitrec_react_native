@@ -1,11 +1,5 @@
 import React, { Component } from "react";
-import {
-  View,
-  Text,
-  ScrollView,
-  Pressable,
-  StyleSheet,
-} from "react-native";
+import { View, Text, ScrollView, Pressable, StyleSheet } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 import {
   PlaceholderColor,
@@ -73,9 +67,7 @@ class Settings extends Component {
       <View style={styles.container}>
         <ScrollView>
           <View style={styles.viewOptionBorder}>
-            <Pressable
-              onPress={() => this.setState({ showContact: true })}
-            >
+            <Pressable onPress={() => this.setState({ showContact: true })}>
               <View style={styles.viewOption}>
                 <View style={styles.viewLeft}>
                   <Text style={styles.text16}>Contact us</Text>
@@ -91,9 +83,7 @@ class Settings extends Component {
             </Pressable>
           </View>
           <View style={styles.viewOptionBorder}>
-            <Pressable
-              onPress={() => this.setState({ showConditions: true })}
-            >
+            <Pressable onPress={() => this.setState({ showConditions: true })}>
               <View style={styles.viewOption}>
                 <View style={styles.viewLeft}>
                   <Text style={styles.text16}>Terms & conditions</Text>
@@ -109,9 +99,7 @@ class Settings extends Component {
             </Pressable>
           </View>
           <View style={styles.viewOptionBorder}>
-            <Pressable
-              onPress={() => this.setState({ showTutorial: true })}
-            >
+            <Pressable onPress={() => this.setState({ showTutorial: true })}>
               <View style={styles.viewOption}>
                 <View style={styles.viewLeft}>
                   <Text style={styles.text16}>App tutorial</Text>
@@ -255,7 +243,7 @@ class Settings extends Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: WhiteColor
+    backgroundColor: WhiteColor,
   },
   viewOptionBorder: {
     borderBottomWidth: 1,
@@ -311,8 +299,8 @@ const styles = StyleSheet.create({
     right: 10,
   },
   text16: {
-    fontSize: 16
-  }
+    fontSize: 16,
+  },
 });
 
 const mapStateToProps = (state) => ({

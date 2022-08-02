@@ -12,10 +12,7 @@ import { getFitnnesLevel } from "../shared/SharedFunctions";
 export const ShowHead = (props) => {
   return (
     <View style={{ flexDirection: "row", padding: 10 }}>
-      <Pressable
-        onPress={props.redirectionViewProfile}
-        style={styles.leftView}
-      >
+      <Pressable onPress={props.redirectionViewProfile} style={styles.leftView}>
         {null === props.image ? (
           <Image
             style={{ height: 50, width: 50 }}

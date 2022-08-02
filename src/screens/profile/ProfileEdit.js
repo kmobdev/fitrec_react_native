@@ -1,5 +1,12 @@
 import React, { Component } from "react";
-import { View, StyleSheet, Image, Text, Keyboard, Pressable } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Image,
+  Text,
+  Keyboard,
+  Pressable,
+} from "react-native";
 import { ScrollView } from "react-native";
 import { GlobalStyles, WhiteColor, PlaceholderColor } from "../../Styles";
 import { UpdateCoverPhoto } from "../../components/shared/UpdateCoverPhoto";

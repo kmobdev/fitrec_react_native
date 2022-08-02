@@ -10,7 +10,7 @@ import {
   Keyboard,
   Platform,
   TextInput,
-  ScrollView
+  ScrollView,
 } from "react-native";
 import { ToastQuestion } from "../../components/shared/ToastQuestion";
 import {
@@ -159,14 +159,14 @@ class JourneyCreate extends Component {
             })
               .then((oImage) => {
                 let oFileItem = {
-                  type: "",
-                  uri: oImage.path,
-                  name: "",
-                  realPath: oFile.path,
-                  order: 1,
-                  mediaType: "image/jpeg",
-                  tags: [],
-                },
+                    type: "",
+                    uri: oImage.path,
+                    name: "",
+                    realPath: oFile.path,
+                    order: 1,
+                    mediaType: "image/jpeg",
+                    tags: [],
+                  },
                   aFiles = [];
                 oFileItem.type = POST_TYPE_IMAGE;
                 oFileItem.name = "fitrec_photo.jpeg";
@@ -214,10 +214,10 @@ class JourneyCreate extends Component {
                   sName.slice(0, nIndexName) + "_" + Date.now() + "_fitrec.mp4";
                 RNFFmpeg.execute(
                   "-i " +
-                  sPath +
-                  ' -ss 00:00 -to 01:00 -preset superfast -movflags +faststart -vf "scale=480:-2" -b:v 1800k ' +
-                  sTemporalPath +
-                  sName
+                    sPath +
+                    ' -ss 00:00 -to 01:00 -preset superfast -movflags +faststart -vf "scale=480:-2" -b:v 1800k ' +
+                    sTemporalPath +
+                    sName
                 )
                   .then((result) => {
                     let oFileItem = {
@@ -302,10 +302,10 @@ class JourneyCreate extends Component {
                   "_fitrec.mp4";
                 RNFFmpeg.execute(
                   "-i " +
-                  sPath +
-                  ' -ss 00:00 -to 01:00 -preset superfast -movflags +faststart -vf "scale=480:-2" -b:v 1800k ' +
-                  sTemporalPath +
-                  sName
+                    sPath +
+                    ' -ss 00:00 -to 01:00 -preset superfast -movflags +faststart -vf "scale=480:-2" -b:v 1800k ' +
+                    sTemporalPath +
+                    sName
                 )
                   .then((result) => {
                     oFileItem.type = POST_TYPE_VIDEO;
@@ -733,12 +733,12 @@ class JourneyCreate extends Component {
                       />
                       {this.state.files[this.state.index].type ==
                         POST_TYPE_IMAGE && (
-                          <View style={styles.footerPhoto}>
-                            <Text style={styles.footerContent}>
-                              TAP PHOTO to tag people
-                            </Text>
-                          </View>
-                        )}
+                        <View style={styles.footerPhoto}>
+                          <Text style={styles.footerContent}>
+                            TAP PHOTO to tag people
+                          </Text>
+                        </View>
+                      )}
                       {this.state.files.length > 1 && (
                         <Pagination
                           dotsLength={this.state.files.length}

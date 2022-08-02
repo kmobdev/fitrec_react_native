@@ -18,12 +18,7 @@ const Input = forwardRef((props, ref) => {
   } = props;
   return (
     <>
-      {iconSource &&
-        <Image
-          source={iconSource}
-          style={styles.ImageStyle}
-        />
-      }
+      {iconSource && <Image source={iconSource} style={styles.ImageStyle} />}
       <TextInput
         ref={ref}
         placeholder={placeholder}

@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  StyleSheet,
-  View,
-  TextInput,
-  Pressable,
-  Text,
-} from "react-native";
+import { StyleSheet, View, TextInput, Pressable, Text } from "react-native";
 import { BlackColor, PlaceholderColor, SignUpColor } from "../../Styles";
 import Icon from "react-native-vector-icons/Ionicons";
 

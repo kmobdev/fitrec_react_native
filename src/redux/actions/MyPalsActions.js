@@ -245,20 +245,20 @@ export const actionSendRequest = (
               database
                 .ref(
                   Constants.FIREBASE_CONFIG.NODE_ACCOUNTS_DB +
-                  sUserPalKey +
-                  "/friendRequests/" +
-                  sUserKey
+                    sUserPalKey +
+                    "/friendRequests/" +
+                    sUserKey
                 )
                 .set(true);
               database
                 .ref(
                   Constants.FIREBASE_CONFIG.NODE_ACCOUNTS_DB +
-                  sUserKey +
-                  "/requestsSent/" +
-                  sUserPalKey
+                    sUserKey +
+                    "/requestsSent/" +
+                    sUserPalKey
                 )
                 .set(true);
-              console.log('sIdPush ======>>>>> ', sIdPush);
+              console.log("sIdPush ======>>>>> ", sIdPush);
               if (undefined !== sIdPush && null !== sIdPush) {
                 var oDataNotification = {
                   headings: { en: sDescription },
@@ -274,25 +274,32 @@ export const actionSendRequest = (
                 };
                 const jsonString = JSON.stringify(oDataNotification);
 
-                OneSignal.postNotification(jsonString, (success) => {
-                  bIsHome
-                    ? dispatch(
-                      actionDispatch(Actions.SEND_REQUEST_FRIEND_HOME_SUCCESS)
-                    )
-                    : dispatch(actionDispatch(Actions.SEND_REQUEST_FRIEND_SUCCESS));
-                  dispatch(actionGetRequests(sUserKey));
-                  dispatch(actionGetPeople({ text: "" }));
-                }, (error) => {
-                  console.log("Error =================>>>>> :", error);
-                });
+                OneSignal.postNotification(
+                  jsonString,
+                  (success) => {
+                    bIsHome
+                      ? dispatch(
+                          actionDispatch(
+                            Actions.SEND_REQUEST_FRIEND_HOME_SUCCESS
+                          )
+                        )
+                      : dispatch(
+                          actionDispatch(Actions.SEND_REQUEST_FRIEND_SUCCESS)
+                        );
+                    dispatch(actionGetRequests(sUserKey));
+                    dispatch(actionGetPeople({ text: "" }));
+                  },
+                  (error) => {
+                    console.log("Error =================>>>>> :", error);
+                  }
+                );
               }
-
             })
-            .catch(() => { });
+            .catch(() => {});
         } else if (bIsHome) dispatch(actionMessage(MESSAGE_ERROR));
         else dispatch(actionMessage(MESSAGE_ERROR));
       })
-      .catch(() => { });
+      .catch(() => {});
   };
 };
 
@@ -325,43 +332,43 @@ export const actionAcceptRequest = (nPalId, sPalKey, sUserKey) => {
         database
           .ref(
             Constants.FIREBASE_CONFIG.NODE_ACCOUNTS_DB +
-            sPalKey +
-            "/requestsSent/" +
-            sUserKey
+              sPalKey +
+              "/requestsSent/" +
+              sUserKey
           )
           .set(false)
           .finally(() => {
             database
               .ref(
                 Constants.FIREBASE_CONFIG.NODE_ACCOUNTS_DB +
-                sPalKey +
-                "/requestsSent/" +
-                sUserKey
+                  sPalKey +
+                  "/requestsSent/" +
+                  sUserKey
               )
               .remove();
           });
         database
           .ref(
             Constants.FIREBASE_CONFIG.NODE_ACCOUNTS_DB +
-            sUserKey +
-            "/friendRequests/" +
-            sPalKey
+              sUserKey +
+              "/friendRequests/" +
+              sPalKey
           )
           .remove();
         database
           .ref(
             Constants.FIREBASE_CONFIG.NODE_ACCOUNTS_DB +
-            sPalKey +
-            "/friends/" +
-            sUserKey
+              sPalKey +
+              "/friends/" +
+              sUserKey
           )
           .set(true);
         database
           .ref(
             Constants.FIREBASE_CONFIG.NODE_ACCOUNTS_DB +
-            sUserKey +
-            "/friends/" +
-            sPalKey
+              sUserKey +
+              "/friends/" +
+              sPalKey
           )
           .set(true);
         dispatch(actionDispatch(Actions.ACCEPT_REQUEST_FRIEND_SUCCESS));
@@ -389,9 +396,9 @@ export const actionCancelRequest = (data) => {
       database
         .ref(
           Constants.FIREBASE_CONFIG.NODE_ACCOUNTS_DB +
-          data.friendKey +
-          "/requestsSent/" +
-          data.accountId
+            data.friendKey +
+            "/requestsSent/" +
+            data.accountId
         )
         .set(false)
         .finally(() => {
@@ -399,9 +406,9 @@ export const actionCancelRequest = (data) => {
           database
             .ref(
               Constants.FIREBASE_CONFIG.NODE_ACCOUNTS_DB +
-              data.friendKey +
-              "/requestsSent/" +
-              data.accountId
+                data.friendKey +
+                "/requestsSent/" +
+                data.accountId
             )
             .remove();
         });
@@ -409,9 +416,9 @@ export const actionCancelRequest = (data) => {
       database
         .ref(
           Constants.FIREBASE_CONFIG.NODE_ACCOUNTS_DB +
-          data.accountId +
-          "/friendRequests/" +
-          data.friendKey
+            data.accountId +
+            "/friendRequests/" +
+            data.friendKey
         )
         .remove();
       if (data.hiddenMessage) dispatch(actionGetRequests(data.accountId));
@@ -423,18 +430,18 @@ export const actionCancelRequest = (data) => {
       database
         .ref(
           Constants.FIREBASE_CONFIG.NODE_ACCOUNTS_DB +
-          data.accountId +
-          "/requestsSent/" +
-          data.friendKey
+            data.accountId +
+            "/requestsSent/" +
+            data.friendKey
         )
         .remove();
       // First, the value is changed to false in order to activate the friend's account modification listener and so the APP is refreshed.
       database
         .ref(
           Constants.FIREBASE_CONFIG.NODE_ACCOUNTS_DB +
-          data.friendKey +
-          "/friendRequests/" +
-          data.accountId
+            data.friendKey +
+            "/friendRequests/" +
+            data.accountId
         )
         .set(false)
         .finally(() => {
@@ -442,9 +449,9 @@ export const actionCancelRequest = (data) => {
           database
             .ref(
               Constants.FIREBASE_CONFIG.NODE_ACCOUNTS_DB +
-              data.friendKey +
-              "/friendRequests/" +
-              data.accountId
+                data.friendKey +
+                "/friendRequests/" +
+                data.accountId
             )
             .remove();
         });
@@ -468,9 +475,9 @@ export const actionUnfollowPal = (
         database
           .ref(
             Constants.FIREBASE_CONFIG.NODE_ACCOUNTS_DB +
-            sPalKey +
-            "/friends/" +
-            sUserKey
+              sPalKey +
+              "/friends/" +
+              sUserKey
           )
           .set(false)
           .finally(() => {
@@ -478,17 +485,17 @@ export const actionUnfollowPal = (
             database
               .ref(
                 Constants.FIREBASE_CONFIG.NODE_ACCOUNTS_DB +
-                sPalKey +
-                "/friends/" +
-                sUserKey
+                  sPalKey +
+                  "/friends/" +
+                  sUserKey
               )
               .remove();
             database
               .ref(
                 Constants.FIREBASE_CONFIG.NODE_ACCOUNTS_DB +
-                sUserKey +
-                "/friends/" +
-                sPalKey
+                  sUserKey +
+                  "/friends/" +
+                  sPalKey
               )
               .remove();
             bIsHome
@@ -502,15 +509,15 @@ export const actionUnfollowPal = (
       .catch(() => {
         bIsHome
           ? dispatch(
-            actionUnfollowPalHomeError({
-              messageError: MESSAGE_ERROR,
-            })
-          )
+              actionUnfollowPalHomeError({
+                messageError: MESSAGE_ERROR,
+              })
+            )
           : dispatch(
-            actionUnfollowPalError({
-              messageError: MESSAGE_ERROR,
-            })
-          );
+              actionUnfollowPalError({
+                messageError: MESSAGE_ERROR,
+              })
+            );
       })
       .finally(() => {
         dispatch(actionDeactivateLoading());

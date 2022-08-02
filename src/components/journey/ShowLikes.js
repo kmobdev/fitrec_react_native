@@ -33,7 +33,7 @@ class ShowLikes extends Component {
           </View>
           <View style={{ flex: 1 }}>
             {this.props.journeyProps.usersLiked !== undefined &&
-              this.props.journeyProps.usersLiked.length > 0 ? (
+            this.props.journeyProps.usersLiked.length > 0 ? (
               <FlatList
                 data={this.props.journeyProps.usersLiked}
                 keyExtractor={(item, index) => index.toString()}

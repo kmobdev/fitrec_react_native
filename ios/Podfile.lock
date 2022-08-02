@@ -456,6 +456,9 @@ PODS:
   - RNScreens (3.15.0):
     - React-Core
     - React-RCTImage
+  - RNSentry (4.2.0):
+    - React-Core
+    - Sentry (= 7.21.0)
   - SDWebImage (5.11.1):
     - SDWebImage/Core (= 5.11.1)
   - SDWebImage/Core (5.11.1)
@@ -465,6 +468,9 @@ PODS:
   - segment-analytics-react-native (2.4.0):
     - React-Core
     - sovran-react-native
+  - Sentry (7.21.0):
+    - Sentry/Core (= 7.21.0)
+  - Sentry/Core (7.21.0)
   - SocketRocket (0.6.0)
   - sovran-react-native (0.4.2):
     - React-Core
@@ -552,6 +558,7 @@ DEPENDENCIES:
   - RNImageCropPicker (from `../node_modules/react-native-image-crop-picker`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
+  - "RNSentry (from `../node_modules/@sentry/react-native`)"
   - "segment-analytics-react-native (from `../node_modules/@segment/analytics-react-native`)"
   - "sovran-react-native (from `../node_modules/@segment/sovran-react-native`)"
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
@@ -579,6 +586,7 @@ SPEC REPOS:
     - OpenSSL-Universal
     - SDWebImage
     - SDWebImageWebPCoder
+    - Sentry
     - SocketRocket
     - TOCropViewController
     - YogaKit
@@ -689,6 +697,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-reanimated"
   RNScreens:
     :path: "../node_modules/react-native-screens"
+  RNSentry:
+    :path: "../node_modules/@sentry/react-native"
   segment-analytics-react-native:
     :path: "../node_modules/@segment/analytics-react-native"
   sovran-react-native:
@@ -768,9 +778,11 @@ SPEC CHECKSUMS:
   RNImageCropPicker: 44e2807bc410741f35d4c45b6586aedfe3da39d2
   RNReanimated: 7fca6c23a82b62d61488bf818323f9a2a0309a04
   RNScreens: 4a1af06327774490d97342c00aee0c2bafb497b7
+  RNSentry: 227b01d7373289c51b8c31b2c8d6bac49f1a4335
   SDWebImage: a7f831e1a65eb5e285e3fb046a23fcfbf08e696d
   SDWebImageWebPCoder: 908b83b6adda48effe7667cd2b7f78c897e5111d
   segment-analytics-react-native: b8ef30c1fc4feae75d98e03226cfc64716f6e0e3
+  Sentry: 194d0a2d4d6ef92c9c08c98d998340b0a63efd81
   SocketRocket: fccef3f9c5cedea1353a9ef6ada904fde10d6608
   sovran-react-native: d63e96982806633d6ee312ca61bf4f56b78c809a
   TOCropViewController: edfd4f25713d56905ad1e0b9f5be3fbe0f59c863

@@ -26,7 +26,7 @@ export const InvitationGroup = (props) =>
       <View
         style={
           (GlobalModal.viewHead,
-            { justifyContent: "center", alignContent: "center" })
+          { justifyContent: "center", alignContent: "center" })
         }
       >
         <Text style={GlobalModal.headTitle}>Group Invitation</Text>
@@ -38,7 +38,7 @@ export const InvitationGroup = (props) =>
         <View style={{ flexDirection: "row" }}>
           <View>
             {props.group.image === "img/group.png" ||
-              null === props.group.image ? (
+            null === props.group.image ? (
               <Image
                 style={{
                   borderRadius: 100,
@@ -49,9 +49,7 @@ export const InvitationGroup = (props) =>
                 source={require("../../assets/imgGroup.png")}
               />
             ) : (
-              <Pressable
-                onPress={() => props.expandImage(props.group.image)}
-              >
+              <Pressable onPress={() => props.expandImage(props.group.image)}>
                 <FastImage
                   style={{
                     borderRadius: 100,

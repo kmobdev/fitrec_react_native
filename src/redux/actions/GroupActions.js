@@ -80,11 +80,11 @@ export const actionCreateGroup = (
   return (dispatch) => {
     dispatch(actionActiveLoading());
     let oFirstMessage = {
-      message: "Welcome to " + sName,
-      sender: sUserKey,
-      type: "text",
-      date: Date.now(),
-    },
+        message: "Welcome to " + sName,
+        sender: sUserKey,
+        type: "text",
+        date: Date.now(),
+      },
       aUsersFirebase = [],
       aCapitans = [];
     aUsers.forEach((oUser) => {
@@ -121,9 +121,9 @@ export const actionCreateGroup = (
           database
             .ref(
               Constants.FIREBASE_CONFIG.NODE_ACCOUNTS_DB +
-              oUser.key +
-              "/groups/" +
-              sKey
+                oUser.key +
+                "/groups/" +
+                sKey
             )
             .set({ messagesRead: 1 });
         });
@@ -138,8 +138,8 @@ export const actionCreateGroup = (
                 database
                   .ref(
                     Constants.FIREBASE_CONFIG.NODE_CONVERSATIONS_GROUPS_DB +
-                    oConversationSuccess.key +
-                    "/messages"
+                      oConversationSuccess.key +
+                      "/messages"
                   )
                   .push(oFirstMessage)
                   .then(() => {
@@ -316,19 +316,19 @@ export const actionJoinGroup = (
             database
               .ref(
                 Constants.FIREBASE_CONFIG.NODE_ACCOUNTS_DB +
-                sUserKey +
-                "/" +
-                Constants.FIREBASE_CONFIG.NODE_GROUPS_DB +
-                sGroupKey
+                  sUserKey +
+                  "/" +
+                  Constants.FIREBASE_CONFIG.NODE_GROUPS_DB +
+                  sGroupKey
               )
               .set({ messagesRead: 1 })
               .then(() => {
                 database
                   .ref(
                     Constants.FIREBASE_CONFIG.NODE_GROUPS_DB +
-                    sGroupKey +
-                    "/users/" +
-                    sUserKey
+                      sGroupKey +
+                      "/users/" +
+                      sUserKey
                   )
                   .set(true)
                   .then(() => {
@@ -367,31 +367,31 @@ export const actionLeaveGroup = (sUserKey, sGroupKey, nGroupId) => {
     database
       .ref(
         Constants.FIREBASE_CONFIG.NODE_ACCOUNTS_DB +
-        sUserKey +
-        "/" +
-        Constants.FIREBASE_CONFIG.NODE_GROUPS_DB +
-        sGroupKey
+          sUserKey +
+          "/" +
+          Constants.FIREBASE_CONFIG.NODE_GROUPS_DB +
+          sGroupKey
       )
       .remove()
       .then(() => {
         database
           .ref(
             Constants.FIREBASE_CONFIG.NODE_GROUPS_DB +
-            sGroupKey +
-            "/users/" +
-            sUserKey
+              sGroupKey +
+              "/users/" +
+              sUserKey
           )
           .remove()
           .then(() => {
             LeaveGroup(nGroupId)
-              .then(() => { })
-              .catch(() => { })
+              .then(() => {})
+              .catch(() => {})
               .finally(() => {
                 database
                   .ref(
                     Constants.FIREBASE_CONFIG.NODE_GROUPS_DB +
-                    sGroupKey +
-                    "/users"
+                      sGroupKey +
+                      "/users"
                   )
                   .limitToFirst(1)
                   .once("value")
@@ -403,9 +403,9 @@ export const actionLeaveGroup = (sUserKey, sGroupKey, nGroupId) => {
                             database
                               .ref(
                                 Constants.FIREBASE_CONFIG.NODE_GROUPS_DB +
-                                sGroupKey +
-                                "/captains/" +
-                                sUserKey
+                                  sGroupKey +
+                                  "/captains/" +
+                                  sUserKey
                               )
                               .remove()
                               .then(() => {
@@ -426,8 +426,8 @@ export const actionLeaveGroup = (sUserKey, sGroupKey, nGroupId) => {
                                             .ref(
                                               Constants.FIREBASE_CONFIG
                                                 .NODE_CONVERSATIONS_GROUPS_DB +
-                                              sConversationKey.val() +
-                                              "/messages"
+                                                sConversationKey.val() +
+                                                "/messages"
                                             )
                                             .push(oMessageLeave);
                                         }
@@ -449,8 +449,8 @@ export const actionLeaveGroup = (sUserKey, sGroupKey, nGroupId) => {
                                               .ref(
                                                 Constants.FIREBASE_CONFIG
                                                   .NODE_CONVERSATIONS_GROUPS_DB +
-                                                sConversationKey.val() +
-                                                "/messages"
+                                                  sConversationKey.val() +
+                                                  "/messages"
                                               )
                                               .push(oMessageNewCapitan);
                                           }
@@ -458,9 +458,9 @@ export const actionLeaveGroup = (sUserKey, sGroupKey, nGroupId) => {
                                             .ref(
                                               Constants.FIREBASE_CONFIG
                                                 .NODE_GROUPS_DB +
-                                              sGroupKey +
-                                              "/captains/" +
-                                              oFirstUser.key
+                                                sGroupKey +
+                                                "/captains/" +
+                                                oFirstUser.key
                                             )
                                             .set(true);
                                         }
@@ -481,7 +481,7 @@ export const actionLeaveGroup = (sUserKey, sGroupKey, nGroupId) => {
                                     .ref(
                                       Constants.FIREBASE_CONFIG
                                         .NODE_CONVERSATIONS_GROUPS_DB +
-                                      sConversationKey.val()
+                                        sConversationKey.val()
                                     )
                                     .remove()
                                     .then(() => {
@@ -539,9 +539,9 @@ export const actionRequestJoinGroup = (
     database
       .ref(
         Constants.FIREBASE_CONFIG.NODE_GROUPS_DB +
-        sGroupKey +
-        "/users/" +
-        sUserKey
+          sGroupKey +
+          "/users/" +
+          sUserKey
       )
       .once("value")
       .then((bIsUser) => {
@@ -549,9 +549,9 @@ export const actionRequestJoinGroup = (
           database
             .ref(
               Constants.FIREBASE_CONFIG.NODE_GROUPS_DB +
-              sGroupKey +
-              "/usersRequest/" +
-              sUserKey
+                sGroupKey +
+                "/usersRequest/" +
+                sUserKey
             )
             .once("value")
             .then((bIsAlreadyRequest) => {
@@ -565,9 +565,9 @@ export const actionRequestJoinGroup = (
                 database
                   .ref(
                     Constants.FIREBASE_CONFIG.NODE_GROUPS_DB +
-                    sGroupKey +
-                    "/usersRequest/" +
-                    sUserKey
+                      sGroupKey +
+                      "/usersRequest/" +
+                      sUserKey
                   )
                   .set(oRequest)
                   .then((bIsAlreadyRequest) => {
@@ -603,13 +603,24 @@ export const actionRequestJoinGroup = (
                                             },
                                             include_player_ids: [sIdPush.val()],
                                           };
-                                          const jsonString = JSON.stringify(oDataNotification);
+                                          const jsonString =
+                                            JSON.stringify(oDataNotification);
 
-                                          OneSignal.postNotification(jsonString, (success) => {
-                                            console.log("Success =================>>>>> :", success);
-                                          }, (error) => {
-                                            console.log("Error =================>>>>> :", error);
-                                          });
+                                          OneSignal.postNotification(
+                                            jsonString,
+                                            (success) => {
+                                              console.log(
+                                                "Success =================>>>>> :",
+                                                success
+                                              );
+                                            },
+                                            (error) => {
+                                              console.log(
+                                                "Error =================>>>>> :",
+                                                error
+                                              );
+                                            }
+                                          );
                                         }
                                       }
                                     );
@@ -690,9 +701,9 @@ export const actionAddMember = (
               database
                 .ref(
                   Constants.FIREBASE_CONFIG.NODE_ACCOUNTS_DB +
-                  oMember.key +
-                  "/groupsInvitations/" +
-                  sGroupKey
+                    oMember.key +
+                    "/groupsInvitations/" +
+                    sGroupKey
                 )
                 .set(oInvitation)
                 .then(() => {
@@ -709,11 +720,15 @@ export const actionAddMember = (
                       };
                       const jsonString = JSON.stringify(oDataNotification);
 
-                      OneSignal.postNotification(jsonString, (success) => {
-                        console.log("Success :", success);
-                      }, (error) => {
-                        console.log("Error :", error);
-                      });
+                      OneSignal.postNotification(
+                        jsonString,
+                        (success) => {
+                          console.log("Success :", success);
+                        },
+                        (error) => {
+                          console.log("Error :", error);
+                        }
+                      );
                     }
                     if (aMembers.length === nCountMembers) {
                       if (sUserKey) dispatch(actionGetMyFriends(sUserKey));
@@ -754,9 +769,9 @@ export const actionAddMemberAllGroups = (data) => {
       database
         .ref(
           Constants.FIREBASE_CONFIG.NODE_ACCOUNTS_DB +
-          data.member.key +
-          "/groupsInvitations/" +
-          oGroup.key
+            data.member.key +
+            "/groupsInvitations/" +
+            oGroup.key
         )
         .set(oInvitation);
       AddNotification(
@@ -765,8 +780,8 @@ export const actionAddMemberAllGroups = (data) => {
         NOTIFICATION_INVITATION_GROUP,
         oGroup.id
       )
-        .then(() => { })
-        .catch(() => { });
+        .then(() => {})
+        .catch(() => {});
     });
     let sHeader = "Groups invitations",
       sContent =
@@ -794,11 +809,15 @@ export const actionAddMemberAllGroups = (data) => {
           };
           const jsonString = JSON.stringify(oDataNotification);
 
-          OneSignal.postNotification(jsonString, (success) => {
-            console.log("Success:", success);
-          }, (error) => {
-            console.log("Error:", error);
-          });
+          OneSignal.postNotification(
+            jsonString,
+            (success) => {
+              console.log("Success:", success);
+            },
+            (error) => {
+              console.log("Error:", error);
+            }
+          );
         }
       })
       .finally(() => {
@@ -859,9 +878,9 @@ export const actionRejectInvitationGroup = (
     database
       .ref(
         Constants.FIREBASE_CONFIG.NODE_ACCOUNTS_DB +
-        data.accountId +
-        "/groupsInvitations/" +
-        data.groupId
+          data.accountId +
+          "/groupsInvitations/" +
+          data.groupId
       )
       .remove()
       .then(() => {
@@ -895,36 +914,36 @@ export const actionAcceptInvitationGroup = (
         database
           .ref(
             Constants.FIREBASE_CONFIG.NODE_ACCOUNTS_DB +
-            sUserKey +
-            "/groupsInvitations/" +
-            sGroupKey
+              sUserKey +
+              "/groupsInvitations/" +
+              sGroupKey
           )
           .once("value", (oInvitationSnap) => {
             if (oInvitationSnap.exists()) {
               database
                 .ref(
                   Constants.FIREBASE_CONFIG.NODE_ACCOUNTS_DB +
-                  sUserKey +
-                  "/groupsInvitations/" +
-                  sGroupKey
+                    sUserKey +
+                    "/groupsInvitations/" +
+                    sGroupKey
                 )
                 .remove()
                 .then(() => {
                   database
                     .ref(
                       Constants.FIREBASE_CONFIG.NODE_ACCOUNTS_DB +
-                      sUserKey +
-                      "/groups/" +
-                      sGroupKey
+                        sUserKey +
+                        "/groups/" +
+                        sGroupKey
                     )
                     .set({ messagesRead: 1 })
                     .then(() => {
                       database
                         .ref(
                           Constants.FIREBASE_CONFIG.NODE_GROUPS_DB +
-                          sGroupKey +
-                          "/users/" +
-                          sUserKey
+                            sGroupKey +
+                            "/users/" +
+                            sUserKey
                         )
                         .set(true)
                         .then(() => {
@@ -978,9 +997,9 @@ export const actionRejectRequest = (data) => {
     database
       .ref(
         Constants.FIREBASE_CONFIG.NODE_GROUPS_DB +
-        data.groupId +
-        "/usersRequest/" +
-        data.userId
+          data.groupId +
+          "/usersRequest/" +
+          data.userId
       )
       .remove()
       .then(() => {
@@ -1005,27 +1024,27 @@ export const actionAcceptRequest = (
     database
       .ref(
         Constants.FIREBASE_CONFIG.NODE_GROUPS_DB +
-        sGroupKey +
-        "/usersRequest/" +
-        sUserKey
+          sGroupKey +
+          "/usersRequest/" +
+          sUserKey
       )
       .remove()
       .then(() => {
         database
           .ref(
             Constants.FIREBASE_CONFIG.NODE_GROUPS_DB +
-            sGroupKey +
-            "/users/" +
-            sUserKey
+              sGroupKey +
+              "/users/" +
+              sUserKey
           )
           .set(true)
           .then(() => {
             database
               .ref(
                 Constants.FIREBASE_CONFIG.NODE_ACCOUNTS_DB +
-                sUserKey +
-                "/groups/" +
-                sGroupKey
+                  sUserKey +
+                  "/groups/" +
+                  sGroupKey
               )
               .set({ messagesRead: 1 })
               .then(() => {
@@ -1090,11 +1109,15 @@ export const actionSendNotificationCapitan = (data) => {
                 };
                 const jsonString = JSON.stringify(oDataNotification);
 
-                OneSignal.postNotification(jsonString, (success) => {
-                  console.log("Success:", success);
-                }, (error) => {
-                  console.log("Error:", error);
-                });
+                OneSignal.postNotification(
+                  jsonString,
+                  (success) => {
+                    console.log("Success:", success);
+                  },
+                  (error) => {
+                    console.log("Error:", error);
+                  }
+                );
               }
             });
           })
@@ -1165,8 +1188,9 @@ export const actionSendMessageGroup = (data) => {
         oMessage.width = data.width;
         oMessage.giphyId = data.giphyId;
         oMessage.isSticker = data.isSticker;
-        sNotificationMessage = `They sent an ${!oMessage.isSticker ? "gif" : "sticker"
-          }`;
+        sNotificationMessage = `They sent an ${
+          !oMessage.isSticker ? "gif" : "sticker"
+        }`;
         break;
       case SEND_MESSAGE_TYPES.IMAGE:
         sNotificationMessage = "They sent an image";
@@ -1187,8 +1211,8 @@ export const actionSendMessageGroup = (data) => {
               database
                 .ref(
                   Constants.FIREBASE_CONFIG.NODE_CONVERSATIONS_GROUPS_DB +
-                  sConversationKey.val() +
-                  "/messages"
+                    sConversationKey.val() +
+                    "/messages"
                 )
                 .push(oMessage)
                 .then(() => {
@@ -1202,11 +1226,11 @@ export const actionSendMessageGroup = (data) => {
                   database
                     .ref(
                       Constants.FIREBASE_CONFIG.NODE_CONVERSATIONS_GROUPS_DB +
-                      data.groupId +
-                      "/updated_at"
+                        data.groupId +
+                        "/updated_at"
                     )
                     .set(Date.now())
-                    .then(() => { });
+                    .then(() => {});
                 });
               dispatch(actionDeactivateLoading());
             })
@@ -1218,19 +1242,19 @@ export const actionSendMessageGroup = (data) => {
           database
             .ref(
               Constants.FIREBASE_CONFIG.NODE_CONVERSATIONS_GROUPS_DB +
-              sConversationKey.val() +
-              "/messages"
+                sConversationKey.val() +
+                "/messages"
             )
             .push(oMessage)
             .then(() => {
               database
                 .ref(
                   Constants.FIREBASE_CONFIG.NODE_GROUPS_DB +
-                  data.groupId +
-                  "/updated_at"
+                    data.groupId +
+                    "/updated_at"
                 )
                 .set(Date.now())
-                .then(() => { });
+                .then(() => {});
               dispatch(
                 sendMessageUsersChat(
                   data.groupId,
@@ -1262,18 +1286,18 @@ const sendMessageUsersChat = (sGroupKey, sAccountKey, sNotificationMessage) => {
               database
                 .ref(
                   Constants.FIREBASE_CONFIG.NODE_ACCOUNTS_DB +
-                  sUserKey.key +
-                  "/groups/" +
-                  sGroupKey
+                    sUserKey.key +
+                    "/groups/" +
+                    sGroupKey
                 )
                 .update({ messagesRead: oGroupUser.val().messagesRead + 1 });
             else
               database
                 .ref(
                   Constants.FIREBASE_CONFIG.NODE_ACCOUNTS_DB +
-                  sUserKey.key +
-                  "/groups/" +
-                  sGroupKey
+                    sUserKey.key +
+                    "/groups/" +
+                    sGroupKey
                 )
                 .set({ messagesRead: 1 });
             GetDataUser(sUserKey.key, "idPush").then((sIdPush) => {
@@ -1289,11 +1313,15 @@ const sendMessageUsersChat = (sGroupKey, sAccountKey, sNotificationMessage) => {
                 };
                 const jsonString = JSON.stringify(oDataNotification);
 
-                OneSignal.postNotification(jsonString, (success) => {
-                  console.log("Success:", success);
-                }, (error) => {
-                  console.log("Error:", error);
-                });
+                OneSignal.postNotification(
+                  jsonString,
+                  (success) => {
+                    console.log("Success:", success);
+                  },
+                  (error) => {
+                    console.log("Error:", error);
+                  }
+                );
               }
             });
           });
@@ -1314,9 +1342,9 @@ export const actionCheckReadMessageGroup = (data) => {
     database
       .ref(
         Constants.FIREBASE_CONFIG.NODE_ACCOUNTS_DB +
-        data.accountId +
-        "/groups/" +
-        data.groupId
+          data.accountId +
+          "/groups/" +
+          data.groupId
       )
       .update({ messagesRead: 0 })
       .then(() => {
@@ -1370,8 +1398,8 @@ export const actionGetGroupInvitations = (data) => {
                 database
                   .ref(
                     Constants.FIREBASE_CONFIG.NODE_ACCOUNTS_DB +
-                    "groupsInvitations" +
-                    oInvitation.key
+                      "groupsInvitations" +
+                      oInvitation.key
                   )
                   .remove();
                 if (nCount === aInvitations.numChildren())
@@ -1423,7 +1451,7 @@ export const actionUpdateGroup = (sGroupKey, sName, sDescription, sImage) => {
           database
             .ref(Constants.FIREBASE_CONFIG.NODE_GROUPS_DB + sGroupKey)
             .update(oUpdate)
-            .then(() => { })
+            .then(() => {})
             .catch(() => {
               dispatch(actionMessage(MESSAGE_ERROR));
             });
@@ -1530,24 +1558,24 @@ export const actionRemoveMembers = (
       if (sConversationKey.exists()) {
         aMembersToRemove.forEach((oMemberRemove) => {
           RemoveToGroup(nGroupId, oMemberRemove.id)
-            .then(() => { })
-            .catch((oError) => { })
+            .then(() => {})
+            .catch((oError) => {})
             .finally(() => {
               database
                 .ref(
                   Constants.FIREBASE_CONFIG.NODE_GROUPS_DB +
-                  sGroupKey +
-                  "/users/" +
-                  oMemberRemove.key
+                    sGroupKey +
+                    "/users/" +
+                    oMemberRemove.key
                 )
                 .remove();
               database
                 .ref(
                   Constants.FIREBASE_CONFIG.NODE_ACCOUNTS_DB +
-                  oMemberRemove.key +
-                  "/" +
-                  Constants.FIREBASE_CONFIG.NODE_GROUPS_DB +
-                  sGroupKey
+                    oMemberRemove.key +
+                    "/" +
+                    Constants.FIREBASE_CONFIG.NODE_GROUPS_DB +
+                    sGroupKey
                 )
                 .remove();
               GetDataUser(oMemberRemove.key, "name").then((sName) => {
@@ -1565,8 +1593,8 @@ export const actionRemoveMembers = (
                   database
                     .ref(
                       Constants.FIREBASE_CONFIG.NODE_CONVERSATIONS_GROUPS_DB +
-                      sConversationKey.val() +
-                      "/messages"
+                        sConversationKey.val() +
+                        "/messages"
                     )
                     .push(oMessage);
                 }
@@ -1732,7 +1760,7 @@ export const actionGetGroup = (sGroupKey = null, sUserLoginKey = null) => {
                                           if (
                                             undefined !== oGroup.captains &&
                                             oGroup.captains[sUserKey.key] ===
-                                            true
+                                              true
                                           )
                                             oUser.isCaptain = true;
                                           aParticipants.push(oUser);
@@ -1794,7 +1822,7 @@ export const actionGetGroup = (sGroupKey = null, sUserLoginKey = null) => {
                   database
                     .ref(
                       Constants.FIREBASE_CONFIG.NODE_CONVERSATIONS_GROUPS_DB +
-                      oGroup.conversation
+                        oGroup.conversation
                     )
                     .remove();
                   database
@@ -1905,8 +1933,8 @@ export const actionAssignAnotherCaptainToLeave = (
     dispatch(actionActiveLoading());
     // We retired the old captain of the group (API)
     LeaveGroup(nGroupId)
-      .then(() => { })
-      .catch(() => { })
+      .then(() => {})
+      .catch(() => {})
       .finally(() => {
         // We retired the old captain of the group (Firebase)
         database
@@ -1921,7 +1949,7 @@ export const actionAssignAnotherCaptainToLeave = (
                 `${Constants.FIREBASE_CONFIG.NODE_GROUPS_DB}${sGroupKey}/captains/${sUserKey}`
               )
               .remove()
-              .then(() => { });
+              .then(() => {});
             // The new main captain is incorporated into the captains (In case it wasn't)
             database
               .ref(
@@ -1961,7 +1989,7 @@ export const actionAssignAnotherCaptainToLeave = (
                 `${Constants.FIREBASE_CONFIG.NODE_ACCOUNTS_DB}${sUserKey}/groups/${sGroupKey}`
               )
               .remove()
-              .catch((oError) => { });
+              .catch((oError) => {});
             // Group conversation is taken
             GetDataGroup(sGroupKey, "conversation").then((sConversationKey) => {
               // He takes the name of the old main captain
@@ -1976,7 +2004,8 @@ export const actionAssignAnotherCaptainToLeave = (
                   };
                   database
                     .ref(
-                      `${Constants.FIREBASE_CONFIG.NODE_CONVERSATIONS_GROUPS_DB
+                      `${
+                        Constants.FIREBASE_CONFIG.NODE_CONVERSATIONS_GROUPS_DB
                       }${sConversationKey.val()}/messages`
                     )
                     .push(oMessageLastCapitan);
@@ -1994,7 +2023,8 @@ export const actionAssignAnotherCaptainToLeave = (
                   };
                   database
                     .ref(
-                      `${Constants.FIREBASE_CONFIG.NODE_CONVERSATIONS_GROUPS_DB
+                      `${
+                        Constants.FIREBASE_CONFIG.NODE_CONVERSATIONS_GROUPS_DB
                       }${sConversationKey.val()}/messages`
                     )
                     .push(oMessageNewCapitan);
@@ -2022,8 +2052,8 @@ export const actionDeleteGroup = (sGroupKey, nGroupId, sUserKey) => {
     dispatch(actionActiveLoading());
     // The system group (API) is removed
     DeleteGroup(nGroupId)
-      .then(() => { })
-      .catch(() => { })
+      .then(() => {})
+      .catch(() => {})
       .finally(() => {
         // The list of keys of users who are members of the group is taken
         GetDataGroup(sGroupKey, "users").then((oListUsersSnap) => {
@@ -2035,7 +2065,7 @@ export const actionDeleteGroup = (sGroupKey, nGroupId, sUserKey) => {
                 `${Constants.FIREBASE_CONFIG.NODE_ACCOUNTS_DB}${oUser.key}/groups/${sGroupKey}`
               )
               .remove()
-              .catch((oError) => { });
+              .catch((oError) => {});
           });
         });
         // the conversation is taken
@@ -2043,19 +2073,20 @@ export const actionDeleteGroup = (sGroupKey, nGroupId, sUserKey) => {
           // The group conversation is deleted
           database
             .ref(
-              `${Constants.FIREBASE_CONFIG.NODE_CONVERSATIONS_GROUPS_DB
+              `${
+                Constants.FIREBASE_CONFIG.NODE_CONVERSATIONS_GROUPS_DB
               }${sConversationKey.val()}`
             )
             .remove()
-            .then(() => { })
-            .catch(() => { });
+            .then(() => {})
+            .catch(() => {});
         });
         // Firebase group is removed
         database
           .ref(`${Constants.FIREBASE_CONFIG.NODE_GROUPS_DB}${sGroupKey}`)
           .remove()
-          .then(() => { })
-          .catch(() => { });
+          .then(() => {})
+          .catch(() => {});
         // Groups are removed
         dispatch(actionGetGroups(sUserKey));
         dispatch(actionDeactivateLoading());

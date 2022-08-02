@@ -9,7 +9,7 @@ import {
   Image,
   Slider,
   Keyboard,
-  FlatList
+  FlatList,
 } from "react-native";
 import {
   GlobalStyles,
@@ -188,7 +188,7 @@ class MyPalsList extends Component {
     });
     var aActivitiesSelected =
       this.state.activities.filter((item) => item.selected).length > 0 &&
-        this.state.activities.filter((item) => item.selected).length <
+      this.state.activities.filter((item) => item.selected).length <
         this.state.activities.length
         ? this.state.activities.filter((item) => item.selected)
         : null;
@@ -515,9 +515,7 @@ class MyPalsList extends Component {
                             resizeMode={FastImage.resizeMode.cover}
                           />
                         )}
-                        <View
-                          style={styles.requestMainView}
-                        >
+                        <View style={styles.requestMainView}>
                           <Text style={styles.textUserReference}>
                             {item.name}
                           </Text>
@@ -652,8 +650,8 @@ class MyPalsList extends Component {
                         style={styles.dummyImagePressable}
                       >
                         {undefined === item.image ||
-                          null === item.image ||
-                          "" === item.image ? (
+                        null === item.image ||
+                        "" === item.image ? (
                           <Image
                             style={styles.dummyImage}
                             source={require("../../assets/imgProfileReadOnly2.png")}
@@ -717,9 +715,7 @@ class MyPalsList extends Component {
                           resizeMode={FastImage.resizeMode.cover}
                         />
                       )}
-                      <View
-                        style={styles.requestMainView}
-                      >
+                      <View style={styles.requestMainView}>
                         <Text style={styles.textUserReference}>
                           {item.name}
                         </Text>
@@ -758,10 +754,10 @@ class MyPalsList extends Component {
           <View style={GlobalModal.viewContent}>
             <View style={GlobalModal.viewHead}>
               {this.state.ageRange !== null ||
-                this.state.gym !== null ||
-                this.state.activities.filter((item) => item.selected).length >
+              this.state.gym !== null ||
+              this.state.activities.filter((item) => item.selected).length >
                 0 ||
-                this.state.nearMe !== false ? (
+              this.state.nearMe !== false ? (
                 <Pressable
                   style={[GlobalModal.buttonLeft, { flexDirection: "row" }]}
                   onPress={() => this.resetFilters()}
@@ -892,12 +888,7 @@ class MyPalsList extends Component {
                     <Text style={[GlobalStyles.textMuted, { width: "50%" }]}>
                       1 Mile
                     </Text>
-                    <Text
-                      style={[
-                        GlobalStyles.textMuted,
-                        styles.milesText,
-                      ]}
-                    >
+                    <Text style={[GlobalStyles.textMuted, styles.milesText]}>
                       30 Miles
                     </Text>
                   </View>
@@ -926,11 +917,11 @@ class MyPalsList extends Component {
               </View>
               <View style={styles.viewActivitiesSelected}>
                 {this.state.activities !== undefined &&
-                  this.state.activities.filter((item) => item.selected) !==
+                this.state.activities.filter((item) => item.selected) !==
                   undefined &&
-                  this.state.activities.filter((item) => item.selected).length >
+                this.state.activities.filter((item) => item.selected).length >
                   0 &&
-                  this.state.activities.filter((item) => item.selected).length <
+                this.state.activities.filter((item) => item.selected).length <
                   this.state.activities.length ? (
                   this.state.activities
                     .filter((item) => item.selected)
@@ -1081,15 +1072,15 @@ const styles = StyleSheet.create({
   },
   profileImage: {
     height: 80,
-    width: 80
+    width: 80,
   },
   dummyImage: {
     height: 80,
-    width: 80
+    width: 80,
   },
   dummyImagePressable: {
     flexDirection: "row",
-    width: "100%"
+    width: "100%",
   },
   userImage: {
     height: 80,
@@ -1107,7 +1098,7 @@ const styles = StyleSheet.create({
   },
   milesText: {
     width: "50%",
-    textAlign: "right"
+    textAlign: "right",
   },
   friendSentRequestsMainView: {
     justifyContent: "center",

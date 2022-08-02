@@ -7,8 +7,7 @@ import { GreenFitrecColor, WhiteColor } from "../../Styles";
 import Icon from "react-native-vector-icons/Ionicons";
 
 const Button = (props) => {
-
-  const { onPress, title, } = props;
+  const { onPress, title } = props;
 
   return (
     <Pressable
@@ -16,14 +15,10 @@ const Button = (props) => {
       style={[styles.roundButton, styles.loginButton]}
     >
       <Text style={styles.loginText}>{title}</Text>
-      <Icon
-        name="arrow-forward"
-        color={GreenFitrecColor}
-        size={22}
-      />
+      <Icon name="arrow-forward" color={GreenFitrecColor} size={22} />
     </Pressable>
-  )
-}
+  );
+};
 
 export default Button;
 

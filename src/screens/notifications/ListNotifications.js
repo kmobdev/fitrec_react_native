@@ -265,8 +265,8 @@ class ListNotifications extends Component {
   deleteAllNotificationsQuestion = () => {
     this.props.notificationProps.notifications.length > 0
       ? this.setState({
-        showQuestionDeleteAll: true,
-      })
+          showQuestionDeleteAll: true,
+        })
       : this.showToast("You have no notifications to delete");
   };
 
@@ -302,8 +302,8 @@ class ListNotifications extends Component {
       notificationText: "",
       groupName: "",
       groupKey: "",
-    })
-  }
+    });
+  };
 
   onViewGroupHandler = () => {
     this.navigateGroup(this.state.groupKey);
@@ -314,7 +314,7 @@ class ListNotifications extends Component {
       groupName: "",
       groupKey: "",
     });
-  }
+  };
 
   render = () => {
     return (
@@ -346,7 +346,10 @@ class ListNotifications extends Component {
                     <View
                       style={[
                         styles.viewNotificaton,
-                        { backgroundColor: 1 == item.view ? WhiteColor : "#EDEDED" }
+                        {
+                          backgroundColor:
+                            1 == item.view ? WhiteColor : "#EDEDED",
+                        },
                       ]}
                     >
                       {null !== item.image ? (
@@ -360,7 +363,7 @@ class ListNotifications extends Component {
                           source={require("../../assets/imgProfileReadOnly.png")}
                         />
                       )}
-                      <View style={styles.userNameMain} >
+                      <View style={styles.userNameMain}>
                         <Text
                           style={styles.textUserReference}
                           numberOfLines={1}
@@ -369,8 +372,8 @@ class ListNotifications extends Component {
                         </Text>
                         <View style={styles.iconMainView}>
                           {item.type == NOTIFICATION_SEND_REQUEST ||
-                            item.type == NOTIFICATION_REQUEST_GROUP ||
-                            item.type == NOTIFICATION_TYPE_NEW_FOLLOWER ? (
+                          item.type == NOTIFICATION_REQUEST_GROUP ||
+                          item.type == NOTIFICATION_TYPE_NEW_FOLLOWER ? (
                             <Icon
                               name="md-person-add"
                               size={16}
@@ -378,8 +381,8 @@ class ListNotifications extends Component {
                             />
                           ) : null}
                           {item.type == NOTIFICATION_CAPITAN_MESSAGE_GROUP ||
-                            item.type == NOTIFICATION_INVITATION_GROUP ||
-                            item.type == NOTIFICATION_TYPE_NEW_CAPTAIN ? (
+                          item.type == NOTIFICATION_INVITATION_GROUP ||
+                          item.type == NOTIFICATION_TYPE_NEW_CAPTAIN ? (
                             <Icon
                               name="md-notifications"
                               size={16}
@@ -387,7 +390,7 @@ class ListNotifications extends Component {
                             />
                           ) : null}
                           {item.type == NOTIFICATION_TYPE_LIKE_JOURNEY ||
-                            item.type == NOTIFICATION_TYPE_TAG_JOURNEY ? (
+                          item.type == NOTIFICATION_TYPE_TAG_JOURNEY ? (
                             <Icon
                               name="md-images"
                               size={16}
@@ -562,7 +565,7 @@ const styles = StyleSheet.create({
   notificationImage: {
     height: 60,
     width: 60,
-    borderRadius: 100
+    borderRadius: 100,
   },
   userNameMain: {
     justifyContent: "center",
@@ -570,22 +573,22 @@ const styles = StyleSheet.create({
     marginRight: 100,
   },
   flexRow: {
-    flexDirection: "row"
+    flexDirection: "row",
   },
   cancleButtonView: {
     width: "45%",
-    marginRight: 5
+    marginRight: 5,
   },
   groupButtonView: {
     width: "45%",
-    marginLeft: 5
+    marginLeft: 5,
   },
   width50: {
-    width: "50%"
+    width: "50%",
   },
   iconMainView: {
     flexDirection: "row",
-    marginBottom: 5
+    marginBottom: 5,
   },
 });
 

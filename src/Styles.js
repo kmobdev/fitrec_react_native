@@ -493,7 +493,7 @@ export const ProfileStyles = StyleSheet.create({
     flexDirection: "row",
     width: "100%",
     height: "100%",
-    alignItems: 'center'
+    alignItems: "center",
   },
   shadowImage: {
     position: "absolute",

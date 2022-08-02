@@ -21,6 +21,7 @@
     "@reduxjs/toolkit": "^1.8.2",
     "@segment/analytics-react-native": "^2.4.0",
     "@segment/sovran-react-native": "^0.4.2",
+    "@sentry/react-native": "^4.2.0",
     "axios": "^0.27.2",
     "ffmpeg-kit-react-native": "^4.5.2",
     "firebase": "^7.17.1",

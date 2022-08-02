@@ -78,25 +78,25 @@ export const actionSendMessage = (
       database
         .ref(
           Constants.FIREBASE_CONFIG.NODE_CONVERSATIONS_DB +
-          sConversationKey +
-          "/users/" +
-          oMessage.sender
+            sConversationKey +
+            "/users/" +
+            oMessage.sender
         )
         .set(true);
       database
         .ref(
           Constants.FIREBASE_CONFIG.NODE_CONVERSATIONS_DB +
-          sConversationKey +
-          "/users/" +
-          sFriendKey
+            sConversationKey +
+            "/users/" +
+            sFriendKey
         )
         .set(true);
       database
         .ref(
           Constants.FIREBASE_CONFIG.NODE_ACCOUNTS_DB +
-          sFriendKey +
-          "/conversations/" +
-          sConversationKey
+            sFriendKey +
+            "/conversations/" +
+            sConversationKey
         )
         .set({
           messagesRead: 0,
@@ -105,9 +105,9 @@ export const actionSendMessage = (
       database
         .ref(
           Constants.FIREBASE_CONFIG.NODE_ACCOUNTS_DB +
-          oMessage.sender +
-          "/conversations/" +
-          sConversationKey
+            oMessage.sender +
+            "/conversations/" +
+            sConversationKey
         )
         .set({
           messagesRead: 0,
@@ -124,8 +124,8 @@ export const actionSendMessage = (
           database
             .ref(
               Constants.FIREBASE_CONFIG.NODE_CONVERSATIONS_DB +
-              sConversationKey +
-              "/messages"
+                sConversationKey +
+                "/messages"
             )
             .push(oMessage);
           dispatch(
@@ -150,8 +150,8 @@ export const actionSendMessage = (
       database
         .ref(
           Constants.FIREBASE_CONFIG.NODE_CONVERSATIONS_DB +
-          sConversationKey +
-          "/messages"
+            sConversationKey +
+            "/messages"
         )
         .push(oMessage);
       dispatch(actionDispatch(Actions.SEND_MESSAGE_SUCCESS));
@@ -210,8 +210,8 @@ export const actionSendMessageChatGroup = (
             database
               .ref(
                 Constants.FIREBASE_CONFIG.NODE_CONVERSATIONS_DB +
-                sConversationKey +
-                "/messages"
+                  sConversationKey +
+                  "/messages"
               )
               .push(oMessage);
             dispatch(
@@ -233,8 +233,8 @@ export const actionSendMessageChatGroup = (
         database
           .ref(
             Constants.FIREBASE_CONFIG.NODE_CONVERSATIONS_DB +
-            sConversationKey +
-            "/messages"
+              sConversationKey +
+              "/messages"
           )
           .push(oMessage);
         dispatch(
@@ -275,10 +275,10 @@ const sendNotificationMessage = (
           database
             .ref(
               Constants.FIREBASE_CONFIG.NODE_ACCOUNTS_DB +
-              sUserKey.key +
-              "/conversations/" +
-              sConversationId +
-              "/messagesRead"
+                sUserKey.key +
+                "/conversations/" +
+                sConversationId +
+                "/messagesRead"
             )
             .once("value")
             .then((oMessagesReadSnap) => {
@@ -286,9 +286,9 @@ const sendNotificationMessage = (
                 database
                   .ref(
                     Constants.FIREBASE_CONFIG.NODE_ACCOUNTS_DB +
-                    sUserKey.key +
-                    "/conversations/" +
-                    sConversationId
+                      sUserKey.key +
+                      "/conversations/" +
+                      sConversationId
                   )
                   .update({ messagesRead: oMessagesReadSnap.val() + 1 });
               GetIdPushUser(sUserKey.key).then((sPushId) => {
@@ -324,12 +324,16 @@ const sendNotificationMessage = (
                     include_player_ids: [sIdPushFriend],
                   };
                   const jsonString = JSON.stringify(oDataNotification);
-                  console.log(' sIdPushFriend =====>>>>>> ', jsonString);
-                  OneSignal.postNotification(jsonString, (success) => {
-                    console.log("Success:", success);
-                  }, (error) => {
-                    console.log("Error:", error);
-                  });
+                  console.log(" sIdPushFriend =====>>>>>> ", jsonString);
+                  OneSignal.postNotification(
+                    jsonString,
+                    (success) => {
+                      console.log("Success:", success);
+                    },
+                    (error) => {
+                      console.log("Error:", error);
+                    }
+                  );
                 }
                 // One-on-one type of conversation
                 if (1 === nTypeConversation) {
@@ -426,16 +430,16 @@ export const actionListMessages = (sUserKey) => {
             database
               .ref(
                 Constants.FIREBASE_CONFIG.NODE_CONVERSATIONS_DB +
-                oConversationKey.key +
-                "/name"
+                  oConversationKey.key +
+                  "/name"
               )
               .once("value")
               .then((sNameGroupSnap) => {
                 database
                   .ref(
                     Constants.FIREBASE_CONFIG.NODE_CONVERSATIONS_DB +
-                    oConversationKey.key +
-                    "/messages"
+                      oConversationKey.key +
+                      "/messages"
                   )
                   .orderByChild("date")
                   .limitToLast(1)
@@ -451,8 +455,8 @@ export const actionListMessages = (sUserKey) => {
                     let sLastMessage = "";
                     if (oMessage) {
                       const sInitalMessage = sNameGroupSnap.exists()
-                        ? "They sent"
-                        : "Sent",
+                          ? "They sent"
+                          : "Sent",
                         bIsSender = oMessage.sender === sUserKey;
                       switch (oMessage.type) {
                         case SEND_MESSAGE_TYPES.IMAGE:
@@ -508,16 +512,16 @@ export const actionListMessages = (sUserKey) => {
                             database
                               .ref(
                                 Constants.FIREBASE_CONFIG.NODE_ACCOUNTS_DB +
-                                sKeyUser +
-                                "/name"
+                                  sKeyUser +
+                                  "/name"
                               )
                               .once("value")
                               .then((sName) => {
                                 database
                                   .ref(
                                     Constants.FIREBASE_CONFIG.NODE_ACCOUNTS_DB +
-                                    sKeyUser +
-                                    "/username"
+                                      sKeyUser +
+                                      "/username"
                                   )
                                   .once("value")
                                   .then((sUserName) => {
@@ -525,8 +529,8 @@ export const actionListMessages = (sUserKey) => {
                                       .ref(
                                         Constants.FIREBASE_CONFIG
                                           .NODE_ACCOUNTS_DB +
-                                        sKeyUser +
-                                        "/image"
+                                          sKeyUser +
+                                          "/image"
                                       )
                                       .once("value")
                                       .then((sProfilePic) => {
@@ -534,8 +538,8 @@ export const actionListMessages = (sUserKey) => {
                                           .ref(
                                             Constants.FIREBASE_CONFIG
                                               .NODE_ACCOUNTS_DB +
-                                            sKeyUser +
-                                            "/id"
+                                              sKeyUser +
+                                              "/id"
                                           )
                                           .once("value")
                                           .then((sIdFitrec) => {
@@ -597,8 +601,8 @@ export const actionListMessages = (sUserKey) => {
                                 database
                                   .ref(
                                     Constants.FIREBASE_CONFIG.NODE_ACCOUNTS_DB +
-                                    sKeyUser.key +
-                                    "/name"
+                                      sKeyUser.key +
+                                      "/name"
                                   )
                                   .once("value")
                                   .then((sName) => {
@@ -606,8 +610,8 @@ export const actionListMessages = (sUserKey) => {
                                       .ref(
                                         Constants.FIREBASE_CONFIG
                                           .NODE_ACCOUNTS_DB +
-                                        sKeyUser.key +
-                                        "/username"
+                                          sKeyUser.key +
+                                          "/username"
                                       )
                                       .once("value")
                                       .then((sUserName) => {
@@ -615,8 +619,8 @@ export const actionListMessages = (sUserKey) => {
                                           .ref(
                                             Constants.FIREBASE_CONFIG
                                               .NODE_ACCOUNTS_DB +
-                                            sKeyUser.key +
-                                            "/image"
+                                              sKeyUser.key +
+                                              "/image"
                                           )
                                           .once("value")
                                           .then((sProfilePic) => {
@@ -624,8 +628,8 @@ export const actionListMessages = (sUserKey) => {
                                               .ref(
                                                 Constants.FIREBASE_CONFIG
                                                   .NODE_ACCOUNTS_DB +
-                                                sKeyUser.key +
-                                                "/id"
+                                                  sKeyUser.key +
+                                                  "/id"
                                               )
                                               .once("value")
                                               .then((nIdFitrec) => {
@@ -653,13 +657,13 @@ export const actionListMessages = (sUserKey) => {
                                                       message: sLastMessage,
                                                       time: oMessage
                                                         ? moment(
-                                                          oMessage.date
-                                                        ).format("LT")
+                                                            oMessage.date
+                                                          ).format("LT")
                                                         : "",
                                                       date: oMessage
                                                         ? moment(
-                                                          oMessage.date
-                                                        ).format("DD MMM")
+                                                            oMessage.date
+                                                          ).format("DD MMM")
                                                         : "",
                                                       image:
                                                         sProfilePic.exists()
@@ -764,9 +768,9 @@ export const actionConfirmMessageRead = (data) => {
     database
       .ref(
         Constants.FIREBASE_CONFIG.NODE_ACCOUNTS_DB +
-        data.accountId +
-        "/conversations/" +
-        data.conversation
+          data.accountId +
+          "/conversations/" +
+          data.conversation
       )
       .update({
         messagesRead: 0,
@@ -1032,10 +1036,10 @@ export const actionCreateChatGroup = (
     dispatch(actionActiveLoading());
     let dNow = Date.now();
     let oConversationNodo = {
-      dateCreated: Date(),
-      userCreated: sUserKey,
-      name: sGroupName,
-    },
+        dateCreated: Date(),
+        userCreated: sUserKey,
+        name: sGroupName,
+      },
       oConversationUser = {
         messagesRead: 1,
       };
@@ -1051,17 +1055,17 @@ export const actionCreateChatGroup = (
           database
             .ref(
               Constants.FIREBASE_CONFIG.NODE_CONVERSATIONS_DB +
-              oSuccess.key +
-              "/users/" +
-              oMember.key
+                oSuccess.key +
+                "/users/" +
+                oMember.key
             )
             .set(true);
           database
             .ref(
               Constants.FIREBASE_CONFIG.NODE_ACCOUNTS_DB +
-              oMember.key +
-              "/conversations/" +
-              oSuccess.key
+                oMember.key +
+                "/conversations/" +
+                oSuccess.key
             )
             .set(oConversationUser);
           if (oMember.key !== sUserKey)
@@ -1071,14 +1075,14 @@ export const actionCreateChatGroup = (
               NOTIFICATION_TYPE_GROUP_CHAT,
               null
             )
-              .then(() => { })
-              .catch(() => { });
+              .then(() => {})
+              .catch(() => {});
         });
         database
           .ref(
             Constants.FIREBASE_CONFIG.NODE_CONVERSATIONS_DB +
-            oSuccess.key +
-            "/messages"
+              oSuccess.key +
+              "/messages"
           )
           .push({
             date: dNow,
@@ -1251,8 +1255,8 @@ export const actionSetConversationToNotification = (sConversationKey) => {
     database
       .ref(
         Constants.FIREBASE_CONFIG.NODE_CONVERSATIONS_DB +
-        sConversationKey +
-        "/name"
+          sConversationKey +
+          "/name"
       )
       .once("value")
       .then((sNameGroupSnap) => {
@@ -1273,24 +1277,24 @@ export const actionSetConversationToNotification = (sConversationKey) => {
                 database
                   .ref(
                     Constants.FIREBASE_CONFIG.NODE_ACCOUNTS_DB +
-                    sKeyUser +
-                    "/username"
+                      sKeyUser +
+                      "/username"
                   )
                   .once("value")
                   .then((sUserName) => {
                     database
                       .ref(
                         Constants.FIREBASE_CONFIG.NODE_ACCOUNTS_DB +
-                        sKeyUser +
-                        "/image"
+                          sKeyUser +
+                          "/image"
                       )
                       .once("value")
                       .then((sProfilePic) => {
                         database
                           .ref(
                             Constants.FIREBASE_CONFIG.NODE_ACCOUNTS_DB +
-                            sKeyUser +
-                            "/id"
+                              sKeyUser +
+                              "/id"
                           )
                           .once("value")
                           .then((sIdFitrec) => {
