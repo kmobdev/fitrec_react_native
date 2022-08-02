@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   View,
   TextInput,
@@ -23,7 +23,7 @@ import {
 import ImagePicker from "react-native-image-crop-picker";
 import { ToastQuestion } from "../../components/shared/ToastQuestion";
 import { GlobalCheckBox } from "../../components/shared/GlobalCheckBox";
-import { connect } from "react-redux";
+import { connect, useDispatch, useSelector } from "react-redux";
 import RNFetchBlob from "rn-fetch-blob";
 import {
   actionUserRegisterValidate,
@@ -34,38 +34,105 @@ import { UpdateCoverPhoto } from "../../components/shared/UpdateCoverPhoto";
 import { actionGetGyms } from "../../redux/actions/ActivityActions";
 import SelectDropdown from "react-native-select-dropdown";
 
-class Register extends Component {
-  constructor(props) {
-    super(props);
-    let lUserFBData = this.props.navigation.getParam("userFBData", null);
-    let aAppleData = this.props.navigation.getParam("appleCredentials", null);
-    this.state = {
-      dateSelect: moment().subtract(16, "years").format("YYYY-MM-DD"),
-      errors: {},
-      showProfilePhoto: false,
-      showCoverPhoto: false,
-      showPassword: null !== lUserFBData ? false : true,
-      user: {
+const Register = ({ navigation }) => {
+
+  let lUserFBData = navigation.getParam("userFBData", null);
+  let aAppleData = navigation.getParam("appleCredentials", null);
+
+  const usernameRef = useRef();
+  const emailRef = useRef();
+  const passwordRef = useRef();
+  const confirmPasswordRef = useRef();
+  const nameRef = useRef();
+  const scrollViewRef = useRef();
+
+  const register = useSelector((state) => state.reducerRegister);
+  const login = useSelector((state) => state.reducerSession);
+  const activity = useSelector((state) => state.reducerActivity);
+
+  const dispatch = useDispatch();
+
+  const [dateSelect, setDateSelect] = useState(moment().subtract(16, "years").format("YYYY-MM-DD"));
+  const [errors, setErrors] = useState({});
+  const [showProfilePhoto, setShowProfilePhoto] = useState(false);
+  const [showCoverPhoto, setShowCoverPhoto] = useState(false);
+  const [showPassword, setShowPassword] = useState(lUserFBData !== null ? false : true);
+  const [user, setUser] = useState({
+    username:
+      null !== lUserFBData
+        ? lUserFBData.name.replace(" ", "")
+        : aAppleData !== null
+          ? aAppleData.name
+          : "",
+    email:
+      null !== lUserFBData
+        ? lUserFBData.email
+        : aAppleData !== null
+          ? aAppleData.email
+          : "",
+    password:
+      null !== lUserFBData
+        ? lUserFBData.id.replace(0, "z").replace(2, "A")
+        : "",
+    confirmPassword:
+      null !== lUserFBData
+        ? lUserFBData.id.replace(0, "z").replace(2, "A")
+        : "",
+    name: null !== lUserFBData ? lUserFBData.name : "",
+    age: null,
+    displayAge: false,
+    sex: null,
+    level: null,
+    image: null !== lUserFBData ? lUserFBData.picture.data.url : null,
+    background: null,
+    userFacebookId: null !== lUserFBData ? lUserFBData.id : "",
+    gym: null,
+    gymId: 0,
+    newGym: false,
+  });
+  const [age, setAge] = useState([
+    16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33,
+    34, 35, 36, 37,
+  ]);
+  const [toastText, setToastText] = useState([""]);
+  const [sex, setSex] = useState(["MALE", "FEMALE"]);
+  const [level, setLevel] = useState(["BEGINNER", "INTERMEDIATE", "ADVANCE"]);
+  const [gymsName, setGymsName] = useState({});
+  const [gyms, setGyms] = useState({});
+
+  const scrollToEnd = () => {
+    if (null !== scrollViewRef && undefined !== scrollViewRef)
+      scrollViewRef.current.scrollToEnd({ animated: true });
+  };
+
+  const getKeyboardOffsetStyle = () => {
+    const { keyboardOffset } = state;
+    return Platform.select({
+      ios: () => ({ paddingBottom: keyboardOffset }),
+      android: () => ({}),
+    })();
+  }
+
+  useEffect(() => {
+    getFacebookPhoto();
+    dispatch(actionGetGyms());
+  }, [])
+
+  useEffect(() => {
+    if (
+      !login.status &&
+      login.redirectSignIn &&
+      login.appleAccount === null
+    ) {
+      let lUserFBData = login.userFBData;
+      setShowPassword(null !== lUserFBData ? false : true);
+      setErrors({});
+      setUser({
         username:
-          null !== lUserFBData
-            ? lUserFBData.name.replace(" ", "")
-            : aAppleData !== null
-            ? aAppleData.name
-            : "",
-        email:
-          null !== lUserFBData
-            ? lUserFBData.email
-            : aAppleData !== null
-            ? aAppleData.email
-            : "",
-        password:
-          null !== lUserFBData
-            ? lUserFBData.id.replace(0, "z").replace(2, "A")
-            : "",
-        confirmPassword:
-          null !== lUserFBData
-            ? lUserFBData.id.replace(0, "z").replace(2, "A")
-            : "",
+          null !== lUserFBData ? lUserFBData.name.replace(" ", "") : "",
+        email: null !== lUserFBData ? lUserFBData.email : "",
+        password: lUserFBData.id.replace(0, "z").replace(2, "A"),
+        confirmPassword: lUserFBData.id.replace(0, "z").replace(2, "A"),
         name: null !== lUserFBData ? lUserFBData.name : "",
         age: null,
         displayAge: false,
@@ -74,71 +141,57 @@ class Register extends Component {
         image: null !== lUserFBData ? lUserFBData.picture.data.url : null,
         background: null,
         userFacebookId: null !== lUserFBData ? lUserFBData.id : "",
-        gym: null,
-        gymId: 0,
-        newGym: false,
-      },
-      toastText: "",
-      gyms: [],
-      gymsName: [],
-      keyboardOffset: 0,
-    };
+      });
+      getFacebookPhoto();
+    }
+  }, [login])
 
-    this.age = [
-      16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33,
-      34, 35, 36, 37,
-    ];
-    this.sex = ["MALE", "FEMALE"];
-    this.level = ["BEGINNER", "INTERMEDIATE", "ADVANCE"];
-    this.gims = "";
+  useEffect(() => {
+    if (
+      null === register.redirectConditions &&
+      undefined !== register.messageError &&
+      "" !== register.messageError
+    ) {
+      showToast(register.messageError);
+    }
+    if (register.redirectConditions) {
+      if (user.newGym) {
+        user.gymId = 0;
+        if (null === user.gym || "" === user.gym.trim())
+          user.gym = null;
+      } else {
+        if ("None" === user.gym) user.gym = null;
+        else
+          gyms.forEach((oGym) => {
+            if (oGym.name === user.gym)
+              user.gymId = oGym.id;
+          });
+      }
+      navigation.navigate("Conditions", { user: user });
+    }
+  }, [register])
 
-    this.getKeyboardOffsetStyle = this.getKeyboardOffsetStyle.bind(this);
-    this.handleKeyboardShow = this.handleKeyboardShow.bind(this);
-    this.handleKeyboardHide = this.handleKeyboardHide.bind(this);
+  useEffect(() => {
+    if (activity.gyms.length > 0 && gyms.length === 0) {
+      let aGymsName = ["None"];
+      activity.gyms.forEach((oGym) => {
+        aGymsName.push(oGym.name);
+      });
+      setGyms(activity.gyms);
+      setGymsName(aGymsName);
+    }
 
-    Keyboard.addListener("keyboardDidShow", this.handleKeyboardShow);
-    Keyboard.addListener("keyboardWillShow", this.handleKeyboardShow);
-    Keyboard.addListener("keyboardWillHide", this.handleKeyboardHide);
-    Keyboard.addListener("keyboardDidHide", this.handleKeyboardHide);
-  }
+  }, [activity])
 
-  handleKeyboardShow = async ({ endCoordinates: { height } }) => {
-    this.setState({ keyboardOffset: height });
-  };
-
-  handleKeyboardHide = async () => {
-    this.setState({ keyboardOffset: 0 });
-  };
-
-  scrollToEnd = () => {
-    if (null !== this.scrollView && undefined !== this.scrollView)
-      this.scrollView.scrollToEnd({ animated: true });
-  };
-
-  getKeyboardOffsetStyle() {
-    const { keyboardOffset } = this.state;
-    return Platform.select({
-      ios: () => ({ paddingBottom: keyboardOffset }),
-      android: () => ({}),
-    })();
-  }
-
-  componentDidMount = async () => {
-    this.getFacebookPhoto();
-    this.props.getGyms();
-  };
-
-  getFacebookPhoto = async () => {
-    if (!this.state.showPassword) {
-      await RNFetchBlob.fetch("GET", this.state.user.image, {}).then(
+  const getFacebookPhoto = async () => {
+    if (!showPassword) {
+      await RNFetchBlob.fetch("GET", user.image, {}).then(
         async (res) => {
           let status = res.info().status;
           if (status == 200) {
-            this.setState({
-              user: {
-                ...this.state.user,
-                image: res.base64(),
-              },
+            setUser({
+              ...user,
+              image: res.base64(),
             });
           }
         }
@@ -146,83 +199,8 @@ class Register extends Component {
     }
   };
 
-  componentWillReceiveProps = (nextProps) => {
-    if (
-      null === nextProps.register.redirectConditions &&
-      undefined !== nextProps.register.messageError &&
-      "" !== nextProps.register.messageError
-    ) {
-      this.showToast(nextProps.register.messageError);
-    }
-    if (nextProps.register.redirectConditions) {
-      if (this.state.user.newGym) {
-        this.state.user.gymId = 0;
-        if (null === this.state.user.gym || "" === this.state.user.gym.trim())
-          this.state.user.gym = null;
-      } else {
-        if ("None" === this.state.user.gym) this.state.user.gym = null;
-        else
-          this.state.gyms.forEach((oGym) => {
-            if (oGym.name === this.state.user.gym)
-              this.state.user.gymId = oGym.id;
-          });
-      }
-      this.props.navigation.navigate("Conditions", { user: this.state.user });
-    }
-    if (nextProps.activity.gyms.length > 0 && this.state.gyms.length === 0) {
-      let aGymsName = ["None"];
-      nextProps.activity.gyms.forEach((oGym) => {
-        aGymsName.push(oGym.name);
-      });
-      this.setState({
-        gyms: nextProps.activity.gyms,
-        gymsName: aGymsName,
-      });
-    }
-    if (
-      !nextProps.login.status &&
-      nextProps.login.redirectSignIn &&
-      nextProps.login.appleAccount === null
-    ) {
-      let lUserFBData = nextProps.login.userFBData;
-      this.setState({
-        showPassword: null !== lUserFBData ? false : true,
-        errors: {},
-        user: {
-          username:
-            null !== lUserFBData ? lUserFBData.name.replace(" ", "") : "",
-          email: null !== lUserFBData ? lUserFBData.email : "",
-          password: lUserFBData.id.replace(0, "z").replace(2, "A"),
-          confirmPassword: lUserFBData.id.replace(0, "z").replace(2, "A"),
-          name: null !== lUserFBData ? lUserFBData.name : "",
-          age: null,
-          displayAge: false,
-          sex: null,
-          level: null,
-          image: null !== lUserFBData ? lUserFBData.picture.data.url : null,
-          background: null,
-          userFacebookId: null !== lUserFBData ? lUserFBData.id : "",
-        },
-      });
-      this.getFacebookPhoto();
-    }
-  };
-
-  changeDate = (sDate) => {
-    this.setState({
-      dateSelect: sDate,
-      user: {
-        ...this.state.user,
-        age: moment().diff(sDate, "years"),
-      },
-    });
-  };
-
-  addImagePerfil = (sType) => {
-    this.setState({
-      showProfilePhoto: false,
-      loadingImage: true,
-    });
+  const addImagePerfil = (sType) => {
+    setShowProfilePhoto(false);
     let oOptions = {
       cropping: true,
       width: 600,
@@ -232,47 +210,30 @@ class Register extends Component {
       includeBase64: true,
     };
     if ("camera" === sType) {
-      ImagePicker.openCamera(oOptions).then(
-        async (image) => {
-          this.setState({
-            user: {
-              ...this.state.user,
-              image: image.data,
-            },
-            loadingImage: false,
+      ImagePicker.openCamera(oOptions)
+        .then((image) => {
+          setUser({
+            ...user,
+            background: image.data
           });
-        },
-        async (cancel) => {
-          this.setState({
-            loadingImage: false,
-          });
-        }
-      );
+        })
+        .catch((error) => {
+        });
     } else {
-      ImagePicker.openPicker(oOptions).then(
-        async (image) => {
-          this.setState({
-            user: {
-              ...this.state.user,
-              image: image.data,
-            },
-            loadingImage: false,
+      ImagePicker.openPicker(oOptions)
+        .then((image) => {
+          setUser({
+            ...user,
+            background: image.data
           });
-        },
-        async (cancel) => {
-          this.setState({
-            loadingImage: false,
-          });
-        }
-      );
+        })
+        .catch((error) => {
+        });
     }
   };
 
-  addImageCover = (sType) => {
-    this.setState({
-      showCoverPhoto: false,
-      loading: true,
-    });
+  const addImageCover = (sType) => {
+    setShowCoverPhoto(false);
     let oOptions = {
       cropping: true,
       width: 500,
@@ -284,63 +245,44 @@ class Register extends Component {
     if ("camera" === sType) {
       ImagePicker.openCamera(oOptions)
         .then((image) => {
-          this.setState({
-            user: {
-              ...this.state.user,
-              background: image.data,
-            },
-            loadingImage: false,
+          setUser({
+            ...user,
+            background: image.data
           });
         })
         .catch((error) => {
-          this.setState({
-            loadingImage: false,
-          });
         });
     } else {
       ImagePicker.openPicker(oOptions)
         .then((image) => {
-          this.setState({
-            user: {
-              ...this.state.user,
-              background: image.data,
-            },
-            loadingImage: false,
+          setUser({
+            ...user,
+            background: image.data
           });
         })
         .catch((error) => {
-          this.setState({
-            loadingImage: false,
-          });
         });
     }
   };
 
-  register = async () => {
-    this.setState({
-      user: {
-        ...this.state.user,
-        name: this.state.user.name.trim(),
-        email: this.state.user.email.trim(),
-      },
+  const registerHandler = async () => {
+    setUser({
+      ...user,
+      name: user.name.trim(),
+      email: user.email.trim(),
     });
-    let lErrors = await this.validate(this.state.user);
+    let lErrors = await validate(user);
     if (lErrors.haveError) {
-      this.setState({
-        errors: lErrors,
-      });
+      setErrors(lErrors);
       if ("" !== lErrors.messageError) {
-        this.showToast(lErrors.messageError);
+        showToast(lErrors.messageError);
       }
     } else {
-      this.props.userRegisterValidate(
-        this.state.user.email,
-        this.state.user.username
-      );
+      dispatch(actionUserRegisterValidate(user.email, user.username));
     }
   };
 
-  validate = async (lValues) => {
+  const validate = async (lValues) => {
     let lErrors = {
       showUsernameError: false,
       showEmailError: false,
@@ -377,7 +319,7 @@ class Register extends Component {
       lErrors.haveError = true;
       lErrors.messageError = "The name is required";
     }
-    if (this.state.showPassword) {
+    if (showPassword) {
       //PASSWORD
       if ("" === lValues.password || lValues.password.length < 7) {
         lErrors.showPasswordError = true;
@@ -430,27 +372,18 @@ class Register extends Component {
     return lErrors;
   };
 
-  showProfilePhoto = async () => {
-    this.setState({
-      showProfilePhoto: true,
-    });
+  const showProfilePhotoHandler = () => {
+    setShowProfilePhoto(true);
   };
 
-  showCoverPhoto = async () => {
-    this.setState({
-      showCoverPhoto: true,
-    });
+  const showCoverPhotoHandler = () => {
+    setShowCoverPhoto(true);
   };
 
-  showToast = async (sText) => {
-    this.setState({
-      toastText: sText,
-      loading: false,
-    });
+  const showToast = (text) => {
+    setToastText(text);
     setTimeout(() => {
-      this.setState({
-        toastText: "",
-      });
+      setToastText("");
     }, 2000);
   };
 
@@ -459,70 +392,11 @@ class Register extends Component {
    * if not exist account load data
    * else login with account
    */
-  loginFB = () => {
-    this.props.loginUserFB();
+  const loginFB = () => {
+    dispatch(actionUserLoginFB());
   };
 
-  getSexLabel = () => {
-    switch (this.state.user.sex) {
-      case "M":
-        return "Male";
-      case "F":
-        return "Female";
-    }
-    return "";
-  };
-
-  getSexValue = (value) => {
-    switch (value) {
-      case "Male":
-        return "M";
-      case "Female":
-        return "F";
-    }
-    return "";
-  };
-
-  getlevelLabel = () => {
-    switch (this.state.user.level) {
-      case "B":
-        return "Beginner";
-      case "M":
-        return "Intermediate";
-      case "A":
-        return "Advance";
-    }
-    return "";
-  };
-
-  getlevelValue = (value) => {
-    switch (value) {
-      case "Beginner":
-        return "B";
-      case "Intermediate":
-        return "M";
-      case "Advance":
-        return "A";
-    }
-    return "";
-  };
-
-  setDate = async (date) => {
-    await this.setState({
-      user: {
-        ...this.state.user,
-        age: date,
-      },
-    });
-  };
-
-  calculateAge() {
-    // Line commented since it will be used later - Leandro Curbelo 01/22/2021
-    // return moment().diff(this.state.user.age, 'years')
-    return this.state.user.age;
-  }
-
-  getAgeItems = () => {
+  const getAgeItems = () => {
     let nCount = 9,
       aAges = [];
     while (nCount < 121) {
@@ -532,359 +406,382 @@ class Register extends Component {
     return aAges;
   };
 
-  handleOnPressLabel = (oRef = null) => {
-    if (oRef) oRef.focus();
+  const handleOnPressLabel = (oRef) => {
+    oRef.current.focus();
   };
 
-  onDropdownSelectionHandler = (selectedItem, index) => {
-    this.setState({
-      user: {
-        ...this.state.user,
-        age: selectedItem,
-      },
+  const onDropdownSelectionHandler = (selectedItem, index) => {
+    setUser({
+      ...user,
+      age: selectedItem
     });
     console.log(selectedItem, index);
   };
 
-  render = () => {
-    return (
-      <View style={this.getKeyboardOffsetStyle()}>
-        <ScrollView ref={(ref) => (this.scrollView = ref)}>
-          <View style={GlobalStyles.photoProfileViewSectionPhotos}>
-            {null !== this.state.user.background ? (
+  return (
+    <View style={{ flex: 1 }}>
+      <ScrollView ref={scrollViewRef}>
+        <View style={GlobalStyles.photoProfileViewSectionPhotos}>
+          {null !== user.background ? (
+            <Image
+              resizeMode="cover"
+              source={{
+                uri: "data:image/png;base64," + user.background,
+              }}
+              style={GlobalStyles.photoProfileCoverPreviewPhoto}
+            />
+          ) : (
+            <View
+              style={[
+                GlobalStyles.photoProfileCoverPreviewPhoto,
+                { backgroundColor: "gray" },
+              ]}
+            />
+          )}
+          <Pressable onPress={showProfilePhotoHandler}>
+            {user.image ? (
               <Image
-                resizeMode="cover"
+                style={GlobalStyles.photoProfileProfilePreviewPhoto}
                 source={{
-                  uri: "data:image/png;base64," + this.state.user.background,
+                  uri: "data:image/png;base64," + user.image,
                 }}
-                style={GlobalStyles.photoProfileCoverPreviewPhoto}
               />
             ) : (
-              <View
-                style={[
-                  GlobalStyles.photoProfileCoverPreviewPhoto,
-                  { backgroundColor: "gray" },
-                ]}
+              <Image
+                style={GlobalStyles.photoProfileImagePerfil}
+                source={require("../../assets/imgProfile2.png")}
               />
             )}
-            <Pressable onPress={() => this.showProfilePhoto()}>
-              {this.state.user.image ? (
-                <Image
-                  style={GlobalStyles.photoProfileProfilePreviewPhoto}
-                  source={{
-                    uri: "data:image/png;base64," + this.state.user.image,
-                  }}
-                />
-              ) : (
-                <Image
-                  style={GlobalStyles.photoProfileImagePerfil}
-                  source={require("../../assets/imgProfile2.png")}
-                />
-              )}
-            </Pressable>
-            <UpdateCoverPhoto press={() => this.showCoverPhoto()} />
-          </View>
-          {
-            // TODO: Login with Facebook commented to solve Apple Review - Leandro Curbelo August 24
-            Platform.OS === "android" && this.state.showPassword && (
-              <View style={[styles.viewSection, { borderBottomWidth: 0 }]}>
-                <ButtonFacebook
-                  login={false}
-                  title="Login facebook account"
-                  onPress={() => this.loginFB()}
-                />
-              </View>
-            )
-          }
-          <View
-            style={[
-              this.state.errors.showUsernameError && GlobalStyles.errorBorder,
-              styles.row,
-            ]}
-          >
-            <Pressable
-              style={styles.colLabel}
-              onPress={() => this.handleOnPressLabel(this.oUsernameRef)}
-              activeOpacity={1}
-            >
-              <Text style={styles.textLabelColumn}>Username</Text>
-            </Pressable>
-            <View style={styles.colInput}>
-              <View style={styles.containerTextInput}>
-                <TextInput
-                  style={styles.textInput}
-                  textContentType={"username"}
-                  ref={(oRef) => (this.oUsernameRef = oRef)}
-                  onChangeText={(text) => {
-                    this.setState({
-                      user: {
-                        ...this.state.user,
-                        username: text.trim().replace(" ", ""),
-                      },
-                    });
-                  }}
-                  value={this.state.user.username}
-                  autoCapitalize="none"
-                  onSubmitEditing={() =>
-                    this.handleOnPressLabel(this.oEmailRef)
-                  }
-                />
-              </View>
-            </View>
-          </View>
-          <View
-            style={[
-              this.state.errors.showEmailError && GlobalStyles.errorBorder,
-              styles.row,
-            ]}
-          >
-            <Pressable
-              style={styles.colLabel}
-              onPress={() => this.handleOnPressLabel(this.oEmailRef)}
-              activeOpacity={1}
-            >
-              <Text style={styles.textLabelColumn}>Email</Text>
-            </Pressable>
-            <View style={styles.colInput}>
-              <View style={styles.containerTextInput}>
-                <TextInput
-                  style={[
-                    styles.textInput,
-                    !this.state.showPassword && styles.placeholderColor,
-                  ]}
-                  ref={(oRef) => (this.oEmailRef = oRef)}
-                  onChangeText={(text) => {
-                    this.setState({
-                      user: {
-                        ...this.state.user,
-                        email: text.trim().replace(" ", ""),
-                      },
-                    });
-                  }}
-                  value={this.state.user.email}
-                  editable={this.state.showPassword ? true : false}
-                  onSubmitEditing={() =>
-                    this.handleOnPressLabel(this.oPasswordRef)
-                  }
-                  autoCapitalize="none"
-                  keyboardType="email-address"
-                  textContentType={"emailAddress"}
-                />
-              </View>
-            </View>
-          </View>
-          {this.state.showPassword && (
-            <>
-              <View
-                style={[
-                  this.state.errors.showPasswordError &&
-                    GlobalStyles.errorBorder,
-                  styles.row,
-                ]}
-              >
-                <Pressable
-                  style={styles.colLabel}
-                  onPress={() => this.handleOnPressLabel(this.oPasswordRef)}
-                  activeOpacity={1}
-                >
-                  <Text style={styles.textLabelColumn}>Password</Text>
-                </Pressable>
-                <View style={styles.colInput}>
-                  <View style={styles.containerTextInput}>
-                    <TextInput
-                      style={styles.textInput}
-                      textContentType={"newPassword"}
-                      ref={(oRef) => (this.oPasswordRef = oRef)}
-                      onChangeText={(text) => {
-                        this.setState({
-                          user: { ...this.state.user, password: text },
-                        });
-                      }}
-                      value={this.state.user.password}
-                      autoCapitalize="none"
-                      secureTextEntry={true}
-                      onSubmitEditing={() =>
-                        this.handleOnPressLabel(this.oConfirmPasswordRef)
-                      }
-                    />
-                  </View>
-                </View>
-              </View>
-              <View
-                style={[
-                  this.state.errors.showConfirmPasswordError &&
-                    GlobalStyles.errorBorder,
-                  styles.row,
-                ]}
-              >
-                <Pressable
-                  style={styles.colLabel}
-                  onPress={() =>
-                    this.handleOnPressLabel(this.oConfirmPasswordRef)
-                  }
-                  activeOpacity={1}
-                >
-                  <Text style={styles.textLabelColumn}>Confirm Password</Text>
-                </Pressable>
-                <View style={styles.colInput}>
-                  <View style={styles.containerTextInput}>
-                    <TextInput
-                      style={styles.textInput}
-                      textContentType={"newPassword"}
-                      ref={(oRef) => (this.oConfirmPasswordRef = oRef)}
-                      onChangeText={(text) => {
-                        this.setState({
-                          user: { ...this.state.user, confirmPassword: text },
-                        });
-                      }}
-                      value={this.state.user.confirmPassword}
-                      autoCapitalize="none"
-                      secureTextEntry={true}
-                      onSubmitEditing={() =>
-                        this.handleOnPressLabel(this.oNameRef)
-                      }
-                    />
-                  </View>
-                </View>
-              </View>
-            </>
-          )}
-          <View
-            style={[
-              this.state.errors.showEmailError && GlobalStyles.errorBorder,
-              styles.row,
-            ]}
-          >
-            <Pressable
-              style={styles.colLabel}
-              onPress={() => this.handleOnPressLabel(this.oNameRef)}
-              activeOpacity={1}
-            >
-              <Text style={styles.textLabelColumn}>Name</Text>
-            </Pressable>
-            <View style={styles.colInput}>
-              <View style={styles.containerTextInput}>
-                <TextInput
-                  style={styles.textInput}
-                  textContentType={"name"}
-                  ref={(oRef) => (this.oNameRef = oRef)}
-                  onChangeText={(text) => {
-                    this.setState({ user: { ...this.state.user, name: text } });
-                  }}
-                  value={this.state.user.name}
-                  autoCapitalize="none"
-                  onSubmitEditing={() => this.handleOnPressLabel(this.oNameRef)}
-                />
-              </View>
-            </View>
-          </View>
-          <View
-            style={[
-              styles.viewSection,
-              styles.checkInput,
-              { alignItems: "flex-end" },
-              this.state.errors.showAgeError && GlobalStyles.errorBorder,
-            ]}
-          >
-            <Text style={styles.textLabel}>Age</Text>
-            <View style={styles.dropdownSelect}>
-              <SelectDropdown
-                data={this.getAgeItems()}
-                onSelect={(selectedItem, index) =>
-                  this.onDropdownSelectionHandler(selectedItem, index)
-                }
-                buttonTextAfterSelection={(selectedItem, index) => {
-                  // text represented after item is selected
-                  // if data array is an array of objects then return selectedItem.property to render after item is selected
-                  return selectedItem;
-                }}
-                rowTextForSelection={(item, index) => {
-                  // text represented for each item in dropdown
-                  // if data array is an array of objects then return item.property to represent item in dropdown
-                  return item;
-                }}
+          </Pressable>
+          <UpdateCoverPhoto press={showCoverPhotoHandler} />
+        </View>
+        {
+          // TODO: Login with Facebook commented to solve Apple Review - Leandro Curbelo August 24
+          Platform.OS === "android" && showPassword && (
+            <View style={[styles.viewSection, { borderBottomWidth: 0 }]}>
+              <ButtonFacebook
+                login={false}
+                title="Login facebook account"
+                onPress={() => loginFB()}
               />
             </View>
-          </View>
-          <View style={[styles.viewSection, styles.displayAge]}>
-            <Text style={styles.textLabel}>Display Age?</Text>
-            <GlobalCheckBox
-              onPress={() => {
-                this.setState({
-                  user: {
-                    ...this.state.user,
-                    displayAge: !this.state.user.displayAge,
-                  },
-                });
-              }}
-              isCheck={!this.state.user.displayAge ? true : false}
-              title="Yes"
-            />
-            <GlobalCheckBox
-              onPress={() => {
-                this.setState({
-                  user: {
-                    ...this.state.user,
-                    displayAge: !this.state.user.displayAge,
-                  },
-                });
-              }}
-              isCheck={this.state.user.displayAge ? true : false}
-              title="No"
-            />
-          </View>
-          <View
-            style={[
-              styles.viewSection,
-              styles.checkInput,
-              { alignItems: "flex-end" },
-              this.state.errors.showSexError && GlobalStyles.errorBorder,
-            ]}
+          )
+        }
+        <View
+          style={[
+            errors.showUsernameError && GlobalStyles.errorBorder,
+            styles.row,
+          ]}
+        >
+          <Pressable
+            style={styles.colLabel}
+            onPress={() => handleOnPressLabel(usernameRef)}
+            activeOpacity={1}
           >
-            <Text style={styles.textLabel}>Sex</Text>
-            <View style={styles.dropdownSelect}>
-              <SelectDropdown
-                data={this.sex}
-                onSelect={(selectedItem, index) => {
-                  this.setState({
-                    user: {
-                      ...this.state.user,
-                      sex: selectedItem,
-                    },
+            <Text style={styles.textLabelColumn}>Username</Text>
+          </Pressable>
+          <View style={styles.colInput}>
+            <View style={styles.containerTextInput}>
+              <TextInput
+                style={styles.textInput}
+                textContentType={"username"}
+                ref={usernameRef}
+                onChangeText={(text) => {
+                  setUser({
+                    ...user,
+                    username: text.trim().replace(" ", ""),
                   });
-                  console.log(selectedItem, index);
                 }}
-                buttonTextAfterSelection={(selectedItem, index) => {
-                  // text represented after item is selected
-                  // if data array is an array of objects then return selectedItem.property to render after item is selected
-                  return selectedItem;
-                }}
-                rowTextForSelection={(item, index) => {
-                  // text represented for each item in dropdown
-                  // if data array is an array of objects then return item.property to represent item in dropdown
-                  return item;
-                }}
+                value={user.username}
+                autoCapitalize="none"
+                onSubmitEditing={() =>
+                  handleOnPressLabel(emailRef)
+                }
               />
             </View>
           </View>
+        </View>
+        <View
+          style={[
+            errors.showEmailError && GlobalStyles.errorBorder,
+            styles.row,
+          ]}
+        >
+          <Pressable
+            style={styles.colLabel}
+            onPress={() => handleOnPressLabel(emailRef)}
+            activeOpacity={1}
+          >
+            <Text style={styles.textLabelColumn}>Email</Text>
+          </Pressable>
+          <View style={styles.colInput}>
+            <View style={styles.containerTextInput}>
+              <TextInput
+                style={[
+                  styles.textInput,
+                  !showPassword && styles.placeholderColor,
+                ]}
+                ref={emailRef}
+                onChangeText={(text) => {
+                  setUser({
+                    ...user,
+                    email: text.trim().replace(" ", ""),
+                  });
+                }}
+                value={user.email}
+                editable={showPassword ? true : false}
+                onSubmitEditing={() =>
+                  handleOnPressLabel(passwordRef)
+                }
+                autoCapitalize="none"
+                keyboardType="email-address"
+                textContentType={"emailAddress"}
+              />
+            </View>
+          </View>
+        </View>
+        {showPassword && (
+          <>
+            <View
+              style={[
+                errors.showPasswordError &&
+                GlobalStyles.errorBorder,
+                styles.row,
+              ]}
+            >
+              <Pressable
+                style={styles.colLabel}
+                onPress={() => handleOnPressLabel(passwordRef)}
+                activeOpacity={1}
+              >
+                <Text style={styles.textLabelColumn}>Password</Text>
+              </Pressable>
+              <View style={styles.colInput}>
+                <View style={styles.containerTextInput}>
+                  <TextInput
+                    style={styles.textInput}
+                    textContentType={"newPassword"}
+                    ref={passwordRef}
+                    onChangeText={(text) => {
+                      setUser({
+                        ...user,
+                        password: text
+                      });
+                    }}
+                    value={user.password}
+                    autoCapitalize="none"
+                    secureTextEntry={true}
+
+                    onSubmitEditing={() =>
+                      handleOnPressLabel(confirmPasswordRef)
+                    }
+                  />
+                </View>
+              </View>
+            </View>
+            <View
+              style={[
+                errors.showConfirmPasswordError &&
+                GlobalStyles.errorBorder,
+                styles.row,
+              ]}
+            >
+              <Pressable
+                style={styles.colLabel}
+                onPress={() =>
+                  handleOnPressLabel(confirmPasswordRef)
+                }
+                activeOpacity={1}
+              >
+                <Text style={styles.textLabelColumn}>Confirm Password</Text>
+              </Pressable>
+              <View style={styles.colInput}>
+                <View style={styles.containerTextInput}>
+                  <TextInput
+                    style={styles.textInput}
+                    textContentType={"newPassword"}
+                    ref={confirmPasswordRef}
+                    onChangeText={(text) => {
+                      setUser({
+                        ...user,
+                        confirmPassword: text
+                      });
+                    }}
+                    value={user.confirmPassword}
+                    autoCapitalize="none"
+                    secureTextEntry={true}
+                    onSubmitEditing={() =>
+                      handleOnPressLabel(nameRef)
+                    }
+                  />
+                </View>
+              </View>
+            </View>
+          </>
+        )}
+        <View
+          style={[
+            errors.showEmailError && GlobalStyles.errorBorder,
+            styles.row,
+          ]}
+        >
+          <Pressable
+            style={styles.colLabel}
+            onPress={() => handleOnPressLabel(nameRef)}
+            activeOpacity={1}
+          >
+            <Text style={styles.textLabelColumn}>Name</Text>
+          </Pressable>
+          <View style={styles.colInput}>
+            <View style={styles.containerTextInput}>
+              <TextInput
+                style={styles.textInput}
+                textContentType={"name"}
+                ref={nameRef}
+                onChangeText={(text) => {
+                  setUser({
+                    ...user,
+                    name: text
+                  });
+                }}
+                value={user.name}
+                autoCapitalize="none"
+                onSubmitEditing={() => handleOnPressLabel(nameRef)}
+              />
+            </View>
+          </View>
+        </View>
+        <View
+          style={[
+            styles.viewSection,
+            styles.checkInput,
+            { alignItems: "flex-end" },
+            errors.showAgeError && GlobalStyles.errorBorder,
+          ]}
+        >
+          <Text style={styles.textLabel}>Age</Text>
+          <View style={styles.dropdownSelect}>
+            <SelectDropdown
+              data={getAgeItems}
+              onSelect={(selectedItem, index) =>
+                onDropdownSelectionHandler(selectedItem, index)
+              }
+              buttonTextAfterSelection={(selectedItem, index) => {
+                // text represented after item is selected
+                // if data array is an array of objects then return selectedItem.property to render after item is selected
+                return selectedItem;
+              }}
+              rowTextForSelection={(item, index) => {
+                // text represented for each item in dropdown
+                // if data array is an array of objects then return item.property to represent item in dropdown
+                return item;
+              }}
+            />
+          </View>
+        </View>
+        <View style={[styles.viewSection, styles.displayAge]}>
+          <Text style={styles.textLabel}>Display Age?</Text>
+          <GlobalCheckBox
+            onPress={() => {
+              setUser({
+                ...user,
+                displayAge: !user.displayAge
+              });
+            }}
+            isCheck={!user.displayAge ? true : false}
+            title="Yes"
+          />
+          <GlobalCheckBox
+            onPress={() => {
+              setUser({
+                ...user,
+                displayAge: !user.displayAge
+              });
+            }}
+            isCheck={user.displayAge ? true : false}
+            title="No"
+          />
+        </View>
+        <View
+          style={[
+            styles.viewSection,
+            styles.checkInput,
+            { alignItems: "flex-end" },
+            errors.showSexError && GlobalStyles.errorBorder,
+          ]}
+        >
+          <Text style={styles.textLabel}>Sex</Text>
+          <View style={styles.dropdownSelect}>
+            <SelectDropdown
+              data={sex}
+              onSelect={(selectedItem, index) => {
+                setUser({
+                  ...user,
+                  sex: selectedItem,
+                });
+                console.log(selectedItem, index);
+              }}
+              buttonTextAfterSelection={(selectedItem, index) => {
+                // text represented after item is selected
+                // if data array is an array of objects then return selectedItem.property to render after item is selected
+                return selectedItem;
+              }}
+              rowTextForSelection={(item, index) => {
+                // text represented for each item in dropdown
+                // if data array is an array of objects then return item.property to represent item in dropdown
+                return item;
+              }}
+            />
+          </View>
+        </View>
+        <View
+          style={[
+            styles.viewSection,
+            styles.checkInput,
+            styles.aligItemsRight,
+            errors.showLevelError && GlobalStyles.errorBorder,
+          ]}
+        >
+          <Text style={styles.textLabel}>Fitness level</Text>
+          <View style={styles.dropdownSelect}>
+            <SelectDropdown
+              data={level}
+              onSelect={(selectedItem, index) => {
+                setUser({
+                  ...user,
+                  level: selectedItem,
+                });
+                console.log(selectedItem, index);
+              }}
+              buttonTextAfterSelection={(selectedItem, index) => {
+                // text represented after item is selected
+                // if data array is an array of objects then return selectedItem.property to render after item is selected
+                return selectedItem;
+              }}
+              rowTextForSelection={(item, index) => {
+                // text represented for each item in dropdown
+                // if data array is an array of objects then return item.property to represent item in dropdown
+                return item;
+              }}
+            />
+          </View>
+        </View>
+        {!user.newGym && (
           <View
             style={[
               styles.viewSection,
               styles.checkInput,
               styles.aligItemsRight,
-              this.state.errors.showLevelError && GlobalStyles.errorBorder,
             ]}
           >
-            <Text style={styles.textLabel}>Fitness level</Text>
+            <Text style={styles.textLabel}>Gym</Text>
             <View style={styles.dropdownSelect}>
               <SelectDropdown
-                data={this.level}
+                data={gymsName}
                 onSelect={(selectedItem, index) => {
-                  this.setState({
-                    user: {
-                      ...this.state.user,
-                      level: selectedItem,
-                    },
+                  setUser({
+                    ...user,
+                    gym: selectedItem,
                   });
                   console.log(selectedItem, index);
                 }}
@@ -901,96 +798,64 @@ class Register extends Component {
               />
             </View>
           </View>
-          {!this.state.user.newGym && (
-            <View
-              style={[
-                styles.viewSection,
-                styles.checkInput,
-                styles.aligItemsRight,
-              ]}
-            >
-              <Text style={styles.textLabel}>Gym</Text>
-              <View style={styles.dropdownSelect}>
-                <SelectDropdown
-                  data={this.state.gymsName}
-                  onSelect={(selectedItem, index) => {
-                    this.setState({
-                      user: {
-                        ...this.state.user,
-                        gym: selectedItem,
-                      },
-                    });
-                    console.log(selectedItem, index);
-                  }}
-                  buttonTextAfterSelection={(selectedItem, index) => {
-                    // text represented after item is selected
-                    // if data array is an array of objects then return selectedItem.property to render after item is selected
-                    return selectedItem;
-                  }}
-                  rowTextForSelection={(item, index) => {
-                    // text represented for each item in dropdown
-                    // if data array is an array of objects then return item.property to represent item in dropdown
-                    return item;
-                  }}
-                />
-              </View>
-            </View>
-          )}
+        )}
+        <View style={[styles.viewSection, styles.displayAge]}>
+          <Text style={styles.textLabel}>Can't find your gym?</Text>
+          <View style={{ marginRight: 20 }}>
+            <GlobalCheckBox
+              onPress={() => {
+                setUser({
+                  ...user,
+                  newGym: !user.newGym,
+                  gym: null,
+                });
+              }}
+              isCheck={user.newGym ? true : false}
+              title={null}
+            />
+          </View>
+        </View>
+        {user.newGym && (
           <View style={[styles.viewSection, styles.displayAge]}>
-            <Text style={styles.textLabel}>Can't find your gym?</Text>
-            <View style={{ marginRight: 20 }}>
-              <GlobalCheckBox
-                onPress={() => {
-                  this.setState({
-                    user: {
-                      ...this.state.user,
-                      newGym: !this.state.user.newGym,
-                      gym: null,
-                    },
-                  });
-                }}
-                isCheck={this.state.user.newGym ? true : false}
-                title={null}
-              />
-            </View>
+            <Text style={styles.textLabel}>Name Gym</Text>
+            <TextInput
+              style={styles.textInput}
+              onFocus={scrollToEnd()}
+              onChangeText={(text) => {
+                setUser({
+                  ...user,
+                  gym: text
+                });
+              }}
+              value={user.gym}
+            />
           </View>
-          {this.state.user.newGym && (
-            <View style={[styles.viewSection, styles.displayAge]}>
-              <Text style={styles.textLabel}>Name Gym</Text>
-              <TextInput
-                style={styles.textInput}
-                onFocus={this.scrollToEnd()}
-                onChangeText={(text) => {
-                  this.setState({ user: { ...this.state.user, gym: text } });
-                }}
-                value={this.state.user.gym}
-              />
-            </View>
-          )}
-          <View style={[styles.viewSection, styles.viewSignUpButton]}>
-            <Pressable
-              onPress={() => this.register()}
-              style={styles.signUpButton}
-            >
-              <Text style={styles.signUpText}>SIGN UP</Text>
-            </Pressable>
-          </View>
-        </ScrollView>
-        <Toast toastText={this.state.toastText} />
-        <ToastQuestion
-          visible={this.state.showProfilePhoto}
-          functionCamera={() => this.addImagePerfil("camera")}
-          functionGallery={() => this.addImagePerfil("gallery")}
-        />
-        <ToastQuestion
-          visible={this.state.showCoverPhoto}
-          functionCamera={() => this.addImageCover("camera")}
-          functionGallery={() => this.addImageCover("gallery")}
-        />
-      </View>
-    );
-  };
+        )}
+        <View style={[styles.viewSection, styles.viewSignUpButton]}>
+          <Pressable
+            onPress={registerHandler}
+            style={styles.signUpButton}
+          >
+            <Text style={styles.signUpText}>SIGN UP</Text>
+          </Pressable>
+        </View>
+      </ScrollView>
+      {/* <Toast visible={true} toastText={toastText} /> */}
+      <ToastQuestion
+        visible={showProfilePhoto}
+        functionCamera={() => addImagePerfil("camera")}
+        functionGallery={() => addImagePerfil("gallery")}
+      />
+      <ToastQuestion
+        visible={showCoverPhoto}
+        functionCamera={() => addImageCover("camera")}
+        functionGallery={() => addImageCover("gallery")}
+      />
+    </View>
+  );
 }
+
+export default Register;
 
 const styles = StyleSheet.create({
   viewSection: {
@@ -1093,22 +958,4 @@ const styles = StyleSheet.create({
   },
 });
 
-const mapStateToProps = (state) => ({
-  register: state.reducerRegister,
-  login: state.reducerSession,
-  activity: state.reducerActivity,
-});
 
-const mapDispatchToProps = (dispatch) => ({
-  userRegisterValidate: (sEmail, sUsername) => {
-    dispatch(actionUserRegisterValidate(sEmail, sUsername));
-  },
-  loginUserFB: () => {
-    dispatch(actionUserLoginFB());
-  },
-  getGyms: () => {
-    dispatch(actionGetGyms());
-  },
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(Register);

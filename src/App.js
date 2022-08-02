@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import SelectRoutes from "./routes/SelectRoutes";
 import { Provider } from "react-redux";
 import store from "./redux/Store";
-import { StatusBar } from "react-native";
+import { LogBox, StatusBar } from "react-native";
 import "react-native-gesture-handler";
 import * as Sentry from "@sentry/react-native";
 import OneSignal from "react-native-onesignal";
