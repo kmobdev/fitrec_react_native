@@ -30,7 +30,7 @@ class ModalReport extends Component {
     };
   }
 
-  componentDidMount = () => { };
+  componentDidMount = () => {};
 
   close = () => {
     this.setState({ description: "", reason: "Aggressive" });

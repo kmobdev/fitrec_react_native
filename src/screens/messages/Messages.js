@@ -213,7 +213,7 @@ class Messages extends Component {
         break;
     }
     const { key: sConversationKey, users: aUsers } =
-      this.props.oMessageProps.oConversation,
+        this.props.oMessageProps.oConversation,
       oSender = {
         key: sUserKey,
         name: sUserName,
@@ -424,8 +424,8 @@ class Messages extends Component {
                 {sConversationKey === oMessage.sender
                   ? this.renderGroupMessage(oMessage)
                   : sUserKey === oMessage.sender
-                    ? this.renderMyMessage(oMessage)
-                    : this.renderMessageOtherSender(oMessage)}
+                  ? this.renderMyMessage(oMessage)
+                  : this.renderMessageOtherSender(oMessage)}
               </View>
             ))
           ) : (
@@ -504,7 +504,7 @@ class Messages extends Component {
                 borderColor: "white",
               },
               oMessage.isSticker !== undefined &&
-              !oMessage.isSticker && { backgroundColor: "none" },
+                !oMessage.isSticker && { backgroundColor: "none" },
             ]}
           >
             {this.renderMessage(oMessage)}
@@ -570,7 +570,7 @@ class Messages extends Component {
                 borderColor: "white",
               },
               oMessage.isSticker !== undefined &&
-              !oMessage.isSticker && { backgroundColor: "none" },
+                !oMessage.isSticker && { backgroundColor: "none" },
             ]}
           >
             {this.renderMessage(oMessage, "#6f6f6f")}
@@ -676,8 +676,8 @@ class Messages extends Component {
         style={[oStyles.viewWriteMessage, { paddingBottom: nKeyboardPadding }]}
       >
         {!bShowKeyboard ||
-          (bShowKeyboard && sText === "") ||
-          bShowMoreOptions ? (
+        (bShowKeyboard && sText === "") ||
+        bShowMoreOptions ? (
           <View
             style={[
               oStyles.row,
@@ -733,8 +733,8 @@ class Messages extends Component {
               ? sText === ""
                 ? "65%"
                 : !bShowMoreOptions
-                  ? "77%"
-                  : "57%"
+                ? "77%"
+                : "57%"
               : "65%",
           }}
         >

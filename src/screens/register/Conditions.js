@@ -1,11 +1,5 @@
 import React, { Component } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  Pressable,
-} from "react-native";
+import { View, Text, StyleSheet, ScrollView, Pressable } from "react-native";
 import { GreenFitrecColor, SignUpColor, WhiteColor } from "../../Styles";
 
 export default class Conditions extends Component {

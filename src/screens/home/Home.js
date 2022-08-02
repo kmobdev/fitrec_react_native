@@ -8,7 +8,7 @@ import {
   ScrollView,
   RefreshControl,
   Share,
-  Pressable
+  Pressable,
 } from "react-native";
 import { GreenFitrecColor, WhiteColor, GlobalStyles } from "../../Styles";
 import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
@@ -164,7 +164,10 @@ class Home extends Component {
   };
 
   checkOneSignalCode = () => {
-    console.log('this.props.session.account ====>>>> ', this.props.session.account);
+    console.log(
+      "this.props.session.account ====>>>> ",
+      this.props.session.account
+    );
     if (null !== this.props.session.account) {
       this.props.checkOneSignalCode({
         accountId: this.props.session.account.key,
@@ -174,9 +177,9 @@ class Home extends Component {
 
   getUserHome = () => {
     let aActivities =
-      this.state.filters.activity.length > 0
-        ? this.state.filters.activity
-        : null,
+        this.state.filters.activity.length > 0
+          ? this.state.filters.activity
+          : null,
       sGarder =
         this.state.filters.gender !== "" ? this.state.filters.gender : null,
       aGyms =
@@ -217,8 +220,7 @@ class Home extends Component {
       this.setState({
         gyms: nextProps.activity.gyms,
       });
-    if (this.props.blockProps.status)
-      this.setState({ showActivity: false });
+    if (this.props.blockProps.status) this.setState({ showActivity: false });
 
     if (nextProps.homeProps.bNavigationHome) {
       if (this.oSwiperRef) this.oSwiperRef.scrollTo(0, true);

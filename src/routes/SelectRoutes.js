@@ -40,8 +40,8 @@ class SelectRoutes extends Component {
     };
     // NativeModules.DevMenu.show();
     // OneSignal.addEventListener('ids', this.onIds);
-    OneSignal.addSubscriptionObserver(event => {
-      this.onIds(event.to)
+    OneSignal.addSubscriptionObserver((event) => {
+      this.onIds(event.to);
     });
   }
 
@@ -118,7 +118,7 @@ class SelectRoutes extends Component {
             position.coords.latitude
           );
       },
-      (error) => { },
+      (error) => {},
       OPTIONS_GEOLOCATION_GET_POSITION
     );
   };
@@ -159,7 +159,7 @@ class SelectRoutes extends Component {
       <>
         {!this.state.loading ? (
           undefined !== this.props.session.account &&
-            null !== this.props.session.account ? (
+          null !== this.props.session.account ? (
             <NavigationLogged />
           ) : (
             <NavigationGuest />

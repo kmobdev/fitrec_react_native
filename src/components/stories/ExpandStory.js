@@ -306,10 +306,7 @@ class ExpandStory extends Component {
                     </Text>
                   </View>
                 </View>
-                <Pressable
-                  onPress={() => this.close()}
-                  style={styles.icon}
-                >
+                <Pressable onPress={() => this.close()} style={styles.icon}>
                   <Icon name="close" color={WhiteColor} size={32} />
                 </Pressable>
               </View>
@@ -386,10 +383,7 @@ class ExpandStory extends Component {
                     </Text>
                   </View>
                 </View>
-                <Pressable
-                  onPress={() => this.close()}
-                  style={styles.icon}
-                >
+                <Pressable onPress={() => this.close()} style={styles.icon}>
                   <Icon name="close" color={WhiteColor} size={32} />
                 </Pressable>
               </>

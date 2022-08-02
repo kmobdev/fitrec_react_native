@@ -86,16 +86,16 @@ class Blocks extends Component {
       bShowQuestion: false,
       nQuestionId: null,
       sQuestionName: null,
-    })
-  }
+    });
+  };
 
   onLockHandler = (item) => {
     this.setState({
       bShowQuestion: true,
       nQuestionId: item.id,
       sQuestionName: item.username,
-    })
-  }
+    });
+  };
 
   renderBlocks = () => {
     return (
@@ -292,11 +292,11 @@ const styles = StyleSheet.create({
     marginTop: 20,
     borderWidth: 0.5,
     borderColor: "#777777",
-    width: '97%',
+    width: "97%",
   },
   inputContainer: {
-    alignItems: 'center'
-  }
+    alignItems: "center",
+  },
 });
 
 const mapStateToProps = (state) => ({

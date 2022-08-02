@@ -1,8 +1,8 @@
 import axios from "axios";
 import promise from "promise";
 import { getTokenLocalStorage } from "../services/StorageServices";
-import 'intl';
-import 'intl/locale-data/jsonp/en'
+import "intl";
+import "intl/locale-data/jsonp/en";
 
 var oAxiosInstance = axios.create();
 

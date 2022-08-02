@@ -6,7 +6,7 @@ import {
   ScrollView,
   Text,
   Image,
-  FlatList
+  FlatList,
 } from "react-native";
 import {
   GlobalStyles,
@@ -29,7 +29,7 @@ class GroupsList extends Component {
     };
   }
 
-  componentWillReceiveProps = async (nextProps) => { };
+  componentWillReceiveProps = async (nextProps) => {};
 
   showToast = async (sText) => {
     this.setState({
@@ -112,11 +112,11 @@ class GroupsList extends Component {
               )}
           </View>
           {this.props.groups !== undefined &&
-            this.props.groups.filter(
-              (element) =>
-                (element.type === GROUP_PRIVATE && element.isCapitan === true) ||
-                element.type === GROUP_PUBLIC
-            ).length > 0 ? (
+          this.props.groups.filter(
+            (element) =>
+              (element.type === GROUP_PRIVATE && element.isCapitan === true) ||
+              element.type === GROUP_PUBLIC
+          ).length > 0 ? (
             <ScrollView style={styles.listView}>
               <View style={{ flexDirection: "row", marginTop: 15 }}>
                 <Pressable
@@ -142,18 +142,18 @@ class GroupsList extends Component {
                         this.props.groups.filter(
                           (element) => element.selected === true
                         ).length &&
-                        null !==
+                      null !==
                         this.props.groups.filter(
                           (element) => element.selected === true
                         ).length &&
-                        this.props.groups.filter(
-                          (element) => element.selected === true
-                        ).length > 0
+                      this.props.groups.filter(
+                        (element) => element.selected === true
+                      ).length > 0
                         ? " (" +
-                        this.props.groups
-                          .filter((element) => element.selected === true)
-                          .length.toString() +
-                        ")"
+                          this.props.groups
+                            .filter((element) => element.selected === true)
+                            .length.toString() +
+                          ")"
                         : ""}
                     </Text>
                   </View>
@@ -168,12 +168,12 @@ class GroupsList extends Component {
                     <View style={styles.viewNotificaton}>
                       {(item.type === GROUP_PUBLIC ||
                         (item.type === GROUP_PRIVATE && item.isCapitan)) &&
-                        !this.props.groupsPal.filter(
-                          (oElement) => oElement.group === item.key
-                        ).length > 0 &&
-                        !this.props.invitations.filter(
-                          (oElement) => oElement.id === item.key
-                        ).length > 0 ? (
+                      !this.props.groupsPal.filter(
+                        (oElement) => oElement.group === item.key
+                      ).length > 0 &&
+                      !this.props.invitations.filter(
+                        (oElement) => oElement.id === item.key
+                      ).length > 0 ? (
                         <Pressable
                           onPress={() => this.selectGroup(item)}
                           style={{ flexDirection: "row", width: "100%" }}

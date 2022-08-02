@@ -140,10 +140,10 @@ class JourneyList extends Component {
     let oDataNotification =
       this.props.session.account.id !== oJourney.user.id
         ? {
-          sHeader: this.props.session.account.username,
-          sDescription: `${this.props.session.account.name} likes your post`,
-          sPushId: oJourney.user.id_push,
-        }
+            sHeader: this.props.session.account.username,
+            sDescription: `${this.props.session.account.name} likes your post`,
+            sPushId: oJourney.user.id_push,
+          }
         : null;
     this.props.addLike(oJourney.id, bAddLike, oDataNotification);
   };
@@ -299,10 +299,10 @@ class JourneyList extends Component {
                   sName.slice(0, nIndexName) + "_" + Date.now() + "_fitrec.mp4";
                 RNFFmpeg.execute(
                   "-i " +
-                  sPath +
-                  ' -ss 00:00 -to 00:30 -preset superfast -movflags +faststart -vf "scale=480:-2" -b:v 1800k ' +
-                  sTemporalPath +
-                  sName
+                    sPath +
+                    ' -ss 00:00 -to 00:30 -preset superfast -movflags +faststart -vf "scale=480:-2" -b:v 1800k ' +
+                    sTemporalPath +
+                    sName
                 )
                   .then((result) => {
                     this.setState({
@@ -357,10 +357,10 @@ class JourneyList extends Component {
                   sName.slice(0, nIndexName) + "_" + Date.now() + "_fitrec.mp4";
                 RNFFmpeg.execute(
                   "-i " +
-                  sPath +
-                  ' -ss 00:00 -to 00:30 -preset superfast -movflags +faststart -vf "scale=480:-2" -b:v 1800k ' +
-                  sTemporalPath +
-                  sName
+                    sPath +
+                    ' -ss 00:00 -to 00:30 -preset superfast -movflags +faststart -vf "scale=480:-2" -b:v 1800k ' +
+                    sTemporalPath +
+                    sName
                 )
                   .then((result) => {
                     this.setState({
@@ -536,10 +536,10 @@ class JourneyList extends Component {
                     : true
                   : this.props.indexHome === 1 ||
                     this.props.indexHome === undefined
-                    ? bPaused == undefined
-                      ? true
-                      : bPaused
-                    : true
+                  ? bPaused == undefined
+                    ? true
+                    : bPaused
+                  : true
               }
               muted={
                 this.props.swiperHome !== undefined
@@ -754,7 +754,7 @@ class JourneyList extends Component {
             <View style={{ padding: 10 }}>
               {null !== this.state.journey &&
                 this.state.journey.user.id !==
-                this.props.session.account.id && (
+                  this.props.session.account.id && (
                   <Pressable
                     onPress={() => {
                       this.setState({
@@ -775,7 +775,7 @@ class JourneyList extends Component {
                 )}
               {null !== this.state.journey &&
                 this.state.journey.user.id ===
-                this.props.session.account.id && (
+                  this.props.session.account.id && (
                   <Pressable
                     onPress={() =>
                       this.setState({
@@ -800,7 +800,7 @@ class JourneyList extends Component {
                 )}
               {null !== this.state.journey &&
                 this.state.journey.user.id ===
-                this.props.session.account.id && (
+                  this.props.session.account.id && (
                   <Pressable
                     onPress={() =>
                       this.setState({
@@ -1117,9 +1117,7 @@ class JourneyList extends Component {
                   </Text>
                 </View>
               </Pressable>
-              <Pressable
-                onPress={() => this.setState({ viewMyStory: false })}
-              >
+              <Pressable onPress={() => this.setState({ viewMyStory: false })}>
                 <View
                   style={[
                     ToastQuestionGenericStyles.viewButtonOption,

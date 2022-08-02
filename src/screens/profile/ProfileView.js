@@ -151,7 +151,7 @@ class ProfileView extends Component {
               ]}
             >
               {null !== this.state.user &&
-                null !== this.state.user.background ? (
+              null !== this.state.user.background ? (
                 <>
                   <FastImage
                     style={GlobalStyles.photoProfileCoverPreviewPhoto}

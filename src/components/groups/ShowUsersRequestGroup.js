@@ -24,7 +24,7 @@ export const ShowUserRequestGroup = (props) =>
       <View
         style={
           (GlobalModal.viewHead,
-            { justifyContent: "center", alignContent: "center" })
+          { justifyContent: "center", alignContent: "center" })
         }
       >
         {

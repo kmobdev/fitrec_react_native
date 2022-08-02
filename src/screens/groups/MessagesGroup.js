@@ -105,7 +105,7 @@ class MessagesGroup extends Component {
     this.props.cleanMessages();
   };
 
-  componentDidUpdate = (oPrevProps) => { };
+  componentDidUpdate = (oPrevProps) => {};
 
   goBack = () => {
     this.props.cleanMessages();
@@ -133,8 +133,8 @@ class MessagesGroup extends Component {
   viewProfile = (oUserKey) => {
     const { oGroup } = this.props.oGroupProps;
     let aUser = oGroup.participants.filter(
-      (oParticipant) => oParticipant.key === oUserKey
-    ),
+        (oParticipant) => oParticipant.key === oUserKey
+      ),
       nId = null;
     if (aUser.length > 0) nId = aUser[0].id;
     this.props.getProfile(nId);
@@ -370,7 +370,7 @@ class MessagesGroup extends Component {
                 borderColor: "white",
               },
               oMessage.isSticker !== undefined &&
-              !oMessage.isSticker && { backgroundColor: "none" },
+                !oMessage.isSticker && { backgroundColor: "none" },
             ]}
           >
             {this.renderMessage(oMessage)}
@@ -419,7 +419,7 @@ class MessagesGroup extends Component {
                 borderColor: "white",
               },
               oMessage.isSticker !== undefined &&
-              !oMessage.isSticker && { backgroundColor: "none" },
+                !oMessage.isSticker && { backgroundColor: "none" },
             ]}
           >
             {this.renderMessage(oMessage, "#6f6f6f")}
@@ -525,8 +525,8 @@ class MessagesGroup extends Component {
         style={[oStyles.viewWriteMessage, { paddingBottom: nKeyboardPadding }]}
       >
         {!bShowKeyboard ||
-          (bShowKeyboard && sText === "") ||
-          bShowMoreOptions ? (
+        (bShowKeyboard && sText === "") ||
+        bShowMoreOptions ? (
           <View
             style={[
               oStyles.row,
@@ -582,8 +582,8 @@ class MessagesGroup extends Component {
               ? sText === ""
                 ? "65%"
                 : !bShowMoreOptions
-                  ? "77%"
-                  : "57%"
+                ? "77%"
+                : "57%"
               : "65%",
           }}
         >

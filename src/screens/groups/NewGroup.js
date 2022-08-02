@@ -222,8 +222,8 @@ class NewGroup extends Component {
       this.props.resetCreateGroup();
       nextProps.grupProps
         ? this.props.navigation.navigate("Groups", {
-          firebaseId: nextProps.grupProps.firebaseId,
-        })
+            firebaseId: nextProps.grupProps.firebaseId,
+          })
         : this.props.navigation.navigate("Groups");
     } else
       this.setState({
@@ -414,7 +414,7 @@ class NewGroup extends Component {
               <View style={{ flexDirection: "row", padding: 10 }}>
                 <View style={{ width: "40%", alignItems: "center" }}>
                   {null !== this.state.imgGroup &&
-                    "" !== this.state.imgGroup ? (
+                  "" !== this.state.imgGroup ? (
                     <View>
                       <Pressable
                         onPress={() => {
@@ -523,7 +523,7 @@ class NewGroup extends Component {
                 <View style={[styles.viewActivitiesSelected, styles.margin]}>
                   {this.state.participants.map((item) =>
                     null !== this.state.selectCapitan &&
-                      this.state.selectCapitan ? (
+                    this.state.selectCapitan ? (
                       item.is_capitan ? (
                         <Pressable
                           key={item.key}
@@ -539,8 +539,8 @@ class NewGroup extends Component {
                           >
                             <View>
                               {null == item.image ||
-                                undefined == item.image ||
-                                "" == item.image ? (
+                              undefined == item.image ||
+                              "" == item.image ? (
                                 <Image
                                   style={GlobalStyles.photoProfileCardList}
                                   source={require("../../assets/profile.png")}
@@ -557,7 +557,7 @@ class NewGroup extends Component {
                               )}
                               <View style={styles.iconUser}>
                                 {null !== this.state.selectCapitan &&
-                                  this.state.selectCapitan ? (
+                                this.state.selectCapitan ? (
                                   item.is_capitan ? (
                                     <Icon
                                       name="md-checkmark-circle"
@@ -594,8 +594,8 @@ class NewGroup extends Component {
                           >
                             <View>
                               {null == item.image ||
-                                undefined == item.image ||
-                                "" == item.image ? (
+                              undefined == item.image ||
+                              "" == item.image ? (
                                 <Image
                                   style={GlobalStyles.photoProfileCardList}
                                   source={require("../../assets/profile.png")}
@@ -612,7 +612,7 @@ class NewGroup extends Component {
                               )}
                               <View style={styles.iconUser}>
                                 {null !== this.state.selectCapitan &&
-                                  this.state.selectCapitan ? (
+                                this.state.selectCapitan ? (
                                   item.is_capitan ? (
                                     <Icon
                                       name="md-checkmark-circle"
@@ -650,8 +650,8 @@ class NewGroup extends Component {
                         >
                           <View>
                             {null == item.image ||
-                              undefined == item.image ||
-                              "" == item.image ? (
+                            undefined == item.image ||
+                            "" == item.image ? (
                               <Image
                                 style={GlobalStyles.photoProfileCardList}
                                 source={require("../../assets/profile.png")}
@@ -687,7 +687,7 @@ class NewGroup extends Component {
                 {this.state.participants.length > 0 ? (
                   <View style={styles.margin}>
                     {null !== this.state.selectCapitan &&
-                      this.state.selectCapitan == true ? (
+                    this.state.selectCapitan == true ? (
                       <Button
                         title="Save captains selected"
                         color={SignUpColor}
@@ -742,8 +742,8 @@ class NewGroup extends Component {
                       <View style={[styles.userCard, styles.margin]}>
                         <View>
                           {null == item.image ||
-                            undefined == item.image ||
-                            "" == item.image ? (
+                          undefined == item.image ||
+                          "" == item.image ? (
                             <Image
                               style={GlobalStyles.photoProfileCardList}
                               source={require("../../assets/profile.png")}

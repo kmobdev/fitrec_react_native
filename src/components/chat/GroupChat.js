@@ -439,9 +439,7 @@ class GroupChat extends Component {
                           marginBottom: 10,
                         }}
                       >
-                        <Pressable
-                          onPress={() => this.props.viewProfile(item)}
-                        >
+                        <Pressable onPress={() => this.props.viewProfile(item)}>
                           {this.props.conversation.users.filter(
                             (oUser) =>
                               oUser.key === item.sender && "" !== oUser.image
@@ -597,8 +595,8 @@ class GroupChat extends Component {
             style={[styles.viewWriteMessage, this.getKeyboardOffsetStyle()]}
           >
             {!this.state.showKeyboard ||
-              (this.state.showKeyboard && this.state.messageSend === "") ||
-              this.state.showMoreOptions ? (
+            (this.state.showKeyboard && this.state.messageSend === "") ||
+            this.state.showMoreOptions ? (
               <View
                 style={[
                   styles.viewWriteMessageIcons,
@@ -659,8 +657,8 @@ class GroupChat extends Component {
                   ? this.state.messageSend === ""
                     ? {}
                     : !this.state.showMoreOptions
-                      ? { width: "77%" }
-                      : { width: "57%" }
+                    ? { width: "77%" }
+                    : { width: "57%" }
                   : {},
               ]}
             >

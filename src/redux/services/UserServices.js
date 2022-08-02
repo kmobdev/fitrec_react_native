@@ -10,8 +10,8 @@ export const UserLogin = (sUsername, sPassword) => {
       password: sPassword,
     })
     .then((oResult) => {
-      console.log('oResult ====>>>> ', oResult)
-      return oResult.data
+      console.log("oResult ====>>>> ", oResult);
+      return oResult.data;
     });
 };
 

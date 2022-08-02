@@ -316,7 +316,7 @@ class ProfileViewHome extends Component {
               ]}
             >
               {null !== this.state.user &&
-                null !== this.state.user.background ? (
+              null !== this.state.user.background ? (
                 <>
                   <FastImage
                     style={GlobalStyles.photoProfileCoverPreviewPhoto}
@@ -416,9 +416,7 @@ class ProfileViewHome extends Component {
                             />
                           </Pressable>
                         </View>
-                        <Pressable
-                          onPress={() => this.showConversation()}
-                        >
+                        <Pressable onPress={() => this.showConversation()}>
                           <Icon
                             name="chatbubbles"
                             size={32}
@@ -682,8 +680,8 @@ class ProfileViewHome extends Component {
           options={
             <View style={{ padding: 10 }}>
               {null !== this.state.user &&
-                undefined !== this.state.user &&
-                !this.state.user.isPal ? (
+              undefined !== this.state.user &&
+              !this.state.user.isPal ? (
                 this.allowSendRequest(this.state.user.id) ? (
                   <Pressable onPress={() => this.sendRequest()}>
                     <View style={ToastQuestionGenericStyles.viewButtonOption}>

@@ -104,10 +104,10 @@ class ShowJourney extends Component {
     let oDataNotification =
       this.props.session.account.id !== this.props.journeyProps.journey.user.id
         ? {
-          sHeader: this.props.session.account.username,
-          sDescription: `${this.props.session.account.name} likes your post`,
-          sPushId: this.props.journeyProps.journey.user.id_push,
-        }
+            sHeader: this.props.session.account.username,
+            sDescription: `${this.props.session.account.name} likes your post`,
+            sPushId: this.props.journeyProps.journey.user.id_push,
+          }
         : null;
     this.props.addLike(nIdJourney, bAddLike, oDataNotification);
   };

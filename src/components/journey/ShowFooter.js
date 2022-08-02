@@ -17,20 +17,14 @@ export const ShowFooter = (props) => {
         <View style={{ flex: 6, flexDirection: "row" }}>
           <View>
             {props.isLiked ? (
-              <Pressable
-                onPress={props.pressUnLike}
-                style={styles.buttonLike}
-              >
+              <Pressable onPress={props.pressUnLike} style={styles.buttonLike}>
                 <Icon name="thumb-up" size={26} color={SignUpColor} />
                 <Text style={[styles.textLike, { color: SignUpColor }]}>
                   Like
                 </Text>
               </Pressable>
             ) : (
-              <Pressable
-                onPress={props.pressAddLike}
-                style={styles.buttonLike}
-              >
+              <Pressable onPress={props.pressAddLike} style={styles.buttonLike}>
                 <Icon
                   name="thumb-up-outline"
                   size={26}
@@ -42,10 +36,7 @@ export const ShowFooter = (props) => {
           </View>
           {props.existTags && (
             <View style={styles.containerTagIcon}>
-              <Pressable
-                onPress={props.showTags}
-                style={styles.buttonTagIcon}
-              >
+              <Pressable onPress={props.showTags} style={styles.buttonTagIcon}>
                 <Icon
                   name="account-circle"
                   size={26}

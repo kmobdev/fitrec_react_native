@@ -3,15 +3,23 @@ import React from "react";
 import { StyleSheet, Image, TextInput } from "react-native";
 
 const Input = (props) => {
-  const { ref, onSubmitEditing, iconSource, onChangeText, value, textContentType, returnKeyType, secureTextEntry, autoCapitalize, autoCompleteType, placeholder, inputStyle } = props;
+  const {
+    ref,
+    onSubmitEditing,
+    iconSource,
+    onChangeText,
+    value,
+    textContentType,
+    returnKeyType,
+    secureTextEntry,
+    autoCapitalize,
+    autoCompleteType,
+    placeholder,
+    inputStyle,
+  } = props;
   return (
     <>
-      {iconSource &&
-        <Image
-          source={iconSource}
-          style={styles.ImageStyle}
-        />
-      }
+      {iconSource && <Image source={iconSource} style={styles.ImageStyle} />}
       <TextInput
         ref={ref}
         placeholder={placeholder}
@@ -26,8 +34,8 @@ const Input = (props) => {
         onChangeText={onChangeText}
       />
     </>
-  )
-}
+  );
+};
 
 export default Input;
 

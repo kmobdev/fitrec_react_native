@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  Text,
-  View,
-  StyleSheet,
-  Pressable,
-  ScrollView,
-} from "react-native";
+import { Text, View, StyleSheet, Pressable, ScrollView } from "react-native";
 import { WhiteColor, SignUpColor, PlaceholderColor } from "../../Styles";
 import { SearchUsername } from "../chat/SearchUsername";
 import { ListGiphy } from "./ListGiphy";
