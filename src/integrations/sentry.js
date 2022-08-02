@@ -2,6 +2,7 @@ import * as Sentry from "@sentry/react-native";
 
 /*
  * docs for Sentry: https://docs.sentry.io/platforms/javascript/configuration/options/
+ * can test out with calling: Sentry.nativeCrash();
  */
 
 export const initSentry = () => {
