@@ -8,11 +8,8 @@ import {
   Image,
   Pressable,
   Platform,
-  Keyboard,
 } from "react-native";
 import { ButtonFacebook } from "../../components/shared/ButtonFacebook";
-import DatePicker from "react-native-datepicker";
-import Icon from "react-native-vector-icons/Ionicons";
 import moment from "moment/min/moment-with-locales";
 import {
   WhiteColor,
@@ -23,16 +20,13 @@ import {
 import ImagePicker from "react-native-image-crop-picker";
 import { ToastQuestion } from "../../components/shared/ToastQuestion";
 import { GlobalCheckBox } from "../../components/shared/GlobalCheckBox";
-import { connect, useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import RNFetchBlob from "rn-fetch-blob";
-import {
-  actionUserRegisterValidate,
-  actionUserLoginFB,
-} from "../../redux/actions/UserActions";
-import { Toast } from "../../components/shared/Toast";
+import { actionUserRegisterValidate, actionUserLoginFB } from "../../redux/actions/UserActions";
 import { UpdateCoverPhoto } from "../../components/shared/UpdateCoverPhoto";
 import { actionGetGyms } from "../../redux/actions/ActivityActions";
 import SelectDropdown from "react-native-select-dropdown";
+import Input from "../../components/login/Input";
 
 const Register = ({ navigation }) => {
 
@@ -99,19 +93,6 @@ const Register = ({ navigation }) => {
   const [level, setLevel] = useState(["BEGINNER", "INTERMEDIATE", "ADVANCE"]);
   const [gymsName, setGymsName] = useState({});
   const [gyms, setGyms] = useState({});
-
-  const scrollToEnd = () => {
-    if (null !== scrollViewRef && undefined !== scrollViewRef)
-      scrollViewRef.current.scrollToEnd({ animated: true });
-  };
-
-  const getKeyboardOffsetStyle = () => {
-    const { keyboardOffset } = state;
-    return Platform.select({
-      ios: () => ({ paddingBottom: keyboardOffset }),
-      android: () => ({}),
-    })();
-  }
 
   useEffect(() => {
     getFacebookPhoto();
@@ -180,8 +161,12 @@ const Register = ({ navigation }) => {
       setGyms(activity.gyms);
       setGymsName(aGymsName);
     }
-
   }, [activity])
+
+  const scrollToEnd = () => {
+    if (null !== scrollViewRef && undefined !== scrollViewRef)
+      scrollViewRef.current.scrollToEnd({ animated: true });
+  };
 
   const getFacebookPhoto = async () => {
     if (!showPassword) {
@@ -482,7 +467,7 @@ const Register = ({ navigation }) => {
           </Pressable>
           <View style={styles.colInput}>
             <View style={styles.containerTextInput}>
-              <TextInput
+              <Input
                 style={styles.textInput}
                 textContentType={"username"}
                 ref={usernameRef}
@@ -516,7 +501,7 @@ const Register = ({ navigation }) => {
           </Pressable>
           <View style={styles.colInput}>
             <View style={styles.containerTextInput}>
-              <TextInput
+              <Input
                 style={[
                   styles.textInput,
                   !showPassword && styles.placeholderColor,
@@ -558,7 +543,7 @@ const Register = ({ navigation }) => {
               </Pressable>
               <View style={styles.colInput}>
                 <View style={styles.containerTextInput}>
-                  <TextInput
+                  <Input
                     style={styles.textInput}
                     textContentType={"newPassword"}
                     ref={passwordRef}
@@ -597,7 +582,7 @@ const Register = ({ navigation }) => {
               </Pressable>
               <View style={styles.colInput}>
                 <View style={styles.containerTextInput}>
-                  <TextInput
+                  <Input
                     style={styles.textInput}
                     textContentType={"newPassword"}
                     ref={confirmPasswordRef}
@@ -634,7 +619,7 @@ const Register = ({ navigation }) => {
           </Pressable>
           <View style={styles.colInput}>
             <View style={styles.containerTextInput}>
-              <TextInput
+              <Input
                 style={styles.textInput}
                 textContentType={"name"}
                 ref={nameRef}
