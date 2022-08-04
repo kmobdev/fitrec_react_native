@@ -10,6 +10,7 @@ import {
   Platform,
 } from "react-native";
 import { ButtonFacebook } from "../../components/shared/ButtonFacebook";
+import { Toast } from "../../components/shared/Toast";
 import moment from "moment/min/moment-with-locales";
 import {
   WhiteColor,
@@ -88,11 +89,12 @@ const Register = ({ navigation }) => {
     16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33,
     34, 35, 36, 37,
   ]);
-  const [toastText, setToastText] = useState([""]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [toastText, setToastText] = useState("");
   const [sex, setSex] = useState(["MALE", "FEMALE"]);
   const [level, setLevel] = useState(["BEGINNER", "INTERMEDIATE", "ADVANCE"]);
   const [gymsName, setGymsName] = useState({});
-  const [gyms, setGyms] = useState({});
+  const [gyms, setGyms] = useState([]);
 
   useEffect(() => {
     getFacebookPhoto();
@@ -154,7 +156,7 @@ const Register = ({ navigation }) => {
 
   useEffect(() => {
     if (activity.gyms.length > 0 && gyms.length === 0) {
-      let aGymsName = ["None"];
+      let aGymsName = [];
       activity.gyms.forEach((oGym) => {
         aGymsName.push(oGym.name);
       });
@@ -366,8 +368,10 @@ const Register = ({ navigation }) => {
   };
 
   const showToast = (text) => {
+    setIsLoading(true)
     setToastText(text);
     setTimeout(() => {
+      setIsLoading(false)
       setToastText("");
     }, 2000);
   };
@@ -388,6 +392,7 @@ const Register = ({ navigation }) => {
       aAges.push("" + nCount);
       nCount++;
     }
+    console.log('aAges ====>>>>> ', aAges);
     return aAges;
   };
 
@@ -468,7 +473,7 @@ const Register = ({ navigation }) => {
           <View style={styles.colInput}>
             <View style={styles.containerTextInput}>
               <Input
-                style={styles.textInput}
+                inputStyle={styles.textInput}
                 textContentType={"username"}
                 ref={usernameRef}
                 onChangeText={(text) => {
@@ -502,7 +507,7 @@ const Register = ({ navigation }) => {
           <View style={styles.colInput}>
             <View style={styles.containerTextInput}>
               <Input
-                style={[
+                inputStyle={[
                   styles.textInput,
                   !showPassword && styles.placeholderColor,
                 ]}
@@ -544,7 +549,7 @@ const Register = ({ navigation }) => {
               <View style={styles.colInput}>
                 <View style={styles.containerTextInput}>
                   <Input
-                    style={styles.textInput}
+                    inputStyle={styles.textInput}
                     textContentType={"newPassword"}
                     ref={passwordRef}
                     onChangeText={(text) => {
@@ -583,7 +588,7 @@ const Register = ({ navigation }) => {
               <View style={styles.colInput}>
                 <View style={styles.containerTextInput}>
                   <Input
-                    style={styles.textInput}
+                    inputStyle={styles.textInput}
                     textContentType={"newPassword"}
                     ref={confirmPasswordRef}
                     onChangeText={(text) => {
@@ -620,7 +625,7 @@ const Register = ({ navigation }) => {
           <View style={styles.colInput}>
             <View style={styles.containerTextInput}>
               <Input
-                style={styles.textInput}
+                inputStyle={styles.textInput}
                 textContentType={"name"}
                 ref={nameRef}
                 onChangeText={(text) => {
@@ -647,7 +652,7 @@ const Register = ({ navigation }) => {
           <Text style={styles.textLabel}>Age</Text>
           <View style={styles.dropdownSelect}>
             <SelectDropdown
-              data={getAgeItems}
+              data={age}
               onSelect={(selectedItem, index) =>
                 onDropdownSelectionHandler(selectedItem, index)
               }
@@ -804,7 +809,7 @@ const Register = ({ navigation }) => {
           <View style={[styles.viewSection, styles.displayAge]}>
             <Text style={styles.textLabel}>Name Gym</Text>
             <TextInput
-              style={styles.textInput}
+              inputStyle={styles.textInput}
               onFocus={scrollToEnd()}
               onChangeText={(text) => {
                 setUser({
@@ -825,7 +830,7 @@ const Register = ({ navigation }) => {
           </Pressable>
         </View>
       </ScrollView>
-      {/* <Toast visible={true} toastText={toastText} /> */}
+      <Toast visible={isLoading} toastText={toastText} />
       <ToastQuestion
         visible={showProfilePhoto}
         functionCamera={() => addImagePerfil("camera")}
@@ -846,7 +851,8 @@ const styles = StyleSheet.create({
   viewSection: {
     width: "100%",
     alignItems: "center",
-    padding: 5,
+    paddingHorizontal: 5,
+    paddingVertical: 10,
     borderBottomWidth: 0.5,
     borderBottomColor: PlaceholderColor,
     zIndex: 0,

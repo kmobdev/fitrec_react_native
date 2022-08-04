@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { View, Text, StyleSheet, ScrollView, Pressable } from "react-native";
 import { GreenFitrecColor, SignUpColor, WhiteColor } from "../../Styles";
 
-const Conditions = (props, { navigation }) => {
+const Conditions = (props) => {
 
   return (
     <View style={styles.viewContent}>
@@ -315,7 +315,7 @@ const Conditions = (props, { navigation }) => {
               { backgroundColor: GreenFitrecColor },
             ]}
             onPress={() => {
-              navigation.navigate("Register");
+              props.navigation.navigate("Register");
             }}
           >
             <Text style={{ color: WhiteColor }}>DISAGREE</Text>
@@ -326,9 +326,9 @@ const Conditions = (props, { navigation }) => {
               { backgroundColor: SignUpColor },
             ]}
             onPress={() => {
-              navigation.navigate("RegisterFinalStep", {
+              props.navigation.navigate("RegisterFinalStep", {
                 user:
-                  navigation.getParam("user", null),
+                  props.navigation.getParam("user", null),
               });
             }}
           >

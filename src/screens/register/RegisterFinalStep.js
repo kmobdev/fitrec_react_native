@@ -1,4 +1,4 @@
-import React, { Component, useState } from "react";
+import React, { Component, useEffect, useRef, useState } from "react";
 import {
   Text,
   View,
@@ -6,18 +6,16 @@ import {
   TextInput,
   ScrollView,
   Pressable,
-  Keyboard,
 } from "react-native";
 import { GlobalStyles, PlaceholderColor, SignUpColor } from "../../Styles";
 import Icon from "react-native-vector-icons/Ionicons";
 import { GlobalCheckBox } from "../../components/shared/GlobalCheckBox";
 import SelectActivities from "../../components/register/SelectActivities";
-import { connect, useDispatch } from "react-redux";
+import { connect, useDispatch, useSelector } from "react-redux";
 import { Toast } from "../../components/shared/Toast";
 import { actionUserRegister } from "../../redux/actions/UserActions";
 import { actionGetAllActivities } from "../../redux/actions/ActivityActions";
 import { LoadingSpinner } from "../../components/shared/LoadingSpinner";
-import ReactNativePickerModule from "react-native-picker-module";
 import {
   lHeightSizes,
   OPTIONS_GEOLOCATION_GET_POSITION,
@@ -26,34 +24,12 @@ import Geolocation from "@react-native-community/geolocation";
 import SelectDropdown from "react-native-select-dropdown";
 
 const RegisterFinalStep = ({ navigation }) => {
-  // constructor(props) {
-  //   super(props);
-  //   this.state = {
-  //     refresh: false,
-  //     showSelectActivities: false,
-  //     toastText: "",
-  //     showWeightError: false,
-  //     showActivitiesError: false,
-  //     errors: {
-  //       showWeightError: false,
-  //       showActivitiesError: false,
-  //       showHeightError: false,
-  //     },
-  //     user: {
-  //       ...this.props.navigation.getParam("user", {}),
-  //       displayWeight: true,
-  //       height: null,
-  //       weight: null,
-  //       goals: "",
-  //       personalTrainer: false,
-  //     },
-  //     activities: [],
-  //     loading: false,
-  //     keyboardPadding: 0,
-  //   };
-  // }
 
-  // const activity = useSelector((state) => state.reducerActivity);
+  const weightRef = useRef();
+  const scrollViewRef = useRef();
+
+  const register = useSelector((state) => state.reducerRegister);
+  const activity = useSelector((state) => state.reducerActivity);
 
   const dispatch = useDispatch();
 
@@ -70,66 +46,44 @@ const RegisterFinalStep = ({ navigation }) => {
     height: null,
     weight: null,
     goals: "",
+    activities: [],
     personalTrainer: false,
   });
   const [loading, setLoading] = useState(false);
   const [activities, setActivities] = useState([]);
-  const [keyboardPadding, setKeyboardPadding] = useState(false);
+
+  useEffect(() => {
+    navigation.setParams({ nextButton: registerHandler });
+    dispatch(actionGetAllActivities());
+  }, []);
 
 
+  useEffect(() => {
+    if (activity.activities.length > 0) {
+      setActivities(activity.activities);
+    }
+  }, [activity]);
 
-  // componentDidMount() {
-  //   this.props.navigation.setParams({ nextButton: this.register });
-  //   this.props.getAllActivities();
-  //   this.oKeyboardListenerWillShow = Keyboard.addListener(
-  //     "keyboardWillShow",
-  //     this.openKeyboard
-  //   );
-  //   this.oKeyboardListenerWillHide = Keyboard.addListener(
-  //     "keyboardWillHide",
-  //     this.closeKeyboard
-  //   );
-  // }
+  useEffect(() => {
+    if (
+      !register.status &&
+      "" !== register.messageError &&
+      null !== register.messageError
+    ) {
+      showToast(register.messageError);
+    }
+    setLoading(false)
+  }, [register]);
 
-  // openKeyboard = ({ endCoordinates: { height } }) => {
-  //   this.setState({ bShowKeyboard: true, keyboardPadding: height });
-  // };
-
-  // closeKeyboard = ({ endCoordinates: { height } }) => {
-  //   this.setState({ bShowKeyboard: false, keyboardPadding: 0 });
-  // };
-
-  // componentWillUnmount = () => {
-  //   this.oKeyboardListenerWillShow && this.oKeyboardListenerWillShow.remove();
-  //   this.oKeyboardListenerWillHide && this.oKeyboardListenerWillHide.remove();
-  // };
-
-  // componentWillReceiveProps = async (nextProps) => {
-  //   if (nextProps.activity.activities.length > 0) {
-  //     await this.setState({
-  //       activities: nextProps.activity.activities,
-  //     });
-  //   }
-  //   if (
-  //     !nextProps.register.status &&
-  //     "" !== nextProps.register.messageError &&
-  //     null !== nextProps.register.messageError
-  //   ) {
-  //     this.showToast(nextProps.register.messageError);
-  //   }
-  //   await this.setState({
-  //     loading: false,
-  //   });
-  // };
-
-  const register = () => {
+  const registerHandler = async () => {
     setUser({
       ...user,
       activities: activities.filter((element) => element.selected),
       personalTrainer: user.personalTrainer === true ? true : false,
-      goals: user.goals.trim() === "" ? null : user.goals,
+      goals: user.goals === "" ? null : user.goals,
     })
-    let lErrors = validate(user);
+    // console.log('user =====>>>> ', user);
+    let lErrors = await validate(user);
     if (lErrors.haveError) {
       setErrors(lErrors);
       setLoading(false);
@@ -172,12 +126,14 @@ const RegisterFinalStep = ({ navigation }) => {
   };
 
   //CHECK HEIGHT, ACTIVITIES AND WEIGHT
-  const validate = (lValues) => {
+  const validate = async (lValues) => {
+    // console.log('lValues ========>>>> ', lValues);
     let lErrors = {
       messageError: "",
       haveError: false,
       showWeightError: false,
       showActivitiesError: false,
+      showHeightError: false,
     };
     // ACTIVITIES
     if (!lValues.activities.length > 0) {
@@ -198,6 +154,9 @@ const RegisterFinalStep = ({ navigation }) => {
       lErrors.haveError = true;
     }
     // AMBOS
+    console.log('lValues.activities.length ===>>> ', lValues.activities.length);
+    console.log('lValues.weight ===>>> ', lValues.weight);
+    console.log('lValues.height ===>>> ', lValues.height);
     if (
       !lValues.activities.length > 0 &&
       ("" === lValues.weight || null === lValues.weight) &&
@@ -221,10 +180,10 @@ const RegisterFinalStep = ({ navigation }) => {
   return (
     <>
       <ScrollView
-        ref={(oRef) => (this.oScrollView = oRef)}
+        ref={scrollViewRef}
         style={{ flex: 1 }}
       >
-        <View style={{ flex: 1, paddingBottom: keyboardPadding + 35 }}>
+        <View style={{ flex: 1, paddingBottom: 35 }}>
           <Text style={styles.titleText}>
             We need a little more information about you setup profile.
           </Text>
@@ -245,7 +204,6 @@ const RegisterFinalStep = ({ navigation }) => {
                     ...user,
                     height: selectedItem,
                   });
-                  console.log(selectedItem, index);
                 }}
                 buttonTextAfterSelection={(selectedItem, index) => {
                   // text represented after item is selected
@@ -268,7 +226,7 @@ const RegisterFinalStep = ({ navigation }) => {
           >
             <Pressable
               style={styles.colLabel}
-              onPress={() => this.oWeightRef.focus()}
+              onPress={() => weightRef.current.focus()}
               activeOpacity={1}
             >
               <Text style={styles.textLabelColumn}>Weight</Text>
@@ -277,14 +235,14 @@ const RegisterFinalStep = ({ navigation }) => {
               <View style={styles.containerTextInput}>
                 <TextInput
                   style={styles.textInput}
-                  ref={(oRef) => (this.oWeightRef = oRef)}
-                  onSubmitEditing={() => this.oWeightRef.focus()}
+                  ref={weightRef}
+                  onSubmitEditing={() => weightRef.current.focus()}
                   placeholder="lbs"
                   value={user.weight}
                   placeholderTextColor={PlaceholderColor}
                   keyboardType="number-pad"
                   onChangeText={(text) => {
-                    +text < 1000
+                    text < 1000
                       ?
                       setUser({
                         ...user,
@@ -413,7 +371,7 @@ const RegisterFinalStep = ({ navigation }) => {
             </Text>
             <TextInput
               style={[styles.checkInput, styles.inputTextArea]}
-              onFocus={() => this.oScrollView.scrollToEnd({ animated: true })}
+              onFocus={() => scrollViewRef.current.scrollToEnd({ animated: true })}
               multiline={true}
               numberOfLines={4}
               textAlign="left"
