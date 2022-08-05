@@ -82,47 +82,49 @@ const RegisterFinalStep = ({ navigation }) => {
       personalTrainer: user.personalTrainer === true ? true : false,
       goals: user.goals === "" ? null : user.goals,
     })
-    // console.log('user =====>>>> ', user);
-    let lErrors = await validate(user);
-    if (lErrors.haveError) {
-      setErrors(lErrors);
-      setLoading(false);
-      showToast(lErrors.messageError);
-    } else {
-      try {
-        Geolocation.getCurrentPosition(
-          (position) => {
-            if (position && undefined !== position.coords) {
-              dispatch(actionUserRegister({
-                ...user,
-                longitude: position.coords.longitude,
-                latitude: position.coords.latitude,
-              }));
-            } else {
-              dispatch(actionUserRegister({
-                ...user,
-                longitude: null,
-                latitude: null,
-              }));
-            }
-          },
-          () => {
-            dispatch(actionUserRegister({
-              ...user,
-              longitude: null,
-              latitude: null,
-            }));
-          },
-          OPTIONS_GEOLOCATION_GET_POSITION
-        );
-      } catch (oError) {
-        dispatch(actionUserRegister({
-          ...user,
-          longitude: null,
-          latitude: null,
-        }));
-      }
-    }
+    setTimeout(() => {
+      console.log('user =====>>>> ', user);
+    }, 500);
+    // let lErrors = await validate(user);
+    // if (lErrors.haveError) {
+    //   setErrors(lErrors);
+    //   setLoading(false);
+    //   showToast(lErrors.messageError);
+    // } else {
+    //   try {
+    //     Geolocation.getCurrentPosition(
+    //       (position) => {
+    //         if (position && undefined !== position.coords) {
+    //           dispatch(actionUserRegister({
+    //             ...user,
+    //             longitude: position.coords.longitude,
+    //             latitude: position.coords.latitude,
+    //           }));
+    //         } else {
+    //           dispatch(actionUserRegister({
+    //             ...user,
+    //             longitude: null,
+    //             latitude: null,
+    //           }));
+    //         }
+    //       },
+    //       () => {
+    //         dispatch(actionUserRegister({
+    //           ...user,
+    //           longitude: null,
+    //           latitude: null,
+    //         }));
+    //       },
+    //       OPTIONS_GEOLOCATION_GET_POSITION
+    //     );
+    //   } catch (oError) {
+    //     dispatch(actionUserRegister({
+    //       ...user,
+    //       longitude: null,
+    //       latitude: null,
+    //     }));
+    //   }
+    // }
   };
 
   //CHECK HEIGHT, ACTIVITIES AND WEIGHT
@@ -176,6 +178,8 @@ const RegisterFinalStep = ({ navigation }) => {
       setToastText("");
     }, 2000);
   };
+
+  console.log(user.weight);
 
   return (
     <>
