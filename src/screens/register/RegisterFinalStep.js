@@ -29,7 +29,7 @@ const RegisterFinalStep = ({ navigation }) => {
   const scrollViewRef = useRef();
 
   const register = useSelector((state) => state.reducerRegister);
-  const activity = useSelector((state) => state.reducerActivity);
+  const activity = useSelector((state) => state.reducerActivity.activities);
 
   const dispatch = useDispatch();
 
@@ -59,8 +59,8 @@ const RegisterFinalStep = ({ navigation }) => {
 
 
   useEffect(() => {
-    if (activity.activities.length > 0) {
-      setActivities(activity.activities);
+    if (activity.length > 0) {
+      setActivities(activity);
     }
   }, [activity]);
 
@@ -82,54 +82,50 @@ const RegisterFinalStep = ({ navigation }) => {
       personalTrainer: user.personalTrainer === true ? true : false,
       goals: user.goals === "" ? null : user.goals,
     })
-    setTimeout(() => {
-      console.log('user =====>>>> ', user);
-    }, 500);
-    // let lErrors = await validate(user);
-    // if (lErrors.haveError) {
-    //   setErrors(lErrors);
-    //   setLoading(false);
-    //   showToast(lErrors.messageError);
-    // } else {
-    //   try {
-    //     Geolocation.getCurrentPosition(
-    //       (position) => {
-    //         if (position && undefined !== position.coords) {
-    //           dispatch(actionUserRegister({
-    //             ...user,
-    //             longitude: position.coords.longitude,
-    //             latitude: position.coords.latitude,
-    //           }));
-    //         } else {
-    //           dispatch(actionUserRegister({
-    //             ...user,
-    //             longitude: null,
-    //             latitude: null,
-    //           }));
-    //         }
-    //       },
-    //       () => {
-    //         dispatch(actionUserRegister({
-    //           ...user,
-    //           longitude: null,
-    //           latitude: null,
-    //         }));
-    //       },
-    //       OPTIONS_GEOLOCATION_GET_POSITION
-    //     );
-    //   } catch (oError) {
-    //     dispatch(actionUserRegister({
-    //       ...user,
-    //       longitude: null,
-    //       latitude: null,
-    //     }));
-    //   }
-    // }
+    let lErrors = await validate(user);
+    if (lErrors.haveError) {
+      setErrors(lErrors);
+      setLoading(false);
+      showToast(lErrors.messageError);
+    } else {
+      try {
+        Geolocation.getCurrentPosition(
+          (position) => {
+            if (position && undefined !== position.coords) {
+              dispatch(actionUserRegister({
+                ...user,
+                longitude: position.coords.longitude,
+                latitude: position.coords.latitude,
+              }));
+            } else {
+              dispatch(actionUserRegister({
+                ...user,
+                longitude: null,
+                latitude: null,
+              }));
+            }
+          },
+          () => {
+            dispatch(actionUserRegister({
+              ...user,
+              longitude: null,
+              latitude: null,
+            }));
+          },
+          OPTIONS_GEOLOCATION_GET_POSITION
+        );
+      } catch (oError) {
+        dispatch(actionUserRegister({
+          ...user,
+          longitude: null,
+          latitude: null,
+        }));
+      }
+    }
   };
 
   //CHECK HEIGHT, ACTIVITIES AND WEIGHT
   const validate = async (lValues) => {
-    // console.log('lValues ========>>>> ', lValues);
     let lErrors = {
       messageError: "",
       haveError: false,
@@ -156,9 +152,6 @@ const RegisterFinalStep = ({ navigation }) => {
       lErrors.haveError = true;
     }
     // AMBOS
-    console.log('lValues.activities.length ===>>> ', lValues.activities.length);
-    console.log('lValues.weight ===>>> ', lValues.weight);
-    console.log('lValues.height ===>>> ', lValues.height);
     if (
       !lValues.activities.length > 0 &&
       ("" === lValues.weight || null === lValues.weight) &&
@@ -171,7 +164,7 @@ const RegisterFinalStep = ({ navigation }) => {
     return lErrors;
   };
 
-  const showToast = async (sText) => {
+  const showToast = (sText) => {
     setToastText(sText);
     setLoading(false);
     setTimeout(() => {
@@ -179,10 +172,27 @@ const RegisterFinalStep = ({ navigation }) => {
     }, 2000);
   };
 
-  console.log(user.weight);
+  const backHandler = () => {
+    navigation.goBack();
+  }
+
+  const onNextHandler = () => {
+    registerHandler();
+  }
 
   return (
-    <>
+    <View style={{ flex: 1 }}>
+      <View style={styles.header}>
+        <Pressable onPress={backHandler}>
+          <Icon name="arrow-back" color={SignUpColor} size={32} />
+        </Pressable>
+        <Text style={styles.headerTitle}>
+          Fill in your profile details
+        </Text>
+        <Pressable onPress={onNextHandler}>
+          <Text style={styles.headerRightButton}>Next</Text>
+        </Pressable>
+      </View>
       <ScrollView
         ref={scrollViewRef}
         style={{ flex: 1 }}
@@ -315,24 +325,9 @@ const RegisterFinalStep = ({ navigation }) => {
               .filter((item) => item.selected)
               .map((element) => (
                 <View
-                  style={{
-                    borderWidth: 0.5,
-                    borderColor: SignUpColor,
-                    padding: 5,
-                    borderRadius: 20,
-                    justifyContent: "center",
-                    marginRight: 5,
-                    marginBottom: 5,
-                  }}
-                  key={element.id}
-                >
-                  <Text
-                    style={{
-                      color: SignUpColor,
-                      textAlign: "center",
-                      justifyContent: "center",
-                    }}
-                  >
+                  style={styles.acticityMain}
+                  key={element.id}>
+                  <Text style={styles.activityName}>
                     {element.name}
                   </Text>
                 </View>
@@ -399,11 +394,30 @@ const RegisterFinalStep = ({ navigation }) => {
       />
       <Toast toastText={toastText} />
       <LoadingSpinner visible={loading} />
-    </>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  header: {
+    height: "7%",
+    width: '100%',
+    backgroundColor: "#ffff",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 10,
+    marginBottom: 15
+  },
+  headerTitle: {
+    fontSize: 18,
+    color: '#000'
+  },
+  headerRightButton: {
+    ...GlobalStyles.backIcon,
+    color: SignUpColor,
+    fontSize: 18
+  },
   viewSection: {
     width: "100%",
     alignItems: "center",
@@ -434,6 +448,20 @@ const styles = StyleSheet.create({
     textAlign: "right",
     paddingRight: "5%",
     color: "black",
+  },
+  acticityMain: {
+    borderWidth: 0.5,
+    borderColor: SignUpColor,
+    padding: 5,
+    borderRadius: 20,
+    justifyContent: "center",
+    marginRight: 5,
+    marginBottom: 5,
+  },
+  activityName: {
+    color: SignUpColor,
+    textAlign: "center",
+    justifyContent: "center",
   },
   displayComboBox: {
     flexDirection: "row",

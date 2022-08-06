@@ -534,8 +534,7 @@ const Register = ({ navigation }) => {
           <>
             <View
               style={[
-                errors.showPasswordError &&
-                GlobalStyles.errorBorder,
+                errors.showPasswordError && GlobalStyles.errorBorder,
                 styles.row,
               ]}
             >
