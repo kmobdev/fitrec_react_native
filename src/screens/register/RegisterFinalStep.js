@@ -1,4 +1,4 @@
-import React, { Component, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Text,
   View,
@@ -11,7 +11,7 @@ import { GlobalStyles, PlaceholderColor, SignUpColor } from "../../Styles";
 import Icon from "react-native-vector-icons/Ionicons";
 import { GlobalCheckBox } from "../../components/shared/GlobalCheckBox";
 import SelectActivities from "../../components/register/SelectActivities";
-import { connect, useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Toast } from "../../components/shared/Toast";
 import { actionUserRegister } from "../../redux/actions/UserActions";
 import { actionGetAllActivities } from "../../redux/actions/ActivityActions";
@@ -539,4 +539,4 @@ const mapDispatchToProps = (dispatch) => ({
   },
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(RegisterFinalStep);
+export default RegisterFinalStep;

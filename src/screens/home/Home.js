@@ -13,7 +13,7 @@ import {
 import { GreenFitrecColor, WhiteColor, GlobalStyles } from "../../Styles";
 import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
 import { Toast } from "../../components/shared/Toast";
-import { connect, useDispatch } from "react-redux";
+import { connect, useDispatch, useSelector } from "react-redux";
 import { actionGetUserHome } from "../../redux/actions/HomeActions";
 import { LoadingSpinner } from "../../components/shared/LoadingSpinner";
 import { FlatList } from "react-native";
@@ -70,6 +70,10 @@ const Home = (props) => {
   // OneSignal.addEventListener('opened', this.onOpened);
 
   const swiperRef = useRef();
+
+  const homeProps = useSelector((state) => state.reducerHome);
+  const chatProps = useSelector((state) => state.reducerChat);
+  const activity = useSelector((state) => state.reducerActivity);
 
   const dispatch = useDispatch();
 
@@ -149,7 +153,6 @@ const Home = (props) => {
       sharedButton: getUserHome,
       showTab: false,
     });
-
     getUserHome();
     checkOneSignalCode();
     dispatch(actionGetAllActivities());
@@ -159,53 +162,40 @@ const Home = (props) => {
       props.palsProps.myFriends.length === 0
     )
       dispatch(actionGetMyFriends());
-
   }, []);
 
-  // componentWillReceiveProps = (nextProps) => {
-  //   if (nextProps.homeProps.status) {
-  //     this.setState({
-  //       activities: nextProps.homeProps.activities,
-  //       refresh: !refresh,
-  //     });
-  //   } else if (
-  //     !nextProps.homeProps.status &&
-  //     "" !== nextProps.homeProps.messageError
-  //   ) {
-  //     showToast(nextProps.homeProps.messageError);
-  //   } else if (
-  //     this.props.chatProps !== nextProps.chatProps &&
-  //     nextProps.chatProps.statusSend
-  //   ) {
-  //     showToast("Message sent successfully");
-  //     if (null !== selectActivity) {
-  //       selectActivity.users.map((element) => {
-  //         element.check = false;
-  //       });
-  //     }
-  //   }
-  //   if (nextProps.activity.activities.length > 0) {
-  //     this.setState({
-  //       activitiesFilter: nextProps.activity.activities,
-  //     });
-  //   }
-  //   if (nextProps.activity.gyms.length > 0 && gyms.length === 0)
-  //     this.setState({
-  //       gyms: nextProps.activity.gyms,
-  //     });
-  //   if (this.props.blockProps.status) this.setState({ showActivity: false });
+  useEffect(() => {
+    if (homeProps.status) {
+      setActivities(homeProps.activities);
+      setRefresh(!refresh);
+    } else if (!homeProps.status && "" !== homeProps.messageError) {
+      showToast(homeProps.messageError);
+    } else if (props.chatProps !== chatProps && chatProps.statusSend) {
+      showToast("Message sent successfully");
+      if (null !== selectActivity) {
+        selectActivity.users.map((element) => {
+          element.check = false;
+        });
+      }
+    }
+    if (activity.activities.length > 0) {
+      setActivitiesFilter(activity.activities)
+    }
+    if (activity.gyms.length > 0 && gyms.length === 0) {
+      setGyms(activity.gyms);
+    }
+    if (props.blockProps.status) {
+      setShowActivity(false);
+    }
+    if (homeProps.bNavigationHome) {
+      if (swiperRef) swiperRef.current.scrollTo(0, true);
+      dispatch(actionCleanNavigation());
+    }
+    setLoading(false);
+    setRefreshing(false);
+    setRefresh(!refresh);
+  }, [homeProps, chatProps, activity]);
 
-  //   if (nextProps.homeProps.bNavigationHome) {
-  //     if (swiperRef) swiperRef.current.scrollTo(0, true);
-  //     this.props.cleanNavigation();
-  //   }
-
-  //   this.setState({
-  //     loading: false,
-  //     refreshing: false,
-  //     refresh: !refresh,
-  //   });
-  // };
 
   const navigateGroup = (sGroupKey) => {
     props.getGroup(sGroupKey, props.session.account.key);
@@ -213,10 +203,6 @@ const Home = (props) => {
   };
 
   const checkOneSignalCode = () => {
-    console.log(
-      "this.props.session.account ====>>>> ",
-      props.session.account
-    );
     if (null !== props.session.account) {
       dispatch(actionCheckOneSignalCode({
         accountId: props.session.account.key,
@@ -285,7 +271,7 @@ const Home = (props) => {
   }
 
   const openActivity = (item) => {
-    setActivities(item);
+    setSelectActivity(item);
     setShowActivity(true);
     setShowFilters(false);
   };
@@ -385,9 +371,7 @@ const Home = (props) => {
             scrollEnabled={false}
             renderItem={({ item }) => (
               <View style={styles.activityContent}>
-                <Pressable
-                  onPress={() => openActivity(item)}
-                >
+                <Pressable onPress={() => openActivity(item)}>
                   <View style={styles.activityHead}>
                     <View style={styles.activityHeadLeft}>
                       <Image
@@ -449,9 +433,7 @@ const Home = (props) => {
         />
         <HomeFilters
           visible={showFilters}
-          press={() => {
-            setShowFilters(!showFilters);
-          }}
+          press={() => setShowFilters(!showFilters)}
           setFilter={(data, bIsDefault = false) =>
             setFiltersHandler(data, bIsDefault)
           }
@@ -486,7 +468,7 @@ const Home = (props) => {
           horizontal={true}
           ref={swiperRef}
         >
-          <View style={styles.contentSwipe}>{renderContent}</View>
+          <View style={styles.contentSwipe}>{renderContent()}</View>
           <View style={styles.contentSwipe}>
             <JourneyList
               swiperHome={true}
@@ -496,7 +478,7 @@ const Home = (props) => {
           </View>
         </Swiper>
       ) : (
-        renderContent
+        renderContent()
       )}
     </View>
   );
