@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, useState } from "react";
 import {
   View,
   ImageBackground,
@@ -18,187 +18,178 @@ import GestureRecognizer, {
   swipeDirections,
 } from "react-native-swipe-gestures";
 
-export default class CarouselTutorial extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      displayImage: 1,
-    };
-  }
+const CarouselTutorial = (props) => {
 
-  setDisplayImageOne = () => {
+  const [displayImage, setDisplayImage] = useState(1);
+
+  const setDisplayImageOne = () => {
     this.setState({
       displayImage: 1,
     });
   };
 
-  nextPage = () => {
-    if (4 === this.state.displayImage) {
-      this.setState({ displayImage: 1 });
-      this.props.close();
-    } else this.setState({ displayImage: this.state.displayImage + 1 });
+  const nextPage = () => {
+    if (4 === displayImage) {
+      setDisplayImage(1);
+      props.close();
+    } else setDisplayImage(displayImage + 1);
   };
 
-  backPage = () => {
-    if (1 === this.state.displayImage) {
-      this.setState({ displayImage: 1 });
-      this.props.close();
-    } else this.setState({ displayImage: this.state.displayImage - 1 });
+  const backPage = () => {
+    if (1 === displayImage) {
+      setDisplayImage(1);
+      props.close();
+    } else setDisplayImage(displayImage - 1);
   };
 
-  onSwipe = (gestureName, gestureState) => {
+  const onSwipe = (gestureName, gestureState) => {
     const { SWIPE_LEFT, SWIPE_RIGHT } = swipeDirections;
     switch (gestureName) {
       case SWIPE_LEFT:
-        this.nextPage();
+        nextPage();
         break;
       case SWIPE_RIGHT:
-        this.backPage();
+        backPage();
         break;
       default:
         break;
     }
   };
 
-  render() {
-    const config = {
-      velocityThreshold: 0.3,
-      directionalOffsetThreshold: 80,
-    };
-    if (this.props.visible) {
-      return (
-        <View style={styles.viewFullAbsolute}>
-          <GestureRecognizer
-            onSwipe={this.onSwipe}
-            config={config}
-            style={{
-              flex: 1,
-              backgroundColor: this.state.backgroundColor,
-            }}
+  const config = {
+    velocityThreshold: 0.3,
+    directionalOffsetThreshold: 80,
+  };
+
+  if (props.visible) {
+    return (
+      <View style={styles.viewFullAbsolute}>
+        <GestureRecognizer
+          onSwipe={onSwipe}
+          config={config}
+          style={styles.gestureRecognizerContainer}
+        >
+          <ImageBackground
+            source={require("../../assets/tutorial/background.png")}
+            style={GlobalStyles.fullImage}
           >
-            <ImageBackground
-              source={require("../../assets/tutorial/background.png")}
-              style={GlobalStyles.fullImage}
-            >
-              {this.state.displayImage === 1 && (
-                <Image
-                  source={require("../../assets/tutorial/1.png")}
-                  resizeMode="stretch"
-                  style={styles.fullImage}
-                />
-              )}
-              {this.state.displayImage === 2 && (
-                <Image
-                  source={require("../../assets/tutorial/2.png")}
-                  style={styles.fullImage}
-                  resizeMode="stretch"
-                />
-              )}
-              {this.state.displayImage === 3 && (
-                <Image
-                  source={require("../../assets/tutorial/3.png")}
-                  style={styles.fullImage}
-                  resizeMode="stretch"
-                />
-              )}
-              {this.state.displayImage === 4 && (
-                <Image
-                  source={require("../../assets/tutorial/4.png")}
-                  style={styles.fullImage}
-                  resizeMode="stretch"
-                />
-              )}
-              <View style={styles.viewControls}>
+            {displayImage === 1 && (
+              <Image
+                source={require("../../assets/tutorial/1.png")}
+                resizeMode="stretch"
+                style={styles.fullImage}
+              />
+            )}
+            {displayImage === 2 && (
+              <Image
+                source={require("../../assets/tutorial/2.png")}
+                style={styles.fullImage}
+                resizeMode="stretch"
+              />
+            )}
+            {displayImage === 3 && (
+              <Image
+                source={require("../../assets/tutorial/3.png")}
+                style={styles.fullImage}
+                resizeMode="stretch"
+              />
+            )}
+            {displayImage === 4 && (
+              <Image
+                source={require("../../assets/tutorial/4.png")}
+                style={styles.fullImage}
+                resizeMode="stretch"
+              />
+            )}
+            <View style={styles.viewControls}>
+              <Pressable
+                style={styles.buttonControls}
+                onPress={props.close}
+              >
+                <Text style={{ color: SignUpColor }}>SKIP</Text>
+              </Pressable>
+              <View style={styles.viewButtonControls}>
                 <Pressable
-                  style={styles.buttonControls}
-                  onPress={this.props.close}
+                  onPress={() => setDisplayImage(1)}
                 >
-                  <Text style={{ color: SignUpColor }}>SKIP</Text>
+                  <Icon
+                    name={
+                      displayImage === 1
+                        ? "ios-radio-button-on"
+                        : "ios-radio-button-off"
+                    }
+                    style={styles.iconControls}
+                    size={18}
+                    color={GreenFitrecColor}
+                  />
                 </Pressable>
-                <View style={styles.viewButtonControls}>
-                  <Pressable
-                    onPress={() => {
-                      this.setState({ displayImage: 1 });
-                    }}
-                  >
-                    <Icon
-                      name={
-                        this.state.displayImage === 1
-                          ? "ios-radio-button-on"
-                          : "ios-radio-button-off"
-                      }
-                      style={styles.iconControls}
-                      size={18}
-                      color={GreenFitrecColor}
-                    />
-                  </Pressable>
-                  <Pressable
-                    onPress={() => {
-                      this.setState({ displayImage: 2 });
-                    }}
-                  >
-                    <Icon
-                      name={
-                        this.state.displayImage === 2
-                          ? "ios-radio-button-on"
-                          : "ios-radio-button-off"
-                      }
-                      style={styles.iconControls}
-                      size={18}
-                      color={GreenFitrecColor}
-                    />
-                  </Pressable>
-                  <Pressable
-                    onPress={() => {
-                      this.setState({ displayImage: 3 });
-                    }}
-                  >
-                    <Icon
-                      name={
-                        this.state.displayImage === 3
-                          ? "ios-radio-button-on"
-                          : "ios-radio-button-off"
-                      }
-                      style={styles.iconControls}
-                      size={18}
-                      color={GreenFitrecColor}
-                    />
-                  </Pressable>
-                  <Pressable
-                    onPress={() => {
-                      this.setState({ displayImage: 4 });
-                    }}
-                  >
-                    <Icon
-                      name={
-                        this.state.displayImage === 4
-                          ? "ios-radio-button-on"
-                          : "ios-radio-button-off"
-                      }
-                      size={18}
-                      color={GreenFitrecColor}
-                    />
-                  </Pressable>
-                </View>
                 <Pressable
-                  style={styles.buttonControls}
-                  onPress={() => this.nextPage()}
+                  onPress={() => setDisplayImage(2)}
                 >
-                  <Text style={{ color: SignUpColor }}>NEXT</Text>
+                  <Icon
+                    name={
+                      displayImage === 2
+                        ? "ios-radio-button-on"
+                        : "ios-radio-button-off"
+                    }
+                    style={styles.iconControls}
+                    size={18}
+                    color={GreenFitrecColor}
+                  />
+                </Pressable>
+                <Pressable
+                  onPress={() => {
+                    setDisplayImage(3);
+                  }}
+                >
+                  <Icon
+                    name={
+                      displayImage === 3
+                        ? "ios-radio-button-on"
+                        : "ios-radio-button-off"
+                    }
+                    style={styles.iconControls}
+                    size={18}
+                    color={GreenFitrecColor}
+                  />
+                </Pressable>
+                <Pressable
+                  onPress={() => setDisplayImage(4)}
+                >
+                  <Icon
+                    name={
+                      displayImage === 4
+                        ? "ios-radio-button-on"
+                        : "ios-radio-button-off"
+                    }
+                    size={18}
+                    color={GreenFitrecColor}
+                  />
                 </Pressable>
               </View>
-            </ImageBackground>
-          </GestureRecognizer>
-        </View>
-      );
-    } else {
-      this.setDisplayImageOne;
-      return null;
-    }
+              <Pressable
+                style={styles.buttonControls}
+                onPress={nextPage}
+              >
+                <Text style={{ color: SignUpColor }}>NEXT</Text>
+              </Pressable>
+            </View>
+          </ImageBackground>
+        </GestureRecognizer>
+      </View>
+    );
+  } else {
+    setDisplayImageOne;
+    return null;
   }
 }
 
+export default CarouselTutorial;
+
 const styles = StyleSheet.create({
+  gestureRecognizerContainer: {
+    flex: 1
+  },
   viewFullAbsolute: {
     position: "absolute",
     top: 0,

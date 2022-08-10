@@ -1,59 +1,59 @@
-import React, { Component } from "react";
+import React, { Component, useState } from "react";
 import { View, Text, Pressable, StyleSheet } from "react-native";
 import { WebView } from "react-native-webview";
 import YouTube from "react-native-youtube";
 import { BlackColor, WhiteColor, SignUpColor } from "../../Styles";
 
-export default class YouTubeVideo extends Component {
-  constructor(props) {
-    super(props);
-  }
+const YouTubeVideo = (props) => {
 
-  render() {
-    return (
-      this.props.visible && (
-        <View style={styles.viewFullAbsolute}>
-          <View
-            style={[styles.head, this.props.noMargin && { paddingTop: 10 }]}
-          >
-            <Text style={styles.headTitle}>What is FITREC?</Text>
-            <View style={[styles.headClose, this.props.noMargin && { top: 5 }]}>
-              <Pressable onPress={this.props.close}>
-                <Text style={styles.headCloseText}>Close</Text>
-              </Pressable>
-            </View>
-          </View>
-          <View style={styles.viewYoutube}>
-            {Platform.OS === "android" ? (
-              <WebView
-                style={{ alignSelf: "stretch", width: "100%" }}
-                javaScriptEnabled={true}
-                source={{
-                  uri: this.props.url,
-                }}
-              />
-            ) : (
-              <YouTube
-                videoId={
-                  this.props.url.split("/")[
-                    this.props.url.split("/").length - 1
-                  ]
-                }
-                style={{ alignSelf: "stretch", height: 250, width: "100%" }}
-                apiKey="AIzaSyDX3zlzsns9a8YyhcqFtz0fICAnX4RYn28"
-                fullscreen={true}
-                onReady={(e) => this.setState({ isReady: true })}
-                onChangeState={(e) => this.setState({ status: e.state })}
-                onChangeQuality={(e) => this.setState({ quality: e.quality })}
-                onError={(e) => this.setState({ error: e.error })}
-              />
-            )}
+  const [isReady, setIsReady] = useState(false);
+  const [status, setStatus] = useState();
+  const [quality, setQuality] = useState();
+  const [error, setError] = useState();
+
+  return (
+    props.visible && (
+      <View style={styles.viewFullAbsolute}>
+        <View
+          style={[styles.head, props.noMargin && { paddingTop: 10 }]}
+        >
+          <Text style={styles.headTitle}>What is FITREC?</Text>
+          <View style={[styles.headClose, props.noMargin && { top: 5 }]}>
+            <Pressable onPress={props.close}>
+              <Text style={styles.headCloseText}>Close</Text>
+            </Pressable>
           </View>
         </View>
-      )
-    );
-  }
+        <View style={styles.viewYoutube}>
+          {Platform.OS === "android" ? (
+            <WebView
+              style={styles.webViewContainer}
+              javaScriptEnabled={true}
+              source={{ uri: props.url }}
+            />
+          ) : (
+            <YouTube
+              videoId={
+                props.url.split("/")[
+                props.url.split("/").length - 1
+                ]
+              }
+              style={{ alignSelf: "stretch", height: 250, width: "100%" }}
+              apiKey="AIzaSyDX3zlzsns9a8YyhcqFtz0fICAnX4RYn28"
+              fullscreen={true}
+              onReady={(e) => setIsReady(true)}
+              onChangeState={(e) => setStatus(e.state)}
+              onChangeQuality={(e) => setQuality(e.quality)}
+              onError={(e) => setError(e.error)}
+            />
+          )}
+        </View>
+      </View>
+    )
+  );
 }
+
+export default YouTubeVideo;
 
 const styles = StyleSheet.create({
   viewFullAbsolute: {
@@ -81,6 +81,10 @@ const styles = StyleSheet.create({
     bottom: 0,
     justifyContent: "center",
     alignItems: "center",
+  },
+  webViewContainer: {
+    alignSelf: "stretch",
+    width: "100%"
   },
   headCloseText: {
     color: SignUpColor,

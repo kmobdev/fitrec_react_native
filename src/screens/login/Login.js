@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Text,
   ImageBackground,
@@ -20,7 +20,7 @@ import { ButtonFacebook } from "../../components/shared/ButtonFacebook";
 import { ButtonApple } from "../../components/shared/ButtonApple";
 import YouTubeVideo from "../../components/login/YouTubeVideo";
 import CarouselTutorial from "../../components/login/CarouselTutorial";
-import { connect } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   actionUserLogin,
   actionUserLoginFB,
@@ -29,65 +29,59 @@ import {
 } from "../../redux/actions/UserActions";
 import { APP_VERSION } from "../../Constants";
 import { Button, Input } from "../../components";
+import { ImageSet } from "../../constants/Images";
 
-class Login extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      username: "",
-      password: "",
-      toastText: "",
-      displayImage: 1,
-      showTutorial: false,
-      showVideoTutorial: false,
-      keyboardOffset: 0,
-    };
-  }
+const Login = (props) => {
 
-  getKeyboardOffsetStyle() {
-    const { keyboardOffset } = this.state;
-    return Platform.select({
-      ios: () => ({ paddingBottom: keyboardOffset / 2 }),
-      android: () => ({}),
-    })();
-  }
+  const screenProps = useSelector((state) => state.reducerSession);
+  const dispatch = useDispatch();
 
-  login = async () => {
-    var sError = this.validate({
-      username: this.state.username,
-      password: this.state.password,
-    });
-    if (null === sError)
-      this.props.loginUser(this.state.username, this.state.password);
-    else this.showToast(sError);
-  };
+  const secondTextInput = useRef();
 
-  loginFB = async () => {
-    this.props.loginUserFB();
-  };
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [toastText, setToastText] = useState('');
+  const [showTutorial, setShowTutorial] = useState(false);
+  const [showVideoTutorial, setShowVideoTutorial] = useState(false);
 
-  loginApple = async () => {
-    this.props.loginUserApple();
-  };
-
-  componentWillReceiveProps = async (nextProps) => {
-    if (!nextProps.login.status && nextProps.login.redirectSignIn) {
-      if (nextProps.login.appleAccount !== null)
-        this.navigateHandler("Register", {
-          appleCredentials: nextProps.login.appleAccount,
+  useEffect(() => {
+    if (!screenProps.status && screenProps.redirectSignIn) {
+      if (screenProps.appleAccount !== null)
+        navigateHandler("Register", {
+          appleCredentials: screenProps.appleAccount,
         });
       else
-        this.navigateHandler("Register", {
-          userFBData: nextProps.login.appleAccount,
+        navigateHandler("Register", {
+          userFBData: screenProps.appleAccount,
         });
     }
-    if (!nextProps.login.status && "" !== nextProps.login.messageError) {
-      this.showToast(nextProps.login.messageError);
-      this.props.cleanMessage();
+    if (!screenProps.status && "" !== screenProps.messageError) {
+      showToast(screenProps.messageError);
+      dispatch(actionCleanMessage());
+    }
+  }, [screenProps])
+
+  const login = () => {
+    var sError = validate({
+      username: username,
+      password: password,
+    });
+    if (null === sError) {
+      dispatch(actionUserLogin(username, password))
+    } else {
+      showToast(sError);
     }
   };
 
-  validate = (values) => {
+  const loginFB = () => {
+    dispatch(actionUserLoginFB())
+  };
+
+  const loginApple = () => {
+    dispatch(actionUserLoginApple());
+  };
+
+  const validate = (values) => {
     if (!values.username) {
       return "Username required";
     }
@@ -97,152 +91,135 @@ class Login extends Component {
     return null;
   };
 
-  showToast = async (sText) => {
-    this.setState({
-      toastText: sText,
-    });
+  const showToast = (message) => {
+    setToastText(message);
     setTimeout(() => {
-      this.setState({
-        toastText: "",
-      });
+      setToastText("");
     }, 2000);
   };
 
-  showTutorialHandler = () => {
-    this.setState({ showTutorial: true });
-  };
-
-  showVideoTutorialHandler = () => {
-    this.setState({ showVideoTutorial: true });
-  };
-
-  navigateHandler = (route) => {
-    this.props.navigation.navigate(route);
-  };
-
-  render() {
-    return (
-      <ScrollView contentContainerStyle={GlobalStyles.container}>
-        <ImageBackground
-          source={require("../../assets/loginBackground.png")}
-          style={GlobalStyles.fullImage}
-        >
-          <View style={styles.mainContainer}>
-            <View style={styles.imageView}>
-              <Image
-                source={require("../../assets/logoWithName.png")}
-                style={{ marginTop: 40 }}
-              />
-            </View>
-            <View style={styles.Content}>
-              <View style={styles.SectionStyle}>
-                <Input
-                  iconSource={
-                    "" === this.state.username &&
-                    require("../../assets/user.png")
-                  }
-                  autoCapitalize={"none"}
-                  autoCompleteType={"username"}
-                  textContentType={"username"}
-                  value={this.state.username}
-                  onChangeText={(text) => this.setState({ username: text })}
-                  onSubmitEditing={() => {
-                    this.secondTextInput.focus();
-                  }}
-                  blurOnSubmit={false}
-                  inputStyle={styles.textInput}
-                />
-              </View>
-
-              <View style={styles.SectionStyle}>
-                <Input
-                  ref={(input) => {
-                    this.secondTextInput = input;
-                  }}
-                  onSubmitEditing={() => {
-                    this.login();
-                  }}
-                  iconSource={
-                    "" === this.state.password &&
-                    require("../../assets/password.png")
-                  }
-                  secureTextEntry={true}
-                  autoCapitalize={"none"}
-                  returnKeyType={"done"}
-                  textContentType={"password"}
-                  style={styles.textInput}
-                  value={this.state.password}
-                  onChangeText={(text) => this.setState({ password: text })}
-                  inputStyle={styles.textInput}
-                />
-              </View>
-              <Button onPress={() => this.login()} title={"LOGIN NOW"} />
-              <ButtonFacebook
-                onPress={() => this.loginFB()}
-                login={true}
-                title="Sign in with Facebook"
-              />
-              {Platform.OS === "ios" && (
-                <ButtonApple
-                  onPress={() => this.loginApple()}
-                  login={true}
-                  title="Sign in with Apple"
-                />
-              )}
-              <Pressable
-                style={styles.touchableTextFree}
-                onPress={() => {
-                  this.navigateHandler("ForgotPassword");
-                }}
-              >
-                <Text style={styles.textFree}>FORGOT PASSWORD?</Text>
-              </Pressable>
-              <Pressable
-                style={styles.touchableTextFree}
-                onPress={this.showVideoTutorialHandler}
-              >
-                <Text style={styles.textFree}>VIDEO APP TUTORIAL</Text>
-              </Pressable>
-            </View>
-            <View style={[styles.viewSection, styles.viewSectionFooter]}>
-              <View style={styles.switchButtons}>
-                <Pressable
-                  onPress={this.showTutorialHandler}
-                  style={styles.roundButtonSwitchLeft}
-                >
-                  <Text style={styles.textButton}>TAKE A TOUR</Text>
-                </Pressable>
-                <Pressable
-                  onPress={() => this.navigateHandler("Register")}
-                  style={styles.roundButtonSwitchRight}
-                >
-                  <Text style={styles.textButton}>SIGN UP</Text>
-                </Pressable>
-              </View>
-              <View style={{ alignItems: "center" }}>
-                <Text style={{ color: "white" }}>{APP_VERSION}</Text>
-              </View>
-            </View>
-            <Toast toastText={this.state.toastText} />
-          </View>
-        </ImageBackground>
-        <CarouselTutorial
-          visible={this.state.showTutorial}
-          close={() => {
-            this.setState({ showTutorial: false });
-          }}
-        />
-        <YouTubeVideo
-          visible={this.state.showVideoTutorial}
-          url="https://www.youtube.com/embed/O5bwmQtr5zQ"
-          close={() => {
-            this.setState({ showVideoTutorial: false });
-          }}
-        />
-      </ScrollView>
-    );
+  const showTutorialHandler = () => {
+    setShowTutorial(true);
   }
+
+  const showVideoTutorialHandler = () => {
+    setShowVideoTutorial(true);
+  }
+
+  const navigateHandler = (route) => {
+    props.navigation.navigate(route)
+  }
+
+  return (
+    <ScrollView contentContainerStyle={GlobalStyles.container}>
+      <ImageBackground
+        source={ImageSet.loginBackground}
+        style={GlobalStyles.fullImage}>
+        <View style={styles.mainContainer}>
+          <View style={styles.imageView}>
+            <Image
+              source={ImageSet.logoWithName}
+              style={{ marginTop: 40 }}
+            />
+          </View>
+          <View style={styles.Content}>
+            <View style={styles.SectionStyle}>
+              <Input
+                iconSource={username === '' && ImageSet.user}
+                autoCapitalize={"none"}
+                autoCompleteType={"username"}
+                textContentType={"username"}
+                value={username}
+                onChangeText={(text) => setUsername(text)}
+                onSubmitEditing={() => { secondTextInput.current.focus(); }}
+                blurOnSubmit={false}
+                inputStyle={styles.textInput}
+              />
+            </View>
+
+            <View style={styles.SectionStyle}>
+              <Input
+                ref={secondTextInput}
+                onSubmitEditing={login}
+                iconSource={password === '' && ImageSet.password}
+                secureTextEntry={true}
+                autoCapitalize={"none"}
+                returnKeyType={"done"}
+                textContentType={"password"}
+                style={styles.textInput}
+                value={password}
+                onChangeText={(text) => setPassword(text)}
+                inputStyle={styles.textInput}
+              />
+            </View>
+            <Button
+              onPress={login}
+              title={'LOGIN NOW'}
+            />
+            <ButtonFacebook
+              onPress={loginFB}
+              login={true}
+              title="Sign in with Facebook"
+            />
+            {Platform.OS === "ios" && (
+              <ButtonApple
+                onPress={loginApple}
+                login={true}
+                title="Sign in with Apple"
+              />
+            )}
+            <Pressable
+              style={styles.touchableTextFree}
+              onPress={() => {
+                navigateHandler("ForgotPassword");
+              }}
+            >
+              <Text style={styles.textFree}>FORGOT PASSWORD?</Text>
+            </Pressable>
+
+            <Pressable
+              style={styles.touchableTextFree}
+              onPress={showVideoTutorialHandler}
+            >
+              <Text style={styles.textFree}>VIDEO APP TUTORIAL</Text>
+            </Pressable>
+          </View>
+          <View style={[styles.viewSection, styles.viewSectionFooter]}>
+            <View style={styles.switchButtons}>
+              <Pressable
+                onPress={showTutorialHandler}
+                style={styles.roundButtonSwitchLeft}
+              >
+                <Text style={styles.textButton}>TAKE A TOUR</Text>
+              </Pressable>
+              <Pressable
+                onPress={() => navigateHandler("Register")}
+                style={styles.roundButtonSwitchRight}
+              >
+                <Text style={styles.textButton}>SIGN UP</Text>
+              </Pressable>
+            </View>
+            <View style={{ alignItems: "center" }}>
+              <Text style={{ color: "white" }}>{APP_VERSION}</Text>
+            </View>
+          </View>
+          <Toast toastText={toastText} />
+        </View>
+      </ImageBackground>
+      <CarouselTutorial
+        visible={showTutorial}
+        close={() => setShowTutorial(false)}
+      />
+      <YouTubeVideo
+        visible={showVideoTutorial}
+        url="https://www.youtube.com/embed/O5bwmQtr5zQ"
+        close={() => setShowVideoTutorial(false)}
+      />
+    </ScrollView>
+  );
 }
+
+export default Login;
 
 const styles = StyleSheet.create({
   mainContainer: {
@@ -347,24 +324,3 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 });
-
-const mapStateToProps = (state) => ({
-  login: state.reducerSession,
-});
-
-const mapDispatchToProps = (dispatch) => ({
-  loginUser: (sUsername, sPassword) => {
-    dispatch(actionUserLogin(sUsername, sPassword));
-  },
-  loginUserFB: () => {
-    dispatch(actionUserLoginFB());
-  },
-  loginUserApple: () => {
-    dispatch(actionUserLoginApple());
-  },
-  cleanMessage: () => {
-    dispatch(actionCleanMessage());
-  },
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(Login);

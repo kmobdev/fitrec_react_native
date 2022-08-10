@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -13,7 +13,7 @@ import {
 import { GreenFitrecColor, WhiteColor, GlobalStyles } from "../../Styles";
 import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
 import { Toast } from "../../components/shared/Toast";
-import { connect } from "react-redux";
+import { connect, useDispatch, useSelector } from "react-redux";
 import { actionGetUserHome } from "../../redux/actions/HomeActions";
 import { LoadingSpinner } from "../../components/shared/LoadingSpinner";
 import { FlatList } from "react-native";
@@ -62,182 +62,173 @@ import {
 } from "../../constants/Notifications";
 import { actionGetMyFriends } from "../../redux/actions/ProfileActions";
 
-class Home extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      toastText: "",
-      refreshing: false,
-      loading: false,
-      activities: [],
-      refresh: false,
-      selectActivity: null,
-      showActivity: false,
-      showFilters: false,
-      filters: {
-        activity: [],
-        range: "",
-        gender: "",
-        gyms: [],
-      },
-      activitiesFilter: [],
-      showSelectActivities: false,
-      gyms: [],
-      showGyms: false,
-      index: 0,
-    };
-    // Listeners for notifications onignal
-    // Comment at the customer's request, the comment will be kept for the doubts of a rollback - Leandro Curbelo 03/11/2020
-    // OneSignal.addEventListener('received', this.onReceived);
-    // OneSignal.addEventListener('opened', this.onOpened);
-  }
+const Home = (props) => {
+
+  // Listeners for notifications onignal
+  // Comment at the customer's request, the comment will be kept for the doubts of a rollback - Leandro Curbelo 03/11/2020
+  // OneSignal.addEventListener('received', this.onReceived);
+  // OneSignal.addEventListener('opened', this.onOpened);
+
+  const swiperRef = useRef();
+
+  const homeProps = useSelector((state) => state.reducerHome);
+  const chatProps = useSelector((state) => state.reducerChat);
+  const activity = useSelector((state) => state.reducerActivity);
+
+  const dispatch = useDispatch();
+
+  const [toastText, setToastText] = useState("");
+  const [refreshing, setRefreshing] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [activities, setActivities] = useState([]);
+  const [refresh, setRefresh] = useState(false);
+  const [selectActivity, setSelectActivity] = useState(null);
+  const [showActivity, setShowActivity] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
+  const [filters, setFilters] = useState({
+    activity: [],
+    range: "",
+    gender: "",
+    gyms: [],
+  });
+  const [activitiesFilter, setActivitiesFilter] = useState([]);
+  const [showSelectActivities, setShowSelectActivities] = useState(false);
+  const [gyms, setGyms] = useState([]);
+  const [showGyms, setShowGyms] = useState(false);
+  const [index, setIndex] = useState(0);
+
   // METHOD OPEN NOTIFICATION
-  onOpened = (oData) => {
-    // Action when the notification opens
-    var oNotification = oData.notification.payload.additionalData;
-    const { account: oAccount } = this.props.session;
-    // Sentence to know if the user is logged
-    if (oAccount) {
-      if (!oNotification)
-        return this.props.navigation.navigate("ListNotifications");
-      // All: Actions to be taken on the notification
-      // The types of notification are detailed in Readme.MD
-      switch (oNotification.type) {
-        case NOTIFICATION_MESSAGE:
-          this.props.sendConversationKey(oNotification.id);
-          this.props.getMessages(oNotification.id, oAccount.key);
-          this.props.navigation.navigate("Messages");
-          break;
-        case NOTIFICATION_NEW_CAPTAIN_GROUP:
-        case NOTIFICATION_MESSAGE_GROUP:
-          this.props.navigateToGroup(oNotification.id);
-          this.props.navigation.navigate("Groups");
-          break;
-        case NOTIFICATION_PAL_REQUEST:
-          this.props.navigation.navigate("MyPals");
-          this.props.navigatePals();
-          break;
-        case NOTIFICATION_REQUEST_JOIN_GROUP:
-          this.props.getGroups(oAccount.key);
-          this.props.navigation.navigate("Groups", {
-            groupId: oNotification.id,
-            request: true,
-          });
-          break;
-        case NOTIFICATION_GROUP_INVITATION:
-          this.props.getInvitationsGroup({ accountId: oAccount.key });
-          this.props.navigation.navigate("Groups", { invitation: true });
-          break;
-        case NOTIFICATION_CAPTAIN:
-          this.props.getNotifications();
-          this.props.navigateToNotification(oNotification.id);
-          this.props.navigation.navigate("ListNotifications");
-          break;
-        case NOTIFICATION_JOURNEY_TAG:
-        case NOTIFICATION_FOLLOW:
-        default:
-          this.props.navigation.navigate("ListNotifications");
-          break;
-      }
-    }
-  };
+  // onOpened = (oData) => {
+  //   // Action when the notification opens
+  //   var oNotification = oData.notification.payload.additionalData;
+  //   const { account: oAccount } = this.props.session;
+  //   // Sentence to know if the user is logged
+  //   if (oAccount) {
+  //     if (!oNotification)
+  //       return props.navigation.navigate("ListNotifications");
+  //     // All: Actions to be taken on the notification
+  //     // The types of notification are detailed in Readme.MD
+  //     switch (oNotification.type) {
+  //       case NOTIFICATION_MESSAGE:
+  //         this.props.sendConversationKey(oNotification.id);
+  //         this.props.getMessages(oNotification.id, oAccount.key);
+  //         props.navigation.navigate("Messages");
+  //         break;
+  //       case NOTIFICATION_NEW_CAPTAIN_GROUP:
+  //       case NOTIFICATION_MESSAGE_GROUP:
+  //         this.props.navigateToGroup(oNotification.id);
+  //         props.navigation.navigate("Groups");
+  //         break;
+  //       case NOTIFICATION_PAL_REQUEST:
+  //         props.navigation.navigate("MyPals");
+  //         this.props.navigatePals();
+  //         break;
+  //       case NOTIFICATION_REQUEST_JOIN_GROUP:
+  //         this.props.getGroups(oAccount.key);
+  //         props.navigation.navigate("Groups", {
+  //           groupId: oNotification.id,
+  //           request: true,
+  //         });
+  //         break;
+  //       case NOTIFICATION_GROUP_INITATION:
+  //         this.props.getInvitationsGroup({ accountId: oAccount.key });
+  //         props.navigation.navigate("Groups", { invitation: true });
+  //         break;
+  //       case NOTIFICATION_CAPTAIN:
+  //         this.props.getNotifications();
+  //         this.props.navigateToNotification(oNotification.id);
+  //         props.navigation.navigate("ListNotifications");
+  //         break;
+  //       case NOTIFICATION_JOURNEY_TAG:
+  //       case NOTIFICATION_FOLLOW:
+  //       default:
+  //         props.navigation.navigate("ListNotifications");
+  //         break;
+  //     }
+  //   }
+  // };
 
-  navigateGroup = (sGroupKey) => {
-    this.props.getGroup(sGroupKey, this.props.session.account.key);
-    this.props.navigation.navigate("DetailsGroup");
-  };
-
-  componentDidMount = () => {
-    this.props.navigation.setParams({
-      sharedButton: this.sharedOption,
+  useEffect(() => {
+    props.navigation.setParams({
+      sharedButton: getUserHome,
       showTab: false,
     });
-    this.getUserHome();
-    this.checkOneSignalCode();
-    this.props.getAllActivities();
-    this.props.getGyms();
+    getUserHome();
+    checkOneSignalCode();
+    dispatch(actionGetAllActivities());
+    dispatch(actionGetGyms());
     if (
-      this.props.palsProps.myFriends.status !== true &&
-      this.props.palsProps.myFriends.length === 0
+      props.palsProps.myFriends.status !== true &&
+      props.palsProps.myFriends.length === 0
     )
-      this.props.getMyFriends();
-  };
+      dispatch(actionGetMyFriends());
+  }, []);
 
-  checkOneSignalCode = () => {
-    console.log(
-      "this.props.session.account ====>>>> ",
-      this.props.session.account
-    );
-    if (null !== this.props.session.account) {
-      this.props.checkOneSignalCode({
-        accountId: this.props.session.account.key,
-      });
-    }
-  };
-
-  getUserHome = () => {
-    let aActivities =
-        this.state.filters.activity.length > 0
-          ? this.state.filters.activity
-          : null,
-      sGarder =
-        this.state.filters.gender !== "" ? this.state.filters.gender : null,
-      aGyms =
-        this.state.filters.gyms.length > 0 ? this.state.filters.gyms : null,
-      sRange =
-        this.state.filters.range !== "" ? this.state.filters.range : null;
-    this.props.getUserHome(aActivities, sGarder, aGyms, sRange);
-  };
-
-  componentWillReceiveProps = (nextProps) => {
-    if (nextProps.homeProps.status) {
-      this.setState({
-        activities: nextProps.homeProps.activities,
-        refresh: !this.state.refresh,
-      });
-    } else if (
-      !nextProps.homeProps.status &&
-      "" !== nextProps.homeProps.messageError
-    ) {
-      this.showToast(nextProps.homeProps.messageError);
-    } else if (
-      this.props.chatProps !== nextProps.chatProps &&
-      nextProps.chatProps.statusSend
-    ) {
-      this.showToast("Message sent successfully");
-      if (null !== this.state.selectActivity) {
-        this.state.selectActivity.users.map((element) => {
+  useEffect(() => {
+    if (homeProps.status) {
+      setActivities(homeProps.activities);
+      setRefresh(!refresh);
+    } else if (!homeProps.status && "" !== homeProps.messageError) {
+      showToast(homeProps.messageError);
+    } else if (props.chatProps !== chatProps && chatProps.statusSend) {
+      showToast("Message sent successfully");
+      if (null !== selectActivity) {
+        selectActivity.users.map((element) => {
           element.check = false;
         });
       }
     }
-    if (nextProps.activity.activities.length > 0) {
-      this.setState({
-        activitiesFilter: nextProps.activity.activities,
-      });
+    if (activity.activities.length > 0) {
+      setActivitiesFilter(activity.activities)
     }
-    if (nextProps.activity.gyms.length > 0 && this.state.gyms.length === 0)
-      this.setState({
-        gyms: nextProps.activity.gyms,
-      });
-    if (this.props.blockProps.status) this.setState({ showActivity: false });
-
-    if (nextProps.homeProps.bNavigationHome) {
-      if (this.oSwiperRef) this.oSwiperRef.scrollTo(0, true);
-      this.props.cleanNavigation();
+    if (activity.gyms.length > 0 && gyms.length === 0) {
+      setGyms(activity.gyms);
     }
+    if (props.blockProps.status) {
+      setShowActivity(false);
+    }
+    if (homeProps.bNavigationHome) {
+      if (swiperRef) swiperRef.current.scrollTo(0, true);
+      dispatch(actionCleanNavigation());
+    }
+    setLoading(false);
+    setRefreshing(false);
+    setRefresh(!refresh);
+  }, [homeProps, chatProps, activity]);
 
-    this.setState({
-      loading: false,
-      refreshing: false,
-      refresh: !this.state.refresh,
-    });
+
+  const navigateGroup = (sGroupKey) => {
+    props.getGroup(sGroupKey, props.session.account.key);
+    props.navigation.navigate("DetailsGroup");
   };
 
-  sharedOption = () => {
+  const checkOneSignalCode = () => {
+    if (null !== props.session.account) {
+      dispatch(actionCheckOneSignalCode({
+        accountId: props.session.account.key,
+      }));
+
+    }
+  };
+
+  const getUserHome = () => {
+    let aActivities =
+      filters.activity.length > 0
+        ? filters.activity
+        : null,
+      sGarder =
+        filters.gender !== "" ? filters.gender : null,
+      aGyms =
+        filters.gyms.length > 0 ? filters.gyms : null,
+      sRange =
+        filters.range !== "" ? filters.range : null;
+    dispatch(actionGetUserHome(aActivities, sGarder, aGyms, sRange));
+  };
+
+  const sharedOption = () => {
     Share.share({
       message:
-        this.props.session.account.name +
+        props.session.account.name +
         " has just invited you to check out a hot new Social Fitness application called, " +
         "FITREC. Go to 'www.FITREC.com' to discover why we're better together, when it comes " +
         "to health and fitness. Or, download the app today for Android 'https://play.google.com/" +
@@ -245,29 +236,23 @@ class Home extends Component {
     });
   };
 
-  showToast = (sText, callback = null) => {
-    this.setState({
-      toastText: sText,
-      loading: false,
-    });
+  const showToast = (text, callback = null) => {
+    setToastText(text);
+    setLoading(false)
     setTimeout(() => {
-      this.setState({
-        toastText: "",
-      });
+      setToastText("");
       if (null !== callback) {
         callback();
       }
     }, 2000);
   };
 
-  onRefresh = () => {
-    this.setState({
-      refreshing: true,
-    });
-    this.getUserHome();
+  const onRefresh = () => {
+    setRefreshing(true)
+    getUserHome();
   };
 
-  getImgActivity(sActivityName) {
+  const getImgActivity = (sActivityName) => {
     var lActivityImg = lActivitiesHome.find(
       (lActivity) => lActivity.name === sActivityName
     );
@@ -276,7 +261,7 @@ class Home extends Component {
     }
   }
 
-  getIcon(sActivityName) {
+  const getIcon = (sActivityName) => {
     var lActivityIcon = lActivitiesIcon.find(
       (lActivity) => lActivity.name === sActivityName
     );
@@ -285,120 +270,83 @@ class Home extends Component {
     }
   }
 
-  openActivity = (lItem) => {
-    this.setState({
-      selectActivity: lItem,
-      showActivity: true,
-      showFilters: false,
-    });
+  const openActivity = (item) => {
+    setSelectActivity(item);
+    setShowActivity(true);
+    setShowFilters(false);
   };
 
-  sendMessage = (message) => {
-    this.setState({
-      loading: true,
-    });
+  const sendMessageHandler = (message) => {
+    setLoading(false);
     var sendUsers = [];
-    for (let element of this.state.selectActivity.users) {
+    for (let element of selectActivity.users) {
       if (element.check && element.key !== null) {
         sendUsers.push(element.key);
       }
     }
-    this.props.sendMessage({
-      accountId: this.props.session.account.key,
+    let data = {
+      accountId: props.session.account.key,
       message: message,
       participants: sendUsers,
       type: "text",
-      name: this.props.session.account.name,
-    });
+      name: props.session.account.name,
+    };
+    dispatch(actionSendMessageAll(data));
   };
 
-  setFilters = (data, bIsDefault = false) => {
+  const setFiltersHandler = (data, bIsDefault = false) => {
     if (bIsDefault) {
-      this.state.activitiesFilter.forEach((oActivity) => {
+      activitiesFilter.forEach((oActivity) => {
         oActivity.selected = false;
       });
-      this.state.gyms.forEach((oGym) => {
-        oGym.selected = false;
+      gyms.forEach((gym) => {
+        gym.selected = false;
       });
     }
-    this.setState({
-      filters: {
-        activity: data.activity,
-        range: data.range,
-        gender: data.gender,
-        gyms: data.gyms,
-      },
-      showFilters: false,
-    });
-    this.getUserHome();
+    setFilters({
+      activity: data.activity,
+      range: data.range,
+      gender: data.gender,
+      gyms: data.gyms,
+    })
+    setShowFilters(false);
+    getUserHome();
   };
 
-  applyActivityFilter = () => {
+  const applyActivityFilter = () => {
     var aActivitiesIds = [];
-    this.state.activitiesFilter.forEach((oActivity) => {
+    activitiesFilter.forEach((oActivity) => {
       if (oActivity.selected === true) aActivitiesIds.push(oActivity);
     });
-    this.setState({
-      filters: {
-        ...this.state.filters,
-        activity: aActivitiesIds,
-      },
-      showSelectActivities: false,
+    setFilters({
+      ...filters,
+      activity: aActivitiesIds,
     });
-    this.setFilters(this.state.filters);
+    setShowSelectActivities(false),
+      setFiltersHandler(filters);
   };
 
-  applyGymFilter = () => {
+  const applyGymFilter = () => {
     var aGymIds = [];
-    this.state.gyms.forEach((oGym) => {
+    gyms.forEach((oGym) => {
       if (oGym.selected === true) aGymIds.push(oGym);
     });
-    this.setState({
-      filters: {
-        ...this.state.filters,
-        gyms: aGymIds,
-      },
-      showGyms: false,
+    setFilters({
+      ...filters,
+      gyms: aGymIds,
     });
-    this.setFilters(this.state.filters);
+    setShowGyms(false);
+    setFiltersHandler(filters);
   };
 
-  swipe = (nIndex) => {
-    this.props.navigation.setParams({
-      index: nIndex,
+  const swipe = (index) => {
+    props.navigation.setParams({
+      index: index,
     });
-    this.setState({ index: nIndex });
+    setIndex(index);
   };
 
-  render() {
-    return (
-      <View style={{ flex: 1 }}>
-        {this.props.swiperHome === undefined ? (
-          <Swiper
-            loop={false}
-            showsPagination={false}
-            onIndexChanged={(nIndex) => this.swipe(nIndex)}
-            scrollEnabled={true}
-            horizontal={true}
-            ref={(oRef) => (this.oSwiperRef = oRef)}
-          >
-            <View style={styles.contentSwipe}>{this.renderContent()}</View>
-            <View style={styles.contentSwipe}>
-              <JourneyList
-                swiperHome={true}
-                navigation={this.props.navigation}
-                indexHome={this.state.index}
-              />
-            </View>
-          </Swiper>
-        ) : (
-          this.renderContent()
-        )}
-      </View>
-    );
-  }
-
-  renderContent = () => {
+  const renderContent = () => {
     return (
       <ImageBackground
         source={require("../../assets/bk.png")}
@@ -409,8 +357,8 @@ class Home extends Component {
           contentContainerStyle={styles.scrollView}
           refreshControl={
             <RefreshControl
-              refreshing={this.state.refreshing}
-              onRefresh={this.onRefresh}
+              refreshing={refreshing}
+              onRefresh={onRefresh}
               tintColor={GreenFitrecColor}
               title="Pull to refresh..."
             />
@@ -418,21 +366,17 @@ class Home extends Component {
         >
           <FlatList
             keyExtractor={(item, index) => index.toString()}
-            data={this.state.activities}
-            extraData={this.state.refresh}
+            data={activities}
+            extraData={refresh}
             scrollEnabled={false}
             renderItem={({ item }) => (
               <View style={styles.activityContent}>
-                <Pressable
-                  onPress={() => {
-                    this.openActivity(item);
-                  }}
-                >
+                <Pressable onPress={() => openActivity(item)}>
                   <View style={styles.activityHead}>
                     <View style={styles.activityHeadLeft}>
                       <Image
                         style={styles.activityIcon}
-                        source={this.getIcon(item.name)}
+                        source={getIcon(item.name)}
                       />
                       <Text style={styles.activityText}>{item.name} </Text>
                     </View>
@@ -471,51 +415,74 @@ class Home extends Component {
                   </View>
                   <Image
                     style={styles.activityImageBrackground}
-                    source={this.getImgActivity(item.name)}
+                    source={getImgActivity(item.name)}
                   />
                 </Pressable>
               </View>
             )}
           />
         </ScrollView>
-        <Toast toastText={this.state.toastText} />
-        <LoadingSpinner visible={this.state.loading} />
+        <Toast toastText={toastText} />
+        <LoadingSpinner visible={loading} />
         <ShowPeople
-          visible={this.state.showActivity}
-          activity={this.state.selectActivity}
-          close={() => {
-            this.setState({ showActivity: false });
-          }}
-          sendMessage={(message) => this.sendMessage(message)}
-          navigation={this.props.navigation}
+          visible={showActivity}
+          activity={selectActivity}
+          close={() => setShowActivity(false)}
+          sendMessage={(message) => sendMessageHandler(message)}
+          navigation={props.navigation}
         />
         <HomeFilters
-          visible={this.state.showFilters}
-          press={() => {
-            this.setState({ showFilters: !this.state.showFilters });
-          }}
+          visible={showFilters}
+          press={() => setShowFilters(!showFilters)}
           setFilter={(data, bIsDefault = false) =>
-            this.setFilters(data, bIsDefault)
+            setFiltersHandler(data, bIsDefault)
           }
-          filters={this.state.filters}
-          activities={this.state.activities}
-          showActivities={() => this.setState({ showSelectActivities: true })}
-          showGyms={() => this.setState({ showGyms: true })}
+          filters={filters}
+          activities={activities}
+          showActivities={() => setSelectActivity(true)}
+          showGyms={() => setShowGyms(true)}
         />
         <SelectActivities
-          visible={this.state.showSelectActivities}
-          activities={this.state.activitiesFilter}
-          close={() => this.applyActivityFilter()}
+          visible={showSelectActivities}
+          activities={activitiesFilter}
+          close={applyActivityFilter}
         />
         <SelectGyms
-          visible={this.state.showGyms}
-          gyms={this.state.gyms}
-          close={() => this.applyGymFilter()}
-          message={(sMessage) => this.showToast(sMessage)}
+          visible={showGyms}
+          gyms={gyms}
+          close={applyGymFilter}
+          message={(message) => showToast(message)}
         />
       </ImageBackground>
     );
   };
+
+  return (
+    <View style={{ flex: 1 }}>
+      {props.swiperHome === undefined ? (
+        <Swiper
+          loop={false}
+          showsPagination={false}
+          onIndexChanged={(index) => swipe(index)}
+          scrollEnabled={true}
+          horizontal={true}
+          ref={swiperRef}
+        >
+          <View style={styles.contentSwipe}>{renderContent()}</View>
+          <View style={styles.contentSwipe}>
+            <JourneyList
+              swiperHome={true}
+              navigation={props.navigation}
+              indexHome={index}
+            />
+          </View>
+        </Swiper>
+      ) : (
+        renderContent()
+      )}
+    </View>
+  );
+
 }
 
 const styles = StyleSheet.create({

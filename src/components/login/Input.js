@@ -1,10 +1,9 @@
-import React from "react";
+import React, { forwardRef } from "react";
 
 import { StyleSheet, Image, TextInput } from "react-native";
 
-const Input = (props) => {
+const Input = forwardRef((props, ref) => {
   const {
-    ref,
     onSubmitEditing,
     iconSource,
     onChangeText,
@@ -15,7 +14,7 @@ const Input = (props) => {
     autoCapitalize,
     autoCompleteType,
     placeholder,
-    inputStyle,
+    inputStyle
   } = props;
   return (
     <>
@@ -34,8 +33,8 @@ const Input = (props) => {
         onChangeText={onChangeText}
       />
     </>
-  );
-};
+  )
+})
 
 export default Input;
 

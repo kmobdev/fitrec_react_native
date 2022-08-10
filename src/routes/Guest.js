@@ -34,23 +34,8 @@ const NavigationGuest = createStackNavigator(
     },
     RegisterFinalStep: {
       screen: RegisterFinalStep,
-      navigationOptions: ({ navigation }) => {
-        const { params = {} } = navigation.state;
-        return {
-          headerTitle: "Fill in your profile details",
-          headerRight: (
-            <Pressable onPress={() => params.nextButton()}>
-              <Text
-                style={[
-                  GlobalStyles.backIcon,
-                  { color: SignUpColor, fontSize: 18 },
-                ]}
-              >
-                Next
-              </Text>
-            </Pressable>
-          ),
-        };
+      navigationOptions: {
+        header: null,
       },
     },
     ForgotPassword: {

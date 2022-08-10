@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Text,
   View,
@@ -6,18 +6,16 @@ import {
   TextInput,
   ScrollView,
   Pressable,
-  Keyboard,
 } from "react-native";
 import { GlobalStyles, PlaceholderColor, SignUpColor } from "../../Styles";
 import Icon from "react-native-vector-icons/Ionicons";
 import { GlobalCheckBox } from "../../components/shared/GlobalCheckBox";
 import SelectActivities from "../../components/register/SelectActivities";
-import { connect } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Toast } from "../../components/shared/Toast";
 import { actionUserRegister } from "../../redux/actions/UserActions";
 import { actionGetAllActivities } from "../../redux/actions/ActivityActions";
 import { LoadingSpinner } from "../../components/shared/LoadingSpinner";
-import ReactNativePickerModule from "react-native-picker-module";
 import {
   lHeightSizes,
   OPTIONS_GEOLOCATION_GET_POSITION,
@@ -25,138 +23,115 @@ import {
 import Geolocation from "@react-native-community/geolocation";
 import SelectDropdown from "react-native-select-dropdown";
 
-class RegisterFinalStep extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      refresh: false,
-      showSelectActivities: false,
-      toastText: "",
-      showWeightError: false,
-      showActivitiesError: false,
-      errors: {
-        showWeightError: false,
-        showActivitiesError: false,
-        showHeightError: false,
-      },
-      user: {
-        ...this.props.navigation.getParam("user", {}),
-        displayWeight: true,
-        height: null,
-        weight: null,
-        goals: "",
-        personalTrainer: false,
-      },
-      activities: [],
-      loading: false,
-      nKeyboardPadding: 0,
-    };
-  }
+const RegisterFinalStep = ({ navigation }) => {
 
-  componentDidMount() {
-    this.props.navigation.setParams({ nextButton: this.register });
-    this.props.getAllActivities();
-    this.oKeyboardListenerWillShow = Keyboard.addListener(
-      "keyboardWillShow",
-      this.openKeyboard
-    );
-    this.oKeyboardListenerWillHide = Keyboard.addListener(
-      "keyboardWillHide",
-      this.closeKeyboard
-    );
-  }
+  const weightRef = useRef();
+  const scrollViewRef = useRef();
 
-  openKeyboard = ({ endCoordinates: { height } }) => {
-    this.setState({ bShowKeyboard: true, nKeyboardPadding: height });
-  };
+  const register = useSelector((state) => state.reducerRegister);
+  const activity = useSelector((state) => state.reducerActivity.activities);
 
-  closeKeyboard = ({ endCoordinates: { height } }) => {
-    this.setState({ bShowKeyboard: false, nKeyboardPadding: 0 });
-  };
+  const dispatch = useDispatch();
 
-  componentWillUnmount = () => {
-    this.oKeyboardListenerWillShow && this.oKeyboardListenerWillShow.remove();
-    this.oKeyboardListenerWillHide && this.oKeyboardListenerWillHide.remove();
-  };
+  const [showSelectActivities, setShowSelectActivities] = useState(false);
+  const [toastText, setToastText] = useState("");
+  const [errors, setErrors] = useState({
+    showWeightError: false,
+    showActivitiesError: false,
+    showHeightError: false,
+  });
+  const [user, setUser] = useState({
+    ...navigation.getParam("user", {}),
+    displayWeight: true,
+    height: null,
+    weight: null,
+    goals: "",
+    activities: [],
+    personalTrainer: false,
+  });
+  const [loading, setLoading] = useState(false);
+  const [activities, setActivities] = useState([]);
 
-  componentWillReceiveProps = async (nextProps) => {
-    if (nextProps.activity.activities.length > 0) {
-      await this.setState({
-        activities: nextProps.activity.activities,
-      });
+  useEffect(() => {
+    navigation.setParams({ nextButton: registerHandler });
+    dispatch(actionGetAllActivities());
+  }, []);
+
+
+  useEffect(() => {
+    if (activity.length > 0) {
+      setActivities(activity);
     }
+  }, [activity]);
+
+  useEffect(() => {
     if (
-      !nextProps.register.status &&
-      "" !== nextProps.register.messageError &&
-      null !== nextProps.register.messageError
+      !register.status &&
+      "" !== register.messageError &&
+      null !== register.messageError
     ) {
-      this.showToast(nextProps.register.messageError);
+      showToast(register.messageError);
     }
-    await this.setState({
-      loading: false,
-    });
-  };
+    setLoading(false)
+  }, [register]);
 
-  register = async () => {
-    await this.setState({
-      user: {
-        ...this.state.user,
-        activities: this.state.activities.filter((element) => element.selected),
-      },
-      personalTrainer: this.state.user.personalTrainer === true ? true : false,
-      goals: this.state.user.goals.trim() === "" ? null : this.state.user.goals,
-    });
-    let lErrors = await this.validate(this.state.user);
+  const registerHandler = async () => {
+    setUser({
+      ...user,
+      activities: activities.filter((element) => element.selected),
+      personalTrainer: user.personalTrainer === true ? true : false,
+      goals: user.goals === "" ? null : user.goals,
+    })
+    let lErrors = await validate(user);
     if (lErrors.haveError) {
-      await this.setState({
-        errors: lErrors,
-        loading: false,
-      });
-      this.showToast(lErrors.messageError);
+      setErrors(lErrors);
+      setLoading(false);
+      showToast(lErrors.messageError);
     } else {
       try {
         Geolocation.getCurrentPosition(
           (position) => {
             if (position && undefined !== position.coords) {
-              this.props.registerUser({
-                ...this.state.user,
+              dispatch(actionUserRegister({
+                ...user,
                 longitude: position.coords.longitude,
                 latitude: position.coords.latitude,
-              });
+              }));
             } else {
-              this.props.registerUser({
-                ...this.state.user,
+              dispatch(actionUserRegister({
+                ...user,
                 longitude: null,
                 latitude: null,
-              });
+              }));
             }
           },
           () => {
-            this.props.registerUser({
-              ...this.state.user,
+            dispatch(actionUserRegister({
+              ...user,
               longitude: null,
               latitude: null,
-            });
+            }));
           },
           OPTIONS_GEOLOCATION_GET_POSITION
         );
       } catch (oError) {
-        this.props.registerUser({
-          ...this.state.user,
+        dispatch(actionUserRegister({
+          ...user,
           longitude: null,
           latitude: null,
-        });
+        }));
       }
     }
   };
 
   //CHECK HEIGHT, ACTIVITIES AND WEIGHT
-  validate = async (lValues) => {
+  const validate = async (lValues) => {
     let lErrors = {
       messageError: "",
       haveError: false,
       showWeightError: false,
       showActivitiesError: false,
+      showHeightError: false,
     };
     // ACTIVITIES
     if (!lValues.activities.length > 0) {
@@ -189,284 +164,260 @@ class RegisterFinalStep extends Component {
     return lErrors;
   };
 
-  /**
-   * show a message in toast
-   */
-  showToast = async (sText) => {
-    this.setState({
-      toastText: sText,
-      loading: false,
-    });
+  const showToast = (sText) => {
+    setToastText(sText);
+    setLoading(false);
     setTimeout(() => {
-      this.setState({
-        toastText: "",
-      });
+      setToastText("");
     }, 2000);
   };
 
-  render = () => {
-    const { nKeyboardPadding } = this.state;
-    return (
-      <>
-        <ScrollView
-          ref={(oRef) => (this.oScrollView = oRef)}
-          style={{ flex: 1 }}
-        >
-          <View style={{ flex: 1, paddingBottom: nKeyboardPadding + 35 }}>
-            <Text style={styles.titleText}>
-              We need a little more information about you setup profile.
-            </Text>
-            <View
-              style={[
-                styles.viewSection,
-                styles.checkInput,
-                { alignItems: "flex-end" },
-                this.state.errors.showHeightError && GlobalStyles.errorBorder,
-              ]}
-            >
-              <Text style={styles.textLabel}>Height</Text>
-              <View style={styles.comboSelect}>
-                <SelectDropdown
-                  data={lHeightSizes}
-                  onSelect={(selectedItem, index) => {
-                    this.setState({
-                      user: {
-                        ...this.state.user,
-                        height: selectedItem,
-                      },
-                    });
-                    console.log(selectedItem, index);
-                  }}
-                  buttonTextAfterSelection={(selectedItem, index) => {
-                    // text represented after item is selected
-                    // if data array is an array of objects then return selectedItem.property to render after item is selected
-                    return selectedItem;
-                  }}
-                  rowTextForSelection={(item, index) => {
-                    // text represented for each item in dropdown
-                    // if data array is an array of objects then return item.property to represent item in dropdown
-                    return item;
-                  }}
-                />
-              </View>
+  const backHandler = () => {
+    navigation.goBack();
+  }
 
-              {/*     
-                                       <View style={styles.comboSelect}>
-                                   <Pressable
-                                       onPress={() => this.pickerHeight.show()} style={{ flexDirection: 'row' }}>
-                                       <Text>
-                                           {null !== this.state.user.height ? this.state.user.height : 'Select here'}
-                                       </Text>
-                                       <Icon name="chevron-down" size={22} style={styles.iconSelect} />
-                                   </Pressable>
-                               </View>
-                               <ReactNativePickerModule
-                                   pickerRef={e => this.pickerHeight = e}
-                                   title={"Height"}
-                                   items={lHeightSizes}
-                                   onValueChange={(value) => this.setState({
-                                       user: {
-                                           ...this.state.user,
-                                           height: value
-                                       }
-                                   })} />
-                                */}
-            </View>
-            <View
-              style={[
-                this.state.errors.showWeightError && GlobalStyles.errorBorder,
-                styles.row,
-              ]}
-            >
-              <Pressable
-                style={styles.colLabel}
-                onPress={() => this.oWeightRef.focus()}
-                activeOpacity={1}
-              >
-                <Text style={styles.textLabelColumn}>Weight</Text>
-              </Pressable>
-              <View style={styles.colInput}>
-                <View style={styles.containerTextInput}>
-                  <TextInput
-                    style={styles.textInput}
-                    ref={(oRef) => (this.oWeightRef = oRef)}
-                    onSubmitEditing={() => this.oWeightRef.focus()}
-                    placeholder="lbs"
-                    value={this.state.user.weight}
-                    placeholderTextColor={PlaceholderColor}
-                    keyboardType="number-pad"
-                    onChangeText={(text) => {
-                      +text < 1000
-                        ? this.setState({
-                            user: { ...this.state.user, weight: text },
-                          })
-                        : this.setState({
-                            user: { ...this.state.user, weight: "1000" },
-                          });
-                    }}
-                  />
-                </View>
-              </View>
-            </View>
-            <View style={[styles.viewSection, styles.displayComboBox]}>
-              <Text style={styles.textLabel}>Display Weight?</Text>
-              <GlobalCheckBox
-                onPress={() => {
-                  this.setState({
-                    user: {
-                      ...this.state.user,
-                      displayWeight: !this.state.user.displayWeight,
-                    },
+  const onNextHandler = () => {
+    registerHandler();
+  }
+
+  return (
+    <View style={{ flex: 1 }}>
+      <View style={styles.header}>
+        <Pressable onPress={backHandler}>
+          <Icon name="arrow-back" color={SignUpColor} size={32} />
+        </Pressable>
+        <Text style={styles.headerTitle}>
+          Fill in your profile details
+        </Text>
+        <Pressable onPress={onNextHandler}>
+          <Text style={styles.headerRightButton}>Next</Text>
+        </Pressable>
+      </View>
+      <ScrollView
+        ref={scrollViewRef}
+        style={{ flex: 1 }}
+      >
+        <View style={{ flex: 1, paddingBottom: 35 }}>
+          <Text style={styles.titleText}>
+            We need a little more information about you setup profile.
+          </Text>
+          <View
+            style={[
+              styles.viewSection,
+              styles.checkInput,
+              { alignItems: "flex-end" },
+              errors.showHeightError && GlobalStyles.errorBorder,
+            ]}
+          >
+            <Text style={styles.textLabel}>Height</Text>
+            <View style={styles.comboSelect}>
+              <SelectDropdown
+                data={lHeightSizes}
+                onSelect={(selectedItem, index) => {
+                  setUser({
+                    ...user,
+                    height: selectedItem,
                   });
                 }}
-                isCheck={this.state.user.displayWeight ? true : false}
-                title="Yes"
-              />
-              <GlobalCheckBox
-                onPress={() => {
-                  this.setState({
-                    user: {
-                      ...this.state.user,
-                      displayWeight: !this.state.user.displayWeight,
-                    },
-                  });
+                buttonTextAfterSelection={(selectedItem, index) => {
+                  // text represented after item is selected
+                  // if data array is an array of objects then return selectedItem.property to render after item is selected
+                  return selectedItem;
                 }}
-                isCheck={!this.state.user.displayWeight ? true : false}
-                title="No"
-              />
-            </View>
-            <View
-              style={[
-                styles.viewSection,
-                styles.checkInput,
-                { alignItems: "flex-end", borderBottomWidth: 0 },
-                this.state.errors.showActivitiesError &&
-                  GlobalStyles.errorBorder,
-              ]}
-            >
-              <Text style={styles.textLabel}>Activities</Text>
-              <View style={styles.comboSelect}>
-                <Pressable
-                  style={{ flexDirection: "row", padding: 4 }}
-                  onPress={() => this.setState({ showSelectActivities: true })}
-                >
-                  <Icon
-                    name="md-create"
-                    size={18}
-                    style={styles.iconSelect}
-                    color={SignUpColor}
-                  />
-                  <Text style={{ color: SignUpColor }}>Choose Activities</Text>
-                </Pressable>
-              </View>
-            </View>
-            <View style={styles.viewActivitiesSelected}>
-              {this.state.activities
-                .filter((item) => item.selected)
-                .map((element) => (
-                  <View
-                    style={{
-                      borderWidth: 0.5,
-                      borderColor: SignUpColor,
-                      padding: 5,
-                      borderRadius: 20,
-                      justifyContent: "center",
-                      marginRight: 5,
-                      marginBottom: 5,
-                    }}
-                    key={element.id}
-                  >
-                    <Text
-                      style={{
-                        color: SignUpColor,
-                        textAlign: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      {element.name}
-                    </Text>
-                  </View>
-                ))}
-            </View>
-            <View
-              style={[
-                styles.viewSection,
-                styles.displayComboBox,
-                { paddingTop: 5 },
-              ]}
-            >
-              <Text style={[styles.textLabel, { width: "40%" }]}>
-                Do you have a personal trainer?
-              </Text>
-              <GlobalCheckBox
-                onPress={() => {
-                  this.setState({
-                    user: {
-                      ...this.state.user,
-                      personalTrainer: !this.state.user.personalTrainer,
-                    },
-                  });
+                rowTextForSelection={(item, index) => {
+                  // text represented for each item in dropdown
+                  // if data array is an array of objects then return item.property to represent item in dropdown
+                  return item;
                 }}
-                isCheck={this.state.user.personalTrainer ? true : false}
-                title="Yes"
-              />
-              <GlobalCheckBox
-                onPress={() => {
-                  this.setState({
-                    user: {
-                      ...this.state.user,
-                      personalTrainer: !this.state.user.personalTrainer,
-                    },
-                  });
-                }}
-                isCheck={!this.state.user.personalTrainer ? true : false}
-                title="No"
-              />
-            </View>
-            <View style={styles.viewSection}>
-              <Text style={[styles.textLabel, { top: 10 }]}>
-                About me/Goals (upto 500 words)
-              </Text>
-              <TextInput
-                style={[styles.checkInput, styles.inputTextArea]}
-                onFocus={() => this.oScrollView.scrollToEnd({ animated: true })}
-                multiline={true}
-                numberOfLines={4}
-                textAlign="left"
-                placeholder="What do you want to say?"
-                placeholderTextColor={PlaceholderColor}
-                onChangeText={(text) =>
-                  this.setState({ user: { ...this.state.user, goals: text } })
-                }
-                value={this.state.user.goals}
               />
             </View>
           </View>
-        </ScrollView>
-        <SelectActivities
-          visible={this.state.showSelectActivities}
-          activities={this.state.activities}
-          close={() => this.setState({ showSelectActivities: false })}
-        />
-        <Toast toastText={this.state.toastText} />
-        <LoadingSpinner visible={this.state.loading} />
-      </>
-    );
-  };
+          <View
+            style={[
+              errors.showWeightError && GlobalStyles.errorBorder,
+              styles.row,
+            ]}
+          >
+            <Pressable
+              style={styles.colLabel}
+              onPress={() => weightRef.current.focus()}
+              activeOpacity={1}
+            >
+              <Text style={styles.textLabelColumn}>Weight</Text>
+            </Pressable>
+            <View style={styles.colInput}>
+              <View style={styles.containerTextInput}>
+                <TextInput
+                  style={styles.textInput}
+                  ref={weightRef}
+                  onSubmitEditing={() => weightRef.current.focus()}
+                  placeholder="lbs"
+                  value={user.weight}
+                  placeholderTextColor={PlaceholderColor}
+                  keyboardType="number-pad"
+                  onChangeText={(text) => {
+                    text < 1000
+                      ?
+                      setUser({
+                        ...user,
+                        weight: text
+                      })
+                      :
+                      setUser({
+                        ...user,
+                        weight: "1000"
+                      })
+                  }}
+                />
+              </View>
+            </View>
+          </View>
+          <View style={[styles.viewSection, styles.displayComboBox]}>
+            <Text style={styles.textLabel}>Display Weight?</Text>
+            <GlobalCheckBox
+              onPress={() => {
+                setUser({
+                  ...user,
+                  displayWeight: !user.displayWeight,
+                })
+              }}
+              isCheck={user.displayWeight ? true : false}
+              title="Yes"
+            />
+            <GlobalCheckBox
+              onPress={() => {
+                setUser({
+                  ...user,
+                  displayWeight: !user.displayWeight,
+                })
+              }}
+              isCheck={!user.displayWeight ? true : false}
+              title="No"
+            />
+          </View>
+          <View
+            style={[
+              styles.viewSection,
+              styles.checkInput,
+              { alignItems: "flex-end", borderBottomWidth: 0 },
+              errors.showActivitiesError &&
+              GlobalStyles.errorBorder,
+            ]}
+          >
+            <Text style={styles.textLabel}>Activities</Text>
+            <View style={styles.comboSelect}>
+              <Pressable
+                style={{ flexDirection: "row", padding: 4 }}
+                onPress={() => setShowSelectActivities(true)}
+              >
+                <Icon
+                  name="md-create"
+                  size={18}
+                  style={styles.iconSelect}
+                  color={SignUpColor}
+                />
+                <Text style={{ color: SignUpColor }}>Choose Activities</Text>
+              </Pressable>
+            </View>
+          </View>
+          <View style={styles.viewActivitiesSelected}>
+            {activities
+              .filter((item) => item.selected)
+              .map((element) => (
+                <View
+                  style={styles.acticityMain}
+                  key={element.id}>
+                  <Text style={styles.activityName}>
+                    {element.name}
+                  </Text>
+                </View>
+              ))}
+          </View>
+          <View
+            style={[
+              styles.viewSection,
+              styles.displayComboBox,
+              { paddingTop: 5 },
+            ]}
+          >
+            <Text style={[styles.textLabel, { width: "40%" }]}>
+              Do you have a personal trainer?
+            </Text>
+            <GlobalCheckBox
+              onPress={() => {
+                setUser({
+                  ...user,
+                  personalTrainer: !user.personalTrainer,
+                })
+              }}
+              isCheck={user.personalTrainer ? true : false}
+              title="Yes"
+            />
+            <GlobalCheckBox
+              onPress={() => {
+                setUser({
+                  ...user,
+                  personalTrainer: !user.personalTrainer,
+                })
+              }}
+              isCheck={!user.personalTrainer ? true : false}
+              title="No"
+            />
+          </View>
+          <View style={styles.viewSection}>
+            <Text style={[styles.textLabel, { top: 10 }]}>
+              About me/Goals (upto 500 words)
+            </Text>
+            <TextInput
+              style={[styles.checkInput, styles.inputTextArea]}
+              onFocus={() => scrollViewRef.current.scrollToEnd({ animated: true })}
+              multiline={true}
+              numberOfLines={4}
+              textAlign="left"
+              placeholder="What do you want to say?"
+              placeholderTextColor={PlaceholderColor}
+              onChangeText={(text) =>
+                setUser({
+                  ...user,
+                  goals: text
+                })
+              }
+              value={user.goals}
+            />
+          </View>
+        </View>
+      </ScrollView>
+      <SelectActivities
+        visible={showSelectActivities}
+        activities={activities}
+        close={() => setShowSelectActivities(false)}
+      />
+      <Toast toastText={toastText} />
+      <LoadingSpinner visible={loading} />
+    </View>
+  );
 }
 
-const pickerSelectStyles = StyleSheet.create({
-  inputIOS: {
-    opacity: 0,
-    position: "absolute",
-  },
-  inputAndroid: {
-    opacity: 0,
-    position: "absolute",
-  },
-});
-
 const styles = StyleSheet.create({
+  header: {
+    height: "7%",
+    width: '100%',
+    backgroundColor: "#ffff",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 10,
+    marginBottom: 15
+  },
+  headerTitle: {
+    fontSize: 18,
+    color: '#000'
+  },
+  headerRightButton: {
+    ...GlobalStyles.backIcon,
+    color: SignUpColor,
+    fontSize: 18
+  },
   viewSection: {
     width: "100%",
     alignItems: "center",
@@ -497,6 +448,20 @@ const styles = StyleSheet.create({
     textAlign: "right",
     paddingRight: "5%",
     color: "black",
+  },
+  acticityMain: {
+    borderWidth: 0.5,
+    borderColor: SignUpColor,
+    padding: 5,
+    borderRadius: 20,
+    justifyContent: "center",
+    marginRight: 5,
+    marginBottom: 5,
+  },
+  activityName: {
+    color: SignUpColor,
+    textAlign: "center",
+    justifyContent: "center",
   },
   displayComboBox: {
     flexDirection: "row",
@@ -574,4 +539,4 @@ const mapDispatchToProps = (dispatch) => ({
   },
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(RegisterFinalStep);
+export default RegisterFinalStep;

@@ -1,5 +1,11 @@
-import React, { Component } from "react";
-import { View, Text, StyleSheet, TextInput, Pressable } from "react-native";
+import React, { Component, useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  Pressable,
+} from "react-native";
 import {
   GreenFitrecColor,
   PlaceholderColor,
@@ -7,85 +13,80 @@ import {
   WhiteColor,
 } from "../../Styles";
 import { Toast } from "../../components/shared/Toast";
-import { connect } from "react-redux";
+import { connect, useDispatch, useSelector } from "react-redux";
 import { actionUserForgotPassword } from "../../redux/actions/UserActions";
 import { LoadingSpinner } from "../../components/shared/LoadingSpinner";
 import { Input } from "../../components";
 
-class ForgotPassword extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      toastText: "",
-      email: "",
-      loading: false,
-    };
-  }
+const ForgotPassword = (props) => {
 
-  showToast = async (sText, callback = null) => {
-    this.setState({
-      toastText: sText,
-      loading: false,
-    });
+  const screenProps = useSelector((state) => state.reducerForgotPassword);
+
+  const [email, setEmail] = useState('');
+  const [toastText, setToastText] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (
+      !screenProps.success &&
+      "" !== screenProps.messageError
+    ) {
+      showToast(screenProps.messageError);
+    } else if (screenProps.success) {
+      showToast(
+        "A link has been sent to reset your password to your email",
+        () => props.navigation.navigate("Login")
+      );
+    }
+    setIsLoading(false)
+  }, [screenProps])
+
+  const showToast = (Text, callback = null) => {
+    setToastText(Text);
+    setIsLoading(false)
     setTimeout(() => {
-      this.setState({
-        toastText: "",
-      });
+      setToastText('');
       if (null !== callback) {
         callback();
       }
     }, 2000);
   };
 
-  forgotPassword = () => {
-    this.props.forgotPassword(this.state.email);
-    this.setState({
-      loading: true,
-    });
+  const forgotPassword = () => {
+    dispatch(actionUserForgotPassword(email));
+    setIsLoading(true)
   };
 
-  componentWillReceiveProps = (nextProps) => {
-    if (
-      !nextProps.screenProps.success &&
-      "" !== nextProps.screenProps.messageError
-    ) {
-      this.showToast(nextProps.screenProps.messageError);
-    } else if (nextProps.screenProps.success) {
-      this.showToast(
-        "A link has been sent to reset your password to your email",
-        () => this.props.navigation.navigate("Login")
-      );
-    }
-    this.setState({
-      loading: false,
-    });
-  };
-
-  render() {
-    return (
-      <View style={styles.content}>
-        <Text style={{ color: GreenFitrecColor }}>
-          Enter your email address you use to sign in to FitRec
-        </Text>
-        <View style={styles.viewSection}>
-          <Input
-            style={styles.textInput}
-            placeholder="Email address"
-            placeholderTextColor={PlaceholderColor}
-            value={this.state.email}
-            onChangeText={(text) => this.setState({ email: text })}
-            autoCapitalize="none"
-          />
-        </View>
-        <Pressable style={styles.button} onPress={() => this.forgotPassword()}>
-          <Text style={{ color: WhiteColor }}>NEXT</Text>
-        </Pressable>
-        <Toast toastText={this.state.toastText} />
-        <LoadingSpinner visible={this.state.loading} />
+  return (
+    <View style={styles.content}>
+      <Text style={{ color: GreenFitrecColor }}>
+        Enter your email address you use to sign in to FitRec
+      </Text>
+      <View style={styles.viewSection}>
+        <Input
+          style={styles.textInput}
+          placeholder="Email address"
+          placeholderTextColor={PlaceholderColor}
+          value={email}
+          onChangeText={(text) => setEmail(text)}
+          autoCapitalize="none"
+        />
       </View>
-    );
-  }
+      <Pressable
+        style={styles.button}
+        onPress={forgotPassword}
+      >
+        <Text style={{ color: WhiteColor }}>NEXT</Text>
+      </Pressable>
+      <Toast toastText={toastText} />
+      <LoadingSpinner visible={isLoading} />
+    </View>
+  );
 }
+
+export default ForgotPassword;
 
 const styles = StyleSheet.create({
   content: {
@@ -112,15 +113,3 @@ const styles = StyleSheet.create({
     marginTop: 15,
   },
 });
-
-const mapStateToProps = (state) => ({
-  screenProps: state.reducerForgotPassword,
-});
-
-const mapDispatchToProps = (dispatch) => ({
-  forgotPassword: (sEmail) => {
-    dispatch(actionUserForgotPassword(sEmail));
-  },
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(ForgotPassword);

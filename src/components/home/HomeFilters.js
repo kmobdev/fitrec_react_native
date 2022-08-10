@@ -1,281 +1,241 @@
-import React, { Component } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { View, Text, Pressable, StyleSheet } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 import { SignUpColor, WhiteColor } from "../../Styles";
 import ReactNativePickerModule from "react-native-picker-module";
 
-export default class HomeFilters extends Component {
-  constructor(props) {
-    super(props);
-    this.pickerGender = React.createRef();
-    this.pickerRange = React.createRef();
-    this.state = {
-      showActivities: false,
-      showRange: false,
-      showGender: false,
-      showDefault: false,
-      showDescriptions: false,
-      showGym: false,
-      filters: null,
-    };
-  }
+const HomeFilters = (props) => {
 
-  componentWillReceiveProps = async (nextProps) => {
-    if (nextProps.visible) {
-      await setTimeout(async () => {
-        await this.setState({
-          showDefault: true,
-          showDescriptions: true,
-        });
+  const pickerGender = useRef();
+  const pickerRange = useRef();
+
+  const [showActivities, setShowActivities] = useState(false);
+  const [showRange, setShowRange] = useState(false);
+  const [showGender, setShowGender] = useState(false);
+  const [showDefault, setShowDefault] = useState(false);
+  const [showDescriptions, setShowDescriptions] = useState(false);
+  const [showGym, setShowGym] = useState(false);
+  const [filters, setFilters] = useState(null);
+
+
+  useEffect(() => {
+    if (props.visible) {
+      setTimeout(() => {
+        setShowDefault(true);
+        setShowDescriptions(true);
       }, 50);
-      await setTimeout(async () => {
-        await this.setState({
-          showRange: true,
-        });
+      setTimeout(() => {
+        setShowRange(true);
       }, 115);
-      await setTimeout(async () => {
-        await this.setState({
-          showGym: true,
-        });
+      setTimeout(() => {
+        setShowGym(true);
       }, 190);
-      await setTimeout(async () => {
-        await this.setState({
-          showGender: true,
-        });
+      setTimeout(() => {
+        setShowGender(true);
       }, 265);
-      await setTimeout(async () => {
-        await this.setState({
-          showActivities: true,
-        });
+      setTimeout(() => {
+        setShowActivities(true);
       }, 340);
-      await this.setState({
-        filters: this.props.filters,
-      });
+      setFilters(props.filters);
     } else {
-      await setTimeout(async () => {
-        await this.setState({
-          showDefault: false,
-          showDescriptions: false,
-        });
+      setTimeout(() => {
+        setShowDefault(false);
+        setShowDescriptions(false);
       }, 30);
-      await setTimeout(async () => {
-        await this.setState({
-          showGender: false,
-        });
+      setTimeout(() => {
+        setShowGender(false);
       }, 50);
-      await setTimeout(async () => {
-        await this.setState({
-          showGym: false,
-        });
+      setTimeout(() => {
+        setShowGym(false);
       }, 70);
-      await setTimeout(async () => {
-        await this.setState({
-          showRange: false,
-        });
+      setTimeout(() => {
+        setShowRange(false);
       }, 90);
-      await setTimeout(async () => {
-        await this.setState({
-          showActivities: false,
-        });
+      setTimeout(() => {
+        setShowActivities(false);
       }, 110);
     }
-  };
+  }, [props])
 
-  applyFilterRange = async (value) => {
+  const applyFilterRange = (value) => {
     switch (value) {
       case "Less than 1 miles":
-        await this.setState({
-          filters: {
-            ...this.state.filters,
-            range: "1",
-          },
+        setFilters({
+          ...filters,
+          range: "1",
         });
         break;
       case "Less than 3 miles":
-        await this.setState({
-          filters: {
-            ...this.state.filters,
-            range: "3",
-          },
+        setFilters({
+          ...filters,
+          range: "3",
         });
         break;
       case "Less than 5 miles":
-        await this.setState({
-          filters: {
-            ...this.state.filters,
-            range: "5",
-          },
+        setFilters({
+          ...filters,
+          range: "5",
         });
         break;
       case "Less than 10 miles":
-        await this.setState({
-          filters: {
-            ...this.state.filters,
-            range: "10",
-          },
+        setFilters({
+          ...filters,
+          range: "10",
         });
         break;
       case "Less than 20 miles":
-        await this.setState({
-          filters: {
-            ...this.state.filters,
-            range: "20",
-          },
+        setFilters({
+          ...filters,
+          range: "20",
         });
         break;
     }
-    this.props.setFilter(this.state.filters);
+    props.setFilter(filters);
   };
 
-  applyFilterGender = async (value) => {
+  const applyFilterGender = (value) => {
     switch (value) {
       case "Female":
-        await this.setState({
-          filters: {
-            ...this.state.filters,
-            gender: "F",
-          },
+        setFilters({
+          ...filters,
+          gender: "F",
         });
         break;
       case "Male":
-        await this.setState({
-          filters: {
-            ...this.state.filters,
-            gender: "M",
-          },
+        setFilters({
+          ...filters,
+          gender: "M",
         });
         break;
     }
-    this.props.setFilter(this.state.filters);
+    props.setFilter(filters);
   };
 
-  applyFilterDefault = async () => {
-    await this.setState({
-      filters: {
-        gender: "",
-        range: "",
-        activity: [],
-        gyms: [],
-      },
+  const applyFilterDefault = () => {
+    setFilters({
+      gender: "",
+      range: "",
+      activity: [],
+      gyms: [],
     });
-    this.props.setFilter(this.state.filters, true);
+    props.setFilter(filters, true);
   };
 
-  render() {
-    return (
-      <View style={styles.viewContent}>
-        {this.state.showActivities && (
-          <View style={[styles.viewBubble, styles.viewBubbleSmall]}>
-            <Pressable
-              style={styles.touchable}
-              onPress={() => this.props.showActivities()}
-            >
-              {this.state.showDescriptions && (
-                <View style={styles.viewBubbleSmallDescription}>
-                  <View style={styles.bubbleSmallDescription}>
-                    <Text style={styles.text}>Activities</Text>
-                  </View>
+  return (
+    <View style={styles.viewContent}>
+      {showActivities && (
+        <View style={[styles.viewBubble, styles.viewBubbleSmall]}>
+          <Pressable
+            style={styles.touchable}
+            onPress={props.showActivities}
+          >
+            {showDescriptions && (
+              <View style={styles.viewBubbleSmallDescription}>
+                <View style={styles.bubbleSmallDescription}>
+                  <Text style={styles.text}>Activities</Text>
                 </View>
-              )}
-              <Icon name="bicycle" size={38} color={WhiteColor} />
-            </Pressable>
-          </View>
-        )}
-        {this.state.showGender && (
-          <View style={[styles.viewBubble, styles.viewBubbleSmall]}>
-            <Pressable
-              style={styles.touchable}
-              onPress={() => this.pickerGender.current.show()}
-            >
-              {this.state.showDescriptions && (
-                <View style={styles.viewBubbleSmallDescription}>
-                  <View style={styles.bubbleSmallDescription}>
-                    <Text style={styles.text}>Gender</Text>
-                  </View>
-                </View>
-              )}
-              <Icon name="people" size={38} color={WhiteColor} />
-            </Pressable>
-            <ReactNativePickerModule
-              pickerRef={this.pickerGender}
-              title={"Gender"}
-              items={["Male", "Female"]}
-              onValueChange={(value) => this.applyFilterGender(value)}
-            />
-          </View>
-        )}
-        {this.state.showGym && (
-          <View style={[styles.viewBubble, styles.viewBubbleSmall]}>
-            <Pressable
-              style={styles.touchable}
-              onPress={() => this.props.showGyms()}
-            >
-              {this.state.showDescriptions && (
-                <View style={styles.viewBubbleSmallDescription}>
-                  <View style={styles.bubbleSmallDescription}>
-                    <Text style={styles.text}>Gym</Text>
-                  </View>
-                </View>
-              )}
-              <Icon name="barbell-outline" size={38} color={WhiteColor} />
-            </Pressable>
-          </View>
-        )}
-        {this.state.showRange && (
-          <View style={[styles.viewBubble, styles.viewBubbleSmall]}>
-            <Pressable
-              style={styles.touchable}
-              onPress={() => this.pickerRange.current.show()}
-            >
-              {this.state.showDescriptions && (
-                <View style={styles.viewBubbleSmallDescription}>
-                  <View style={styles.bubbleSmallDescription}>
-                    <Text style={styles.text}>Range</Text>
-                  </View>
-                </View>
-              )}
-              <Icon name="map-sharp" size={38} color={WhiteColor} />
-            </Pressable>
-            <ReactNativePickerModule
-              pickerRef={this.pickerRange}
-              title={"Range"}
-              items={[
-                "Less than 1 miles",
-                "Less than 3 miles",
-                "Less than 5 miles",
-                "Less than 10 miles",
-                "Less than 20 miles",
-              ]}
-              onValueChange={(value) => this.applyFilterRange(value)}
-            />
-          </View>
-        )}
-        {this.state.showDefault && (
-          <View style={[styles.viewBubble, styles.viewBubbleSmall]}>
-            <Pressable
-              style={styles.touchable}
-              onPress={() => this.applyFilterDefault()}
-            >
-              {this.state.showDescriptions && (
-                <View style={styles.viewBubbleSmallDescription}>
-                  <View style={styles.bubbleSmallDescription}>
-                    <Text style={styles.text}>Default</Text>
-                  </View>
-                </View>
-              )}
-              <Icon name="options" size={38} color={WhiteColor} />
-            </Pressable>
-          </View>
-        )}
-        <View style={[styles.viewBubble, styles.viewBubbleBig]}>
-          <Pressable style={styles.touchable} onPress={this.props.press}>
-            <Text style={[styles.text, styles.bold]}>FILTER</Text>
+              </View>
+            )}
+            <Icon name="bicycle" size={38} color={WhiteColor} />
           </Pressable>
         </View>
+      )}
+      {showGender && (
+        <View style={[styles.viewBubble, styles.viewBubbleSmall]}>
+          <Pressable
+            style={styles.touchable}
+            onPress={() => pickerGender.current.show()}
+          >
+            {showDescriptions && (
+              <View style={styles.viewBubbleSmallDescription}>
+                <View style={styles.bubbleSmallDescription}>
+                  <Text style={styles.text}>Gender</Text>
+                </View>
+              </View>
+            )}
+            <Icon name="people" size={38} color={WhiteColor} />
+          </Pressable>
+          <ReactNativePickerModule
+            pickerRef={pickerGender}
+            title={"Gender"}
+            items={["Male", "Female"]}
+            onValueChange={(value) => applyFilterGender(value)}
+          />
+        </View>
+      )}
+      {showGym && (
+        <View style={[styles.viewBubble, styles.viewBubbleSmall]}>
+          <Pressable
+            style={styles.touchable}
+            onPress={() => props.showGyms()}
+          >
+            {showDescriptions && (
+              <View style={styles.viewBubbleSmallDescription}>
+                <View style={styles.bubbleSmallDescription}>
+                  <Text style={styles.text}>Gym</Text>
+                </View>
+              </View>
+            )}
+            <Icon name="barbell-outline" size={38} color={WhiteColor} />
+          </Pressable>
+        </View>
+      )}
+      {showRange && (
+        <View style={[styles.viewBubble, styles.viewBubbleSmall]}>
+          <Pressable
+            style={styles.touchable}
+            onPress={() => pickerRange.current.show()}
+          >
+            {showDescriptions && (
+              <View style={styles.viewBubbleSmallDescription}>
+                <View style={styles.bubbleSmallDescription}>
+                  <Text style={styles.text}>Range</Text>
+                </View>
+              </View>
+            )}
+            <Icon name="map-sharp" size={38} color={WhiteColor} />
+          </Pressable>
+          <ReactNativePickerModule
+            pickerRef={pickerRange}
+            title={"Range"}
+            items={[
+              "Less than 1 miles",
+              "Less than 3 miles",
+              "Less than 5 miles",
+              "Less than 10 miles",
+              "Less than 20 miles",
+            ]}
+            onValueChange={(value) => applyFilterRange(value)}
+          />
+        </View>
+      )}
+      {showDefault && (
+        <View style={[styles.viewBubble, styles.viewBubbleSmall]}>
+          <Pressable
+            style={styles.touchable}
+            onPress={() => applyFilterDefault()}
+          >
+            {showDescriptions && (
+              <View style={styles.viewBubbleSmallDescription}>
+                <View style={styles.bubbleSmallDescription}>
+                  <Text style={styles.text}>Default</Text>
+                </View>
+              </View>
+            )}
+            <Icon name="options" size={38} color={WhiteColor} />
+          </Pressable>
+        </View>
+      )}
+      <View style={[styles.viewBubble, styles.viewBubbleBig]}>
+        <Pressable style={styles.touchable} onPress={props.press}>
+          <Text style={[styles.text, styles.bold]}>FILTER</Text>
+        </Pressable>
       </View>
-    );
-  }
+    </View>
+  );
 }
+
+export default HomeFilters;
 
 const styles = StyleSheet.create({
   viewContent: {

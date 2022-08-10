@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import SelectRoutes from "./routes/SelectRoutes";
 import { Provider } from "react-redux";
 import store from "./redux/Store";
-import { StatusBar } from "react-native";
+import { LogBox, StatusBar } from "react-native";
 import "react-native-gesture-handler";
 import * as Sentry from "@sentry/react-native";
 import OneSignal from "react-native-onesignal";
@@ -17,6 +17,7 @@ OneSignal.setAppId("8ca46953-1fae-474e-85e6-fe65e7ca2523");
 OneSignal.promptForPushNotificationsWithUserResponse((response) => {
   console.log("Prompt response  :", response);
 });
+LogBox.ignoreAllLogs()
 
 const App = () => {
   const analytics = initSegment();

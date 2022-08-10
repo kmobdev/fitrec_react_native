@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ScrollView,
   StyleSheet,
@@ -7,11 +7,10 @@ import {
   View,
   RefreshControl,
   FlatList,
-  Image,
-  TextInput,
+  Image
 } from "react-native";
 import FastImage from "react-native-fast-image";
-import { connect } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   GlobalStyles,
   GreenFitrecColor,
@@ -28,83 +27,78 @@ import {
 } from "../../redux/actions/BlockActions";
 import { Input } from "../../components";
 
-class Blocks extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      refresh: false,
-      bShowQuestion: false,
-      sQuestionName: null,
-      nQuestionId: null,
-      search: "",
-    };
-    this.props.get();
-  }
+const Blocks = (props) => {
 
-  componentDidMount = () => {
-    this.props.navigation.setParams({ navigateBack: this.navigateBack });
+  const oBlocks = useSelector((state) => state.reducerBlock);
+
+  const dispatch = useDispatch();
+
+  const [refresh, setRefresh] = useState(false);
+  const [showQuestion, setShowQuestion] = useState(false);
+  const [questionName, setQuestionName] = useState(null);
+  const [questionId, setQuestionId] = useState(null);
+  const [search, setSearch] = useState("");
+
+
+  useEffect(() => {
+    dispatch(actionGetBlocks());
+    props.navigation.setParams({ navigateBack: navigateBack });
+    return () => {
+      navigateBack();
+    }
+  }, [])
+
+
+  const navigateBack = () => {
+    dispatch(actionCleanBlock());
+    props.navigation.goBack();
   };
 
-  componentWillUnmount = () => {
-    this.navigateBack();
-  };
-
-  navigateBack = () => {
-    this.props.clean();
-    this.props.navigation.goBack();
-  };
-
-  onRefresh = async () => {
-    this.props.get();
-    await this.setState({ refresh: false });
+  const onRefresh = () => {
+    dispatch(actionGetBlocks());
+    setRefresh(false);
   };
   /**
    * Function that filters the data based on the tab in which the user is.
    *
    * @author Leandro Curbelo
    */
-  getData = () => {
-    return this.props.oBlocks.blocks.filter(
+  const getData = () => {
+    return oBlocks.blocks.filter(
       (element) =>
-        element.name.toUpperCase().includes(this.state.search.toUpperCase()) ||
-        element.username.toUpperCase().includes(this.state.search.toUpperCase())
+        element.name.toUpperCase().includes(search.toUpperCase()) ||
+        element.username.toUpperCase().includes(search.toUpperCase())
     );
   };
 
-  unblock = () => {
-    let nUserId = this.state.nQuestionId;
-    this.props.unblock(nUserId);
-    this.setState({
-      bShowQuestion: false,
-      nQuestionId: null,
-      sQuestionName: null,
-    });
+  const unblock = () => {
+    let userId = questionId;
+    dispatch(actionUnblockUser(userId));
+    setShowQuestion(false);
+    setQuestionId(null);
+    setQuestionName(null);
   };
 
-  onCancleHandler = () => {
-    this.setState({
-      bShowQuestion: false,
-      nQuestionId: null,
-      sQuestionName: null,
-    });
+  const onCancleHandler = () => {
+    setShowQuestion(false);
+    setQuestionId(null);
+    setQuestionName(null);
   };
 
-  onLockHandler = (item) => {
-    this.setState({
-      bShowQuestion: true,
-      nQuestionId: item.id,
-      sQuestionName: item.username,
-    });
+  const onLockHandler = (item) => {
+    setShowQuestion(false);
+    setQuestionId(item.id);
+    setQuestionName(item.username);
   };
 
-  renderBlocks = () => {
+  const renderBlocks = () => {
     return (
       <>
-        {this.props.oBlocks.blocks.length > 0 && this.getData().length > 0 ? (
+        {oBlocks.blocks.length > 0 && getData().length > 0 ? (
           <FlatList
-            data={this.getData()}
+            data={getData()}
             keyExtractor={(item, index) => index.toString()}
-            extraData={this.state.refresh}
+            extraData={refresh}
             renderItem={({ item }) => (
               <View style={styles.containerRow}>
                 <View style={{ flex: 3 }}>
@@ -127,7 +121,7 @@ class Blocks extends Component {
                 </View>
                 <View style={styles.sectionButton}>
                   <Pressable
-                    onPress={() => this.onLockHandler(item)}
+                    onPress={() => onLockHandler(item)}
                     style={styles.removeButton}
                     activeOpacity={0.8}
                   >
@@ -142,7 +136,7 @@ class Blocks extends Component {
               </View>
             )}
           />
-        ) : this.props.oBlocks.blocks.length > 0 ? (
+        ) : oBlocks.blocks.length > 0 ? (
           <Text style={styles.textEmptyData}>No results found</Text>
         ) : (
           <Text style={styles.textEmptyData}>You have no blocked users</Text>
@@ -151,55 +145,23 @@ class Blocks extends Component {
     );
   };
 
-  render = () => {
-    return (
-      <View style={styles.container}>
-        <View style={styles.inputContainer}>
-          <Input
-            placeholder={"Search"}
-            value={this.state.search}
-            onChangeText={(sValue) => {
-              this.setState({ search: sValue });
-            }}
-            style={styles.textInput}
-          />
-        </View>
-        <ScrollView
-          refreshControl={
-            <RefreshControl
-              refreshing={this.state.refresh}
-              onRefresh={() => this.onRefresh()}
-              tintColor={GreenFitrecColor}
-              title="Pull to refresh..."
-            />
-          }
-        >
-          {this.renderBlocks()}
-        </ScrollView>
-        {this.renderQuestions()}
-      </View>
-    );
-  };
-
-  renderQuestions = () => {
+  const renderQuestions = () => {
     return (
       <>
         <ToastQuestionGeneric
-          visible={this.state.bShowQuestion}
+          visible={showQuestion}
           titleBig="Unblock User"
           title={
-            "Are you sure you want to unblock " + this.state.sQuestionName + "?"
+            "Are you sure you want to unblock " + questionName + "?"
           }
           options={
             <View style={ToastQuestionStyles.viewButtons}>
               <Pressable
-                onPress={() =>
-                  this.setState({
-                    bShowQuestion: false,
-                    nQuestionId: null,
-                    sQuestionName: null,
-                  })
-                }
+                onPress={() => {
+                  setShowQuestion(false);
+                  setQuestionId(null);
+                  setQuestionName(null);
+                }}
                 style={[
                   ToastQuestionStyles.button,
                   { backgroundColor: GreenFitrecColor, marginRight: 10 },
@@ -208,7 +170,7 @@ class Blocks extends Component {
                 <Text style={ToastQuestionStyles.textButton}>Cancel</Text>
               </Pressable>
               <Pressable
-                onPress={() => this.unblock()}
+                onPress={() => unblock()}
                 style={[
                   ToastQuestionStyles.button,
                   { backgroundColor: SignUpColor },
@@ -222,7 +184,34 @@ class Blocks extends Component {
       </>
     );
   };
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.inputContainer}>
+        <Input
+          placeholder={"Search"}
+          value={search}
+          onChangeText={(value) => setSearch(value)}
+          style={styles.textInput}
+        />
+      </View>
+      <ScrollView
+        refreshControl={
+          <RefreshControl
+            refreshing={refresh}
+            onRefresh={() => onRefresh()}
+            tintColor={GreenFitrecColor}
+            title="Pull to refresh..."
+          />
+        }>
+        {renderBlocks()}
+      </ScrollView>
+      {renderQuestions()}
+    </View>
+  );
 }
+
+export default Blocks;
 
 const styles = StyleSheet.create({
   container: {
@@ -298,22 +287,3 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 });
-
-const mapStateToProps = (state) => ({
-  session: state.reducerSession,
-  oBlocks: state.reducerBlock,
-});
-
-const mapDispatchToProps = (dispatch) => ({
-  get: () => {
-    dispatch(actionGetBlocks());
-  },
-  unblock: (nUserId) => {
-    dispatch(actionUnblockUser(nUserId));
-  },
-  clean: () => {
-    dispatch(actionCleanBlock());
-  },
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(Blocks);

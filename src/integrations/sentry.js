@@ -11,6 +11,7 @@ export const initSentry = () => {
     // Set tracesSampleRate to 1.0 to capture 100% of transactions for performance monitoring.
     // We recommend adjusting this value in production.
     tracesSampleRate: 1.0,
-    debug: false, // hard code to false for now but can set to true to turn off dev events
+    enableNative: false,
+    debug: true, // hard code to false for now but can set to true to turn off dev events
   });
 };
