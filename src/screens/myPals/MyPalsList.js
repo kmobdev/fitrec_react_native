@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, useEffect, useRef, useState } from "react";
 import {
   ImageBackground,
   Text,
@@ -24,7 +24,7 @@ import {
 } from "../../Styles";
 import { SearchUsername } from "../../components/chat/SearchUsername";
 import Icon from "react-native-vector-icons/Ionicons";
-import { connect } from "react-redux";
+import { connect, useDispatch, useSelector } from "react-redux";
 import {
   actionGetMyFriends,
   actionGetMyFriendsListener,
@@ -51,161 +51,160 @@ import {
 } from "../../redux/actions/ActivityActions";
 import Geolocation from "@react-native-community/geolocation";
 import moment from "moment/min/moment-with-locales";
-import { OPTIONS_GEOLOCATION_GET_POSITION } from "../../Constants";
+import { lABC, OPTIONS_GEOLOCATION_GET_POSITION } from "../../Constants";
 import { actionCleanNavigation } from "../../redux/actions/NavigationActions";
 
-class MyPalsList extends Component {
-  constructor(props) {
-    super(props);
-    this.pickerGym = React.createRef();
-    this.pickerAge = React.createRef();
-    this.state = {
-      tabSelectPals: true,
-      loading: false,
-      refresh: false,
-      search: "",
-      searchPals: "",
-      filterRequests: "",
-      toastText: "",
-      refreshing: false,
-      showFilters: false,
-      nearMe: false,
-      distance: 5,
-      gym: null,
-      ageRange: null,
-      showSelectActivities: false,
-      activities: [],
-      gyms: [],
-      gymsName: [],
-    };
-  }
+const MyPalsList = (props) => {
 
-  componentDidMount = () => {
-    const { key: sUserKey } = this.props.session.account;
-    this.props.getMyFriendsListener(sUserKey);
-    this.getRequests();
-    this.props.navigation.getParam("request", false) &&
-      this.setState({
-        tabSelectPals: false,
-      });
-    this.props.getAllActivities();
-    this.props.getGyms();
-  };
+  const pickerGym = useRef();
+  const pickerAge = useRef();
 
-  componentWillUnmount = () => {
-    this.props.getMyFriendsListener();
-  };
+  const session = useSelector((state) => state.reducerSession);
+  const myPals = useSelector((state) => state.reducerMyPals);
+  const myPalsRequest = useSelector((state) => state.reducerRequests);
+  const activity = useSelector((state) => state.reducerActivity);
 
-  openOptions = () => {
+  const dispatch = useDispatch();
+
+  const [tabSelectPals, setTabSelectPals] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [refresh, setRefresh] = useState(false);
+  const [search, setSearch] = useState("");
+  const [searchPals, setSearchPals] = useState("");
+  const [filterRequests, setFilterRequests] = useState("");
+  const [toastText, setToastText] = useState("");
+  const [refreshing, setRefreshing] = useState(false);
+  const [showFilters, setShowFilters] = useState(false);
+  const [nearMe, setNearMe] = useState(false);
+  const [distance, setDistance] = useState(5);
+  const [gym, setGym] = useState(null);
+  const [ageRange, setAgeRange] = useState(null);
+  const [ageMin, setAgeMin] = useState(null);
+  const [ageMax, setAgeMax] = useState(null);
+  const [showSelectActivities, setShowSelectActivities] = useState(false);
+  const [activities, setActivities] = useState([]);
+  const [gyms, setGyms] = useState([]);
+  const [gymsName, setGymsName] = useState([]);
+
+  // componentWillUnmount = () => {
+  //   props.getMyFriendsListener();
+  // };
+
+  useEffect(() => {
+    const { key: sUserKey } = session.account;
+    dispatch(actionGetMyFriendsListener(sUserKey));
+    getRequests();
+    props.navigation.getParam("request", false) && setTabSelectPals(false);
+    dispatch(actionGetAllActivities());
+    dispatch(actionGetGyms());
+  }, [])
+
+
+
+  const openOptions = () => {
     Keyboard.dismiss();
-    this.setState({ showFilters: !this.state.showFilters });
+    setShowFilters(!showFilters);
   };
 
-  getMyFriends = () => {
-    this.setState({
-      loading: true,
-    });
-    this.props.getMyFriends();
+  const getMyFriends = () => {
+    setLoading(true);
+    dispatch(actionGetMyFriends());
   };
 
-  getRequests = () => {
-    this.setState({
-      loading: true,
-    });
-    this.props.getRequests(this.props.session.account.key);
+  const getRequests = () => {
+    setLoading(true);
+    dispatch(actionGetRequests(session.account.key));
   };
 
-  componentWillReceiveProps = (nextProps) => {
-    if (
-      null !== nextProps.myPalsRequest.statusSend &&
-      nextProps.myPalsRequest.statusSend
-    ) {
-      this.props.resetStateRequest();
-      this.setState({ search: "", filterRequests: "" });
-      this.searchPeople();
-      this.showToast("Your request has been sent");
-    } else if (
-      null !== nextProps.myPalsRequest.statusSend &&
-      !nextProps.myPalsRequest.statusSend
-    ) {
-      this.setState({ search: "", filterRequests: "" });
-      this.searchPeople();
-      this.showToast(nextProps.myPalsRequest.messageError);
-      this.props.resetStateRequest();
-    }
-    if (
-      null !== nextProps.myPalsRequest.statusAccept &&
-      nextProps.myPalsRequest.statusAccept === true
-    ) {
-      this.props.resetStateRequest();
-      this.showToast("Successfully accepted");
-    } else if (
-      null !== nextProps.myPalsRequest.statusAccept &&
-      !nextProps.myPalsRequest.statusAccept &&
-      "" !== nextProps.myPalsRequest.messageError
-    ) {
-      this.showToast(nextProps.myPalsRequest.messageError);
-      this.props.resetStateRequest();
-    }
-    if (
-      null !== nextProps.myPalsRequest.statusCancel &&
-      nextProps.myPalsRequest.statusCancel === true
-    ) {
-      this.props.resetStateRequest();
-      this.showToast("Successfully cancel");
-    }
-    if (nextProps.activity.activities.length > 0) {
-      this.setState({
-        activities: nextProps.activity.activities,
-      });
-    }
-    if (nextProps.activity.gyms.length > 0) {
-      var aGymsName = ["None"];
-      nextProps.activity.gyms.forEach((oGym) => {
-        aGymsName.push(oGym.name);
-      });
-      this.setState({
-        gyms: nextProps.activity.gyms,
-        gymsName: aGymsName,
-      });
-    }
+  // componentWillReceiveProps = (nextProps) => {
+  //   if (
+  //     null !== nextProps.myPalsRequest.statusSend &&
+  //     nextProps.myPalsRequest.statusSend
+  //   ) {
+  //     props.resetStateRequest();
+  //     setState({ search: "", filterRequests: "" });
+  //     searchPeople();
+  //     showToast("Your request has been sent");
+  //   } else if (
+  //     null !== nextProps.myPalsRequest.statusSend &&
+  //     !nextProps.myPalsRequest.statusSend
+  //   ) {
+  //     setState({ search: "", filterRequests: "" });
+  //     searchPeople();
+  //     showToast(nextProps.myPalsRequest.messageError);
+  //     props.resetStateRequest();
+  //   }
+  //   if (
+  //     null !== nextProps.myPalsRequest.statusAccept &&
+  //     nextProps.myPalsRequest.statusAccept === true
+  //   ) {
+  //     props.resetStateRequest();
+  //     showToast("Successfully accepted");
+  //   } else if (
+  //     null !== nextProps.myPalsRequest.statusAccept &&
+  //     !nextProps.myPalsRequest.statusAccept &&
+  //     "" !== nextProps.myPalsRequest.messageError
+  //   ) {
+  //     showToast(nextProps.myPalsRequest.messageError);
+  //     props.resetStateRequest();
+  //   }
+  //   if (
+  //     null !== nextProps.myPalsRequest.statusCancel &&
+  //     nextProps.myPalsRequest.statusCancel === true
+  //   ) {
+  //     props.resetStateRequest();
+  //     showToast("Successfully cancel");
+  //   }
+  //   if (activity.activities.length > 0) {
+  //     setState({
+  //       activities: activity.activities,
+  //     });
+  //   }
+  //   if (activity.gyms.length > 0) {
+  //     var aGymsName = ["None"];
+  //     activity.gyms.forEach((oGym) => {
+  //       aGymsName.push(oGym.name);
+  //     });
+  //     setState({
+  //       gyms: activity.gyms,
+  //       gymsName: aGymsName,
+  //     });
+  //   }
 
-    if (nextProps.myPals.bRequestNavigation) {
-      this.setState({ tabSelectPals: false });
-      this.props.cleanNavigation();
-    }
+  //   if (nextProps.myPals.bRequestNavigation) {
+  //     setState({ tabSelectPals: false });
+  //     props.cleanNavigation();
+  //   }
 
-    this.setState({
-      refresh: !this.state.refresh,
-      loading: false,
-      refreshing: false,
-    });
-  };
+  //   setState({
+  //     refresh: !refresh,
+  //     loading: false,
+  //     refreshing: false,
+  //   });
+  // };
 
-  searchPeople = () => {
-    this.setState({
-      filterRequests: this.state.search,
-    });
+  const searchPeople = () => {
+    setFilterRequests(search);
     var aActivitiesSelected =
-      this.state.activities.filter((item) => item.selected).length > 0 &&
-      this.state.activities.filter((item) => item.selected).length <
-        this.state.activities.length
-        ? this.state.activities.filter((item) => item.selected)
+      activities.filter((item) => item.selected).length > 0 &&
+        activities.filter((item) => item.selected).length <
+        activities.length
+        ? activities.filter((item) => item.selected)
         : null;
 
     var nGymId = null;
-    if (null !== this.state.gym)
-      this.state.gyms.forEach((oGym) => {
-        if (oGym.name === this.state.gym) nGymId = oGym.id;
+    if (null !== gym)
+      gyms.forEach((oGym) => {
+        if (oGym.name === gym) nGymId = oGym.id;
       });
-    var sFilter = this.state.search,
+    var sFilter = search,
       aActivities = aActivitiesSelected,
-      nMaxAge = this.state.ageRange !== null ? this.state.ageMax : null,
-      nMinAge = this.state.ageRange !== null ? this.state.ageMin : null,
-      nDistance = this.state.distance,
+      nMaxAge = ageRange !== null ? ageMax : null,
+      nMinAge = ageRange !== null ? ageMin : null,
+      nDistance = distance,
       nLongitude = null,
       nLatitude = null;
-    if (this.state.nearMe)
+    if (nearMe)
       try {
         Geolocation.getCurrentPosition(
           (position) => {
@@ -213,7 +212,7 @@ class MyPalsList extends Component {
               nLongitude = position.coords.longitude;
               nLatitude = position.coords.latitude;
             }
-            this.props.getPeople(
+            props.getPeople(
               sFilter,
               nMinAge,
               nMaxAge,
@@ -225,7 +224,7 @@ class MyPalsList extends Component {
             );
           },
           () => {
-            this.props.getPeople(
+            props.getPeople(
               sFilter,
               nMinAge,
               nMaxAge,
@@ -239,7 +238,7 @@ class MyPalsList extends Component {
           OPTIONS_GEOLOCATION_GET_POSITION
         );
       } catch (oError) {
-        this.props.getPeople(
+        props.getPeople(
           sFilter,
           nMinAge,
           nMaxAge,
@@ -251,7 +250,7 @@ class MyPalsList extends Component {
         );
       }
     else
-      this.props.getPeople(
+      props.getPeople(
         sFilter,
         nMinAge,
         nMaxAge,
@@ -263,34 +262,34 @@ class MyPalsList extends Component {
       );
   };
 
-  notOtherArray = (nIdFitrec) => {
-    if (nIdFitrec === this.props.session.account.id) {
+  const notOtherArray = (nIdFitrec) => {
+    if (nIdFitrec === session.account.id) {
       return false;
     }
     if (
-      this.props.myPalsRequest.requestsRecived !== undefined &&
-      this.props.myPalsRequest.requestsRecived.length > 0
+      myPalsRequest.requestsRecived !== undefined &&
+      myPalsRequest.requestsRecived.length > 0
     ) {
       if (
-        this.props.myPalsRequest.requestsRecived.filter(
+        myPalsRequest.requestsRecived.filter(
           (element) => nIdFitrec === element.id
         ).length > 0
       ) {
         return false;
       }
     }
-    if (this.props.myPalsRequest.requestsSent.length > 0) {
+    if (myPalsRequest.requestsSent.length > 0) {
       if (
-        this.props.myPalsRequest.requestsSent.filter(
+        myPalsRequest.requestsSent.filter(
           (element) => nIdFitrec === element.id
         ).length > 0
       ) {
         return false;
       }
     }
-    if (this.props.myPals.myFriends.length > 0) {
+    if (myPals.myFriends.length > 0) {
       if (
-        this.props.myPals.myFriends.filter(
+        myPals.myFriends.filter(
           (element) => nIdFitrec === element.id
         ).length > 0
       ) {
@@ -300,407 +299,184 @@ class MyPalsList extends Component {
     return true;
   };
 
-  showToast = (sText) => {
-    this.setState({
-      toastText: sText,
-      loading: false,
-    });
+  const showToast = (text) => {
+    setToastText(text);
+    setLoading(false);
     setTimeout(() => {
-      this.setState({
-        toastText: "",
-      });
+      setToastText("");
     }, 2000);
   };
 
-  sendRequest = (sUserPalKey) => {
-    this.setState({
-      loading: true,
-    });
-    this.props.sendRequest(
+  const sendRequest = (sUserPalKey) => {
+    setLoading(true);
+    dispatch(actionSendRequest(
       sUserPalKey,
-      this.props.session.account.key,
-      this.props.session.account.name,
+      session.account.key,
+      session.account.name,
       false
-    );
+    ));
   };
 
-  acceptRequest = (oPal) => {
-    this.props.acceptRequest(oPal.id, oPal.key, this.props.session.account.key);
+  const acceptRequest = (oPal) => {
+    dispatch(actionAcceptRequest(oPal.id, oPal.key, session.account.key));
   };
 
-  cancelRequest = (lFriendItem, sType) => {
-    this.setState({
-      loading: true,
-    });
-    this.props.cancelRequest({
-      accountId: this.props.session.account.key,
+  const cancelRequest = (lFriendItem, sType) => {
+    setLoading(true);
+    let data = {
+      accountId: session.account.key,
       friendKey: lFriendItem.key,
       type: sType,
-    });
+    };
+    dispatch(actionCancelRequest(data));
   };
 
-  refreshFriends = () => {
-    this.setState({
-      refreshing: true,
-    });
-    this.getMyFriends();
+  const refreshFriends = () => {
+    setRefreshing(true);
+    getMyFriends();
   };
 
-  refreshRequest = () => {
-    this.setState({
-      refreshing: true,
-    });
-    this.getRequests();
+  const refreshRequest = () => {
+    setRefreshing(true);
+    getRequests();
   };
 
-  changeTab = (bValue) => {
-    if (bValue) {
-      this.setState({ search: "", searchPals: "" });
-      this.searchPeople();
+  const changeTab = (value) => {
+    if (value) {
+      setSearch("");
+      setSearchPals("");
+      searchPeople();
     }
-    this.setState({ tabSelectPals: bValue });
+    setTabSelectPals(value)
   };
 
-  redirectionViewProfile = (nIdFitrec) => {
-    this.props.getProfile(nIdFitrec);
-    this.props.navigation.navigate("ProfileViewDetails");
+  const redirectionViewProfile = (idFitrec) => {
+    dispatch(actionGetProfile(idFitrec, true));
+    props.navigation.navigate("ProfileViewDetails");
   };
 
-  getAgeValue = (sValue) => {
-    if (sValue === "Under 18 years old")
-      this.setState({
-        ageRange: sValue,
-        ageMin: 0,
-        ageMax: 18,
-      });
-    else if (sValue === "Between 18 and 30 years")
-      this.setState({
-        ageRange: sValue,
-        ageMin: 18,
-        ageMax: 30,
-      });
-    else if (sValue === "Over 30 years old")
-      this.setState({
-        ageRange: sValue,
-        ageMin: 30,
-        ageMax: 100,
-      });
-    else
-      this.setState({
-        ageRange: null,
-      });
+  const getAgeValue = (value) => {
+    if (value === "Under 18 years old") {
+      setAgeRange(value);
+      setAgeMin(0);
+      setAgeMax(18);
+    }
+    else if (value === "Between 18 and 30 years") {
+      setAgeRange(value);
+      setAgeMin(18);
+      setAgeMax(30);
+    } else if (value === "Over 30 years old") {
+      setAgeRange(value);
+      setAgeMin(30);
+      setAgeMax(100);
+    } else {
+      setAgeRange(null);
+    }
   };
 
-  resetFilters = () => {
-    undefined !== this.state.activities &&
-      this.state.activities.map((oActivity) => {
-        oActivity.selected = false;
+  const resetFilters = () => {
+    undefined !== activities &&
+      activities.map((activity) => {
+        activity.selected = false;
       });
-    this.setState({
-      ageRange: null,
-      ageMax: null,
-      ageMin: null,
-      gym: null,
-      nearMe: false,
-      distance: 5,
-      refresh: !this.state.refresh,
-    });
-    this.searchPeople();
+    setAgeRange(null);
+    setAgeMin(null);
+    setAgeMax(null);
+    setGym(null);
+    setNearMe(false);
+    setDistance(5);
+    setRefresh(!refresh)
+    searchPeople();
   };
 
-  selectGym = (sValue) => {
-    this.setState({
-      gym: "None" === sValue ? null : sValue,
-    });
+  const selectGym = (value) => {
+    setGym(value === "None" ? null : value)
   };
 
-  render = () => {
-    return (
-      <ImageBackground
-        source={require("../../assets/bk.png")}
-        resizeMode="stretch"
-        style={GlobalStyles.fullImage}
-      >
-        <View style={GlobalTabs.viewTabs}>
-          <Pressable
-            onPress={() => this.changeTab(true)}
-            style={[
-              GlobalTabs.tabLeft,
-              this.state.tabSelectPals && GlobalTabs.tabActive,
-            ]}
-          >
-            <View>
-              <Text
-                style={
-                  this.state.tabSelectPals
-                    ? GlobalTabs.tabsTextActive
-                    : GlobalTabs.tabsText
-                }
-              >
-                Pals
-              </Text>
-            </View>
-          </Pressable>
-          <Pressable
-            onPress={() => this.changeTab(false)}
-            style={[
-              GlobalTabs.tabRight,
-              !this.state.tabSelectPals && GlobalTabs.tabActive,
-            ]}
-          >
-            <View>
-              <Text
-                style={
-                  !this.state.tabSelectPals
-                    ? GlobalTabs.tabsTextActive
-                    : GlobalTabs.tabsText
-                }
-              >
-                Requests
-              </Text>
-            </View>
-          </Pressable>
-        </View>
-        {this.state.tabSelectPals ? (
-          <View style={styles.viewPals}>
-            <View style={styles.viewPalsWidth}>
-              <SearchUsername
-                ph="Search for people or username"
-                value={this.state.searchPals}
-                change={(text) => this.setState({ searchPals: text })}
-                clean={() => {
-                  this.setState({ searchPals: "" });
-                }}
-              />
-              <ScrollView
-                refreshControl={
-                  <RefreshControl
-                    refreshing={this.state.refreshing}
-                    onRefresh={() => this.refreshFriends()}
-                    tintColor={GreenFitrecColor}
-                    title="Pull to refresh..."
-                  />
-                }
-              >
-                {this.props.myPals.myFriends.length > 0 && (
-                  <FlatList
-                    data={this.props.myPals.myFriends.filter(
-                      (element) =>
-                        element.name
-                          .toUpperCase()
-                          .includes(this.state.searchPals.toUpperCase()) ||
-                        element.username
-                          .toUpperCase()
-                          .includes(this.state.searchPals.toUpperCase())
-                    )}
-                    keyExtractor={(item, index) => index.toString()}
-                    extraData={this.state.refresh}
-                    renderItem={({ item }) => (
-                      <Pressable
-                        style={styles.imagePressable}
-                        onPress={() => this.redirectionViewProfile(item.id)}
-                      >
-                        {undefined === item.image || null === item.image ? (
-                          <Image
-                            style={styles.dummyImage}
-                            source={require("../../assets/imgProfileReadOnly2.png")}
-                          />
-                        ) : (
-                          <FastImage
-                            style={styles.userImage}
-                            source={{
-                              uri: item.image,
-                              priority: FastImage.priority.high,
-                            }}
-                            resizeMode={FastImage.resizeMode.cover}
-                          />
-                        )}
-                        <View style={styles.requestMainView}>
-                          <Text style={styles.textUserReference}>
-                            {item.name}
-                          </Text>
-                          <Text style={{ fontSize: 14 }}>
-                            {item.username} -{" "}
-                            {moment(
-                              item.last_connection,
-                              "YYYY-MM-DD H:m:s"
-                            ).fromNow()}
-                          </Text>
-                        </View>
-                      </Pressable>
-                    )}
-                  />
-                )}
-              </ScrollView>
-            </View>
-            <View style={styles.viewABC}>
-              {lABC.map((element) => (
-                <Text style={styles.textABC} key={element}>
-                  {element}
-                </Text>
-              ))}
-            </View>
+  return (
+    <ImageBackground
+      source={require("../../assets/bk.png")}
+      resizeMode="stretch"
+      style={GlobalStyles.fullImage}
+    >
+      <View style={GlobalTabs.viewTabs}>
+        <Pressable
+          onPress={() => changeTab(true)}
+          style={[
+            GlobalTabs.tabLeft,
+            tabSelectPals && GlobalTabs.tabActive,
+          ]}
+        >
+          <View>
+            <Text
+              style={
+                tabSelectPals
+                  ? GlobalTabs.tabsTextActive
+                  : GlobalTabs.tabsText
+              }
+            >
+              Pals
+            </Text>
           </View>
-        ) : (
-          <View style={{ flex: 1 }}>
+        </Pressable>
+        <Pressable
+          onPress={() => changeTab(false)}
+          style={[
+            GlobalTabs.tabRight,
+            !tabSelectPals && GlobalTabs.tabActive,
+          ]}
+        >
+          <View>
+            <Text
+              style={
+                !tabSelectPals
+                  ? GlobalTabs.tabsTextActive
+                  : GlobalTabs.tabsText
+              }
+            >
+              Requests
+            </Text>
+          </View>
+        </Pressable>
+      </View>
+      {tabSelectPals ? (
+        <View style={styles.viewPals}>
+          <View style={styles.viewPalsWidth}>
             <SearchUsername
               ph="Search for people or username"
-              value={this.state.search}
-              change={(text) => {
-                this.setState({ search: text });
-                "" === text && this.searchPeople();
-              }}
-              blur={() => this.searchPeople()}
-              clean={() => {
-                this.setState({ search: "" });
-                this.searchPeople();
-              }}
+              value={searchPals}
+              change={(text) => setSearchPals(text)}
+              clean={() => setSearchPals("")}
             />
             <ScrollView
               refreshControl={
                 <RefreshControl
-                  refreshing={this.state.refreshing}
-                  onRefresh={() => this.refreshRequest()}
+                  refreshing={refreshing}
+                  onRefresh={() => refreshFriends()}
                   tintColor={GreenFitrecColor}
                   title="Pull to refresh..."
                 />
               }
             >
-              {this.props.myPalsRequest.requestsRecived !== undefined &&
-                this.props.myPalsRequest.requestsRecived instanceof Array &&
-                this.props.myPalsRequest.requestsRecived !== null && (
-                  <FlatList
-                    data={this.props.myPalsRequest.requestsRecived.filter(
-                      (element) =>
-                        element.name
-                          .toUpperCase()
-                          .includes(this.state.filterRequests.toUpperCase()) ||
-                        element.username
-                          .toUpperCase()
-                          .includes(this.state.filterRequests.toUpperCase())
-                    )}
-                    keyExtractor={(item, index) => index.toString()}
-                    extraData={this.state.refresh}
-                    renderItem={({ item }) => (
-                      <View style={styles.viewNotificaton}>
-                        <Pressable
-                          onPress={() => this.redirectionViewProfile(item.id)}
-                          style={styles.dummyImagePressable}
-                        >
-                          {null === item.image || undefined === item.image ? (
-                            <Image
-                              style={styles.dummyImage}
-                              source={require("../../assets/imgProfileReadOnly2.png")}
-                            />
-                          ) : (
-                            <FastImage
-                              style={styles.userImage}
-                              source={{
-                                uri: item.image,
-                                priority: FastImage.priority.high,
-                              }}
-                              resizeMode={FastImage.resizeMode.cover}
-                            />
-                          )}
-                          <View style={styles.friendRequestsMainView}>
-                            <Text
-                              style={styles.textUserReference}
-                              numberOfLines={1}
-                            >
-                              {item.name}(@{item.username})
-                            </Text>
-                            <Text style={{ fontSize: 14 }}>
-                              Sent you a friend request.
-                            </Text>
-                          </View>
-                        </Pressable>
-                        <Pressable
-                          style={styles.viewIconRight}
-                          onPress={() => this.acceptRequest(item)}
-                        >
-                          <Icon
-                            name="md-checkmark"
-                            size={32}
-                            color="yellowgreen"
-                          />
-                        </Pressable>
-                        <Pressable
-                          onPress={() => this.cancelRequest(item, "reject")}
-                          style={[styles.viewIconRight, { right: 50 }]}
-                        >
-                          <Icon name="md-close" size={32} color={SignUpColor} />
-                        </Pressable>
-                      </View>
-                    )}
-                  />
-                )}
-              {undefined !== this.props.myPalsRequest.requestsSent && (
+              {myPals.myFriends.length > 0 && (
                 <FlatList
-                  data={this.props.myPalsRequest.requestsSent.filter(
+                  data={myPals.myFriends.filter(
                     (element) =>
-                      element.name.includes(this.state.filterRequests) ||
-                      element.username.includes(this.state.filterRequests)
+                      element.name
+                        .toUpperCase()
+                        .includes(searchPals.toUpperCase()) ||
+                      element.username
+                        .toUpperCase()
+                        .includes(searchPals.toUpperCase())
                   )}
                   keyExtractor={(item, index) => index.toString()}
-                  extraData={this.state.refresh}
+                  extraData={refresh}
                   renderItem={({ item }) => (
-                    <View style={styles.viewNotificaton}>
-                      <Pressable
-                        onPress={() => this.redirectionViewProfile(item.id)}
-                        style={styles.dummyImagePressable}
-                      >
-                        {undefined === item.image ||
-                        null === item.image ||
-                        "" === item.image ? (
-                          <Image
-                            style={styles.dummyImage}
-                            source={require("../../assets/imgProfileReadOnly2.png")}
-                          />
-                        ) : (
-                          <FastImage
-                            style={styles.userImage}
-                            source={{
-                              uri: item.image,
-                              priority: FastImage.priority.high,
-                            }}
-                            resizeMode={FastImage.resizeMode.cover}
-                          />
-                        )}
-                        <View style={styles.friendSentRequestsMainView}>
-                          <Text
-                            style={styles.textUserReference}
-                            numberOfLines={1}
-                          >
-                            {item.name}(@{item.username})
-                          </Text>
-                          <Text style={{ fontSize: 14 }}>
-                            Friend request sent.
-                          </Text>
-                        </View>
-                      </Pressable>
-                      <Pressable
-                        onPress={() => this.cancelRequest(item, "cancel")}
-                        style={styles.viewIconRight}
-                      >
-                        <Icon name="md-close" size={32} color={SignUpColor} />
-                      </Pressable>
-                    </View>
-                  )}
-                />
-              )}
-              <FlatList
-                data={this.props.myPalsRequest.peopleFitrec.filter((element) =>
-                  this.notOtherArray(element.id)
-                )}
-                keyExtractor={(item, index) => index.toString()}
-                extraData={this.state.refresh}
-                renderItem={({ item }) => (
-                  <View style={styles.viewNotificaton}>
                     <Pressable
-                      onPress={() => this.redirectionViewProfile(item.id)}
-                      style={styles.dummyImagePressable}
+                      style={styles.imagePressable}
+                      onPress={() => redirectionViewProfile(item.id)}
                     >
-                      {null === item.image ? (
+                      {undefined === item.image || null === item.image ? (
                         <Image
                           style={styles.dummyImage}
                           source={require("../../assets/imgProfileReadOnly2.png")}
@@ -719,116 +495,283 @@ class MyPalsList extends Component {
                         <Text style={styles.textUserReference}>
                           {item.name}
                         </Text>
-                        <Text>@{item.username}</Text>
+                        <Text style={{ fontSize: 14 }}>
+                          {item.username} -{" "}
+                          {moment(
+                            item.last_connection,
+                            "YYYY-MM-DD H:m:s"
+                          ).fromNow()}
+                        </Text>
                       </View>
+                    </Pressable>
+                  )}
+                />
+              )}
+            </ScrollView>
+          </View>
+          <View style={styles.viewABC}>
+            {lABC.map((element) => (
+              <Text style={styles.textABC} key={element}>
+                {element}
+              </Text>
+            ))}
+          </View>
+        </View>
+      ) : (
+        <View style={{ flex: 1 }}>
+          <SearchUsername
+            ph="Search for people or username"
+            value={search}
+            change={(text) => {
+              setSearch(text);
+              text === "" && searchPeople();
+            }}
+            blur={() => searchPeople()}
+            clean={() => {
+              setSearch("");
+              searchPeople();
+            }}
+          />
+          <ScrollView
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={() => refreshRequest()}
+                tintColor={GreenFitrecColor}
+                title="Pull to refresh..."
+              />
+            }
+          >
+            {myPalsRequest.requestsRecived !== undefined &&
+              myPalsRequest.requestsRecived instanceof Array &&
+              myPalsRequest.requestsRecived !== null && (
+                <FlatList
+                  data={myPalsRequest.requestsRecived.filter(
+                    (element) =>
+                      element.name
+                        .toUpperCase()
+                        .includes(filterRequests.toUpperCase()) ||
+                      element.username
+                        .toUpperCase()
+                        .includes(filterRequests.toUpperCase())
+                  )}
+                  keyExtractor={(item, index) => index.toString()}
+                  extraData={refresh}
+                  renderItem={({ item }) => (
+                    <View style={styles.viewNotificaton}>
                       <Pressable
-                        onPress={() => this.sendRequest(item.key)}
+                        onPress={() => redirectionViewProfile(item.id)}
+                        style={styles.dummyImagePressable}
+                      >
+                        {null === item.image || undefined === item.image ? (
+                          <Image
+                            style={styles.dummyImage}
+                            source={require("../../assets/imgProfileReadOnly2.png")}
+                          />
+                        ) : (
+                          <FastImage
+                            style={styles.userImage}
+                            source={{
+                              uri: item.image,
+                              priority: FastImage.priority.high,
+                            }}
+                            resizeMode={FastImage.resizeMode.cover}
+                          />
+                        )}
+                        <View style={styles.friendRequestsMainView}>
+                          <Text
+                            style={styles.textUserReference}
+                            numberOfLines={1}
+                          >
+                            {item.name}(@{item.username})
+                          </Text>
+                          <Text style={{ fontSize: 14 }}>
+                            Sent you a friend request.
+                          </Text>
+                        </View>
+                      </Pressable>
+                      <Pressable
                         style={styles.viewIconRight}
+                        onPress={() => acceptRequest(item)}
                       >
                         <Icon
-                          name="md-person-add"
-                          size={30}
+                          name="md-checkmark"
+                          size={32}
                           color="yellowgreen"
                         />
                       </Pressable>
+                      <Pressable
+                        onPress={() => cancelRequest(item, "reject")}
+                        style={[styles.viewIconRight, { right: 50 }]}
+                      >
+                        <Icon name="md-close" size={32} color={SignUpColor} />
+                      </Pressable>
+                    </View>
+                  )}
+                />
+              )}
+            {undefined !== myPalsRequest.requestsSent && (
+              <FlatList
+                data={myPalsRequest.requestsSent.filter(
+                  (element) =>
+                    element.name.includes(filterRequests) ||
+                    element.username.includes(filterRequests)
+                )}
+                keyExtractor={(item, index) => index.toString()}
+                extraData={refresh}
+                renderItem={({ item }) => (
+                  <View style={styles.viewNotificaton}>
+                    <Pressable
+                      onPress={() => redirectionViewProfile(item.id)}
+                      style={styles.dummyImagePressable}
+                    >
+                      {undefined === item.image ||
+                        null === item.image ||
+                        "" === item.image ? (
+                        <Image
+                          style={styles.dummyImage}
+                          source={require("../../assets/imgProfileReadOnly2.png")}
+                        />
+                      ) : (
+                        <FastImage
+                          style={styles.userImage}
+                          source={{
+                            uri: item.image,
+                            priority: FastImage.priority.high,
+                          }}
+                          resizeMode={FastImage.resizeMode.cover}
+                        />
+                      )}
+                      <View style={styles.friendSentRequestsMainView}>
+                        <Text
+                          style={styles.textUserReference}
+                          numberOfLines={1}
+                        >
+                          {item.name}(@{item.username})
+                        </Text>
+                        <Text style={{ fontSize: 14 }}>
+                          Friend request sent.
+                        </Text>
+                      </View>
+                    </Pressable>
+                    <Pressable
+                      onPress={() => cancelRequest(item, "cancel")}
+                      style={styles.viewIconRight}
+                    >
+                      <Icon name="md-close" size={32} color={SignUpColor} />
                     </Pressable>
                   </View>
                 )}
               />
-            </ScrollView>
-            <View style={GlobalBubble.position}>
-              <View
-                style={[GlobalBubble.viewBubble, GlobalBubble.viewBubbleBig]}
-              >
-                <Pressable
-                  style={GlobalBubble.touchable}
-                  onPress={() => this.openOptions()}
-                >
-                  <Text style={GlobalBubble.text}>FILTER</Text>
-                </Pressable>
-              </View>
-            </View>
-          </View>
-        )}
-        {this.state.showFilters && (
-          <View style={GlobalModal.viewContent}>
-            <View style={GlobalModal.viewHead}>
-              {this.state.ageRange !== null ||
-              this.state.gym !== null ||
-              this.state.activities.filter((item) => item.selected).length >
-                0 ||
-              this.state.nearMe !== false ? (
-                <Pressable
-                  style={[GlobalModal.buttonLeft, { flexDirection: "row" }]}
-                  onPress={() => this.resetFilters()}
-                >
-                  <Icon name="refresh-outline" color={SignUpColor} size={22} />
-                  <Text style={[GlobalModal.titleClose, { marginLeft: 2 }]}>
-                    Default
-                  </Text>
-                </Pressable>
-              ) : null}
-              <Text style={GlobalModal.headTitle}>Filters</Text>
-              <Pressable
-                style={[GlobalModal.buttonClose, { flexDirection: "row" }]}
-                onPress={() => this.setState({ showFilters: false })}
-              >
-                <Icon name="close" color={SignUpColor} size={22} />
-                <Text style={[GlobalModal.titleClose, { marginLeft: 2 }]}>
-                  Close
-                </Text>
-              </Pressable>
-            </View>
-            <View style={{ padding: 20 }}>
-              {this.state.gymsName !== undefined && (
-                <View
-                  style={[
-                    styles.viewSection,
-                    styles.checkInput,
-                    { alignItems: "flex-end", marginTop: 0 },
-                  ]}
-                >
-                  <Text style={styles.textLabel}>Gym</Text>
-                  <View style={styles.comboSelect}>
-                    <Pressable
-                      onPress={() => this.pickerGym.current.show()}
-                      style={{ flexDirection: "row" }}
-                    >
-                      <Text>
-                        {null !== this.state.gym ? this.state.gym : "None"}
+            )}
+            <FlatList
+              data={myPalsRequest.peopleFitrec.filter((element) =>
+                notOtherArray(element.id)
+              )}
+              keyExtractor={(item, index) => index.toString()}
+              extraData={refresh}
+              renderItem={({ item }) => (
+                <View style={styles.viewNotificaton}>
+                  <Pressable
+                    onPress={() => redirectionViewProfile(item.id)}
+                    style={styles.dummyImagePressable}
+                  >
+                    {null === item.image ? (
+                      <Image
+                        style={styles.dummyImage}
+                        source={require("../../assets/imgProfileReadOnly2.png")}
+                      />
+                    ) : (
+                      <FastImage
+                        style={styles.userImage}
+                        source={{
+                          uri: item.image,
+                          priority: FastImage.priority.high,
+                        }}
+                        resizeMode={FastImage.resizeMode.cover}
+                      />
+                    )}
+                    <View style={styles.requestMainView}>
+                      <Text style={styles.textUserReference}>
+                        {item.name}
                       </Text>
+                      <Text>@{item.username}</Text>
+                    </View>
+                    <Pressable
+                      onPress={() => sendRequest(item.key)}
+                      style={styles.viewIconRight}
+                    >
                       <Icon
-                        name="chevron-down"
-                        size={22}
-                        style={styles.iconSelect}
+                        name="md-person-add"
+                        size={30}
+                        color="yellowgreen"
                       />
                     </Pressable>
-                  </View>
-                  <ReactNativePickerModule
-                    pickerRef={this.pickerGym}
-                    title={"Gym"}
-                    items={this.state.gymsName}
-                    onValueChange={(value) => this.selectGym(value)}
-                  />
+                  </Pressable>
                 </View>
               )}
+            />
+          </ScrollView>
+          <View style={GlobalBubble.position}>
+            <View
+              style={[GlobalBubble.viewBubble, GlobalBubble.viewBubbleBig]}
+            >
+              <Pressable
+                style={GlobalBubble.touchable}
+                onPress={() => openOptions()}
+              >
+                <Text style={GlobalBubble.text}>FILTER</Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      )}
+      {showFilters && (
+        <View style={GlobalModal.viewContent}>
+          <View style={GlobalModal.viewHead}>
+            {ageRange !== null ||
+              gym !== null ||
+              activities.filter((item) => item.selected).length >
+              0 ||
+              nearMe !== false ? (
+              <Pressable
+                style={[GlobalModal.buttonLeft, { flexDirection: "row" }]}
+                onPress={() => resetFilters()}
+              >
+                <Icon name="refresh-outline" color={SignUpColor} size={22} />
+                <Text style={[GlobalModal.titleClose, { marginLeft: 2 }]}>
+                  Default
+                </Text>
+              </Pressable>
+            ) : null}
+            <Text style={GlobalModal.headTitle}>Filters</Text>
+            <Pressable
+              style={[GlobalModal.buttonClose, { flexDirection: "row" }]}
+              onPress={() => setShowFilters(false)}
+            >
+              <Icon name="close" color={SignUpColor} size={22} />
+              <Text style={[GlobalModal.titleClose, { marginLeft: 2 }]}>
+                Close
+              </Text>
+            </Pressable>
+          </View>
+          <View style={{ padding: 20 }}>
+            {gymsName !== undefined && (
               <View
                 style={[
                   styles.viewSection,
                   styles.checkInput,
-                  { alignItems: "flex-end" },
+                  { alignItems: "flex-end", marginTop: 0 },
                 ]}
               >
-                <Text style={styles.textLabel}>Age Range</Text>
+                <Text style={styles.textLabel}>Gym</Text>
                 <View style={styles.comboSelect}>
                   <Pressable
-                    onPress={() => this.pickerAge.current.show()}
+                    onPress={() => pickerGym.current.show()}
                     style={{ flexDirection: "row" }}
                   >
                     <Text>
-                      {null !== this.state.ageRange
-                        ? this.state.ageRange
-                        : "Select here"}
+                      {null !== gym ? gym : "None"}
                     </Text>
                     <Icon
                       name="chevron-down"
@@ -838,129 +781,151 @@ class MyPalsList extends Component {
                   </Pressable>
                 </View>
                 <ReactNativePickerModule
-                  pickerRef={this.pickerAge}
+                  pickerRef={pickerGym}
                   title={"Gym"}
-                  items={[
-                    "Select here",
-                    "Under 18 years old",
-                    "Between 18 and 30 years",
-                    "Over 30 years old",
-                  ]}
-                  onValueChange={(value) => {
-                    this.getAgeValue(value);
-                  }}
+                  items={gymsName}
+                  onValueChange={(value) => selectGym(value)}
                 />
               </View>
-              <View
-                style={[
-                  styles.viewSection,
-                  styles.checkInput,
-                  { alignItems: "flex-end" },
+            )}
+            <View
+              style={[
+                styles.viewSection,
+                styles.checkInput,
+                { alignItems: "flex-end" },
+              ]}
+            >
+              <Text style={styles.textLabel}>Age Range</Text>
+              <View style={styles.comboSelect}>
+                <Pressable
+                  onPress={() => pickerAge.current.show()}
+                  style={{ flexDirection: "row" }}
+                >
+                  <Text>
+                    {null !== ageRange
+                      ? ageRange
+                      : "Select here"}
+                  </Text>
+                  <Icon
+                    name="chevron-down"
+                    size={22}
+                    style={styles.iconSelect}
+                  />
+                </Pressable>
+              </View>
+              <ReactNativePickerModule
+                pickerRef={pickerAge}
+                title={"Gym"}
+                items={[
+                  "Select here",
+                  "Under 18 years old",
+                  "Between 18 and 30 years",
+                  "Over 30 years old",
                 ]}
-              >
-                <Text style={styles.textLabel}>Near Me</Text>
-                <View style={styles.comboSelect}>
-                  <GlobalCheckBox
-                    onPress={() => {
-                      this.setState({
-                        nearMe: !this.state.nearMe,
-                      });
-                    }}
-                    isCheck={this.state.nearMe}
-                    title={null}
-                  />
-                </View>
-              </View>
-              {this.state.nearMe && (
-                <View style={{ width: "100%" }}>
-                  <Slider
-                    step={1}
-                    minimumValue={1}
-                    maximumValue={30}
-                    onValueChange={(value) =>
-                      this.setState({ distance: value })
-                    }
-                    value={this.state.distance}
-                    minimumTrackTintColor={SignUpColor}
-                    thumbTintColor={SignUpColor}
-                  />
-                  <View style={styles.dummyImagePressable}>
-                    <Text style={[GlobalStyles.textMuted, { width: "50%" }]}>
-                      1 Mile
-                    </Text>
-                    <Text style={[GlobalStyles.textMuted, styles.milesText]}>
-                      30 Miles
-                    </Text>
-                  </View>
-                </View>
-              )}
-              <View style={[styles.viewSection, styles.checkInput]}>
-                <Text style={styles.textLabel}>Activities</Text>
-                <View style={[styles.comboSelect, { marginBottom: 7 }]}>
-                  <Pressable
-                    style={{ flexDirection: "row" }}
-                    onPress={() =>
-                      this.setState({ showSelectActivities: true })
-                    }
-                  >
-                    <Icon
-                      name="md-create"
-                      size={18}
-                      style={styles.iconSelect}
-                      color={SignUpColor}
-                    />
-                    <Text style={{ color: SignUpColor }}>
-                      Choose Activities
-                    </Text>
-                  </Pressable>
-                </View>
-              </View>
-              <View style={styles.viewActivitiesSelected}>
-                {this.state.activities !== undefined &&
-                this.state.activities.filter((item) => item.selected) !==
-                  undefined &&
-                this.state.activities.filter((item) => item.selected).length >
-                  0 &&
-                this.state.activities.filter((item) => item.selected).length <
-                  this.state.activities.length ? (
-                  this.state.activities
-                    .filter((item) => item.selected)
-                    .map((element) => (
-                      <View style={styles.activityContainer} key={element.id}>
-                        <Text style={styles.activityNode}>{element.name}</Text>
-                      </View>
-                    ))
-                ) : (
-                  <View style={styles.activityContainer}>
-                    <Text style={styles.activityNode}>All Activities</Text>
-                  </View>
-                )}
+                onValueChange={(value) => {
+                  getAgeValue(value);
+                }}
+              />
+            </View>
+            <View
+              style={[
+                styles.viewSection,
+                styles.checkInput,
+                { alignItems: "flex-end" },
+              ]}
+            >
+              <Text style={styles.textLabel}>Near Me</Text>
+              <View style={styles.comboSelect}>
+                <GlobalCheckBox
+                  onPress={() => setNearMe(!nearMe)}
+                  isCheck={nearMe}
+                  title={null}
+                />
               </View>
             </View>
-            <Pressable
-              onPress={() => {
-                this.searchPeople();
-                this.setState({
-                  showSelectActivities: false,
-                  showFilters: false,
-                });
-              }}
-              style={[styles.buttonContent, GlobalStyles.buttonCancel]}
-            >
-              <Text style={styles.buttonText}>APPLY FILTERS</Text>
-            </Pressable>
+            {nearMe && (
+              <View style={{ width: "100%" }}>
+                <Slider
+                  step={1}
+                  minimumValue={1}
+                  maximumValue={30}
+                  onValueChange={(value) => setDistance(value)}
+                  value={distance}
+                  minimumTrackTintColor={SignUpColor}
+                  thumbTintColor={SignUpColor}
+                />
+                <View style={styles.dummyImagePressable}>
+                  <Text style={[GlobalStyles.textMuted, { width: "50%" }]}>
+                    1 Mile
+                  </Text>
+                  <Text style={[GlobalStyles.textMuted, styles.milesText]}>
+                    30 Miles
+                  </Text>
+                </View>
+              </View>
+            )}
+            <View style={[styles.viewSection, styles.checkInput]}>
+              <Text style={styles.textLabel}>Activities</Text>
+              <View style={[styles.comboSelect, { marginBottom: 7 }]}>
+                <Pressable
+                  style={{ flexDirection: "row" }}
+                  onPress={() => setShowSelectActivities(true)}
+                >
+                  <Icon
+                    name="md-create"
+                    size={18}
+                    style={styles.iconSelect}
+                    color={SignUpColor}
+                  />
+                  <Text style={{ color: SignUpColor }}>
+                    Choose Activities
+                  </Text>
+                </Pressable>
+              </View>
+            </View>
+            <View style={styles.viewActivitiesSelected}>
+              {activities !== undefined &&
+                activities.filter((item) => item.selected) !==
+                undefined &&
+                activities.filter((item) => item.selected).length >
+                0 &&
+                activities.filter((item) => item.selected).length <
+                activities.length ? (
+                activities
+                  .filter((item) => item.selected)
+                  .map((element) => (
+                    <View style={styles.activityContainer} key={element.id}>
+                      <Text style={styles.activityNode}>{element.name}</Text>
+                    </View>
+                  ))
+              ) : (
+                <View style={styles.activityContainer}>
+                  <Text style={styles.activityNode}>All Activities</Text>
+                </View>
+              )}
+            </View>
           </View>
-        )}
-        <SelectActivities
-          visible={this.state.showSelectActivities}
-          activities={this.state.activities}
-          close={() => this.setState({ showSelectActivities: false })}
-        />
-        <LoadingSpinner visible={this.state.loading} />
-        <Toast toastText={this.state.toastText} />
-      </ImageBackground>
-    );
-  };
+          <Pressable
+            onPress={() => {
+              searchPeople();
+              setShowSelectActivities(false);
+              setShowFilters(false);
+            }}
+            style={[styles.buttonContent, GlobalStyles.buttonCancel]}
+          >
+            <Text style={styles.buttonText}>APPLY FILTERS</Text>
+          </Pressable>
+        </View>
+      )}
+      <SelectActivities
+        visible={showSelectActivities}
+        activities={activities}
+        close={() => setShowSelectActivities(false)}
+      />
+      <LoadingSpinner visible={loading} />
+      <Toast toastText={toastText} />
+    </ImageBackground>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -1107,35 +1072,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const lABC = [
-  "A",
-  "B",
-  "C",
-  "D",
-  "E",
-  "F",
-  "G",
-  "H",
-  "I",
-  "J",
-  "K",
-  "L",
-  "M",
-  "N",
-  "Ñ",
-  "O",
-  "P",
-  "Q",
-  "R",
-  "S",
-  "T",
-  "U",
-  "V",
-  "W",
-  "X",
-  "Y",
-  "Z",
-];
+
 
 const mapStateToProps = (state) => ({
   session: state.reducerSession,

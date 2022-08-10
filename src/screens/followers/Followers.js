@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ScrollView,
   StyleSheet,
@@ -8,7 +8,7 @@ import {
   RefreshControl,
   FlatList,
 } from "react-native";
-import { connect } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   GlobalTabs,
   GreenFitrecColor,
@@ -27,61 +27,62 @@ import { ToastQuestionGeneric } from "../../components/shared/ToastQuestionGener
 import { actionGetProfile } from "../../redux/actions/ProfileActions";
 import { FollowerCard, FollowerTabs, Input } from "../../components";
 
-class Followers extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      activeTab: this.props.navigation.getParam("tab", true),
-      refresh: false,
-      question: false,
-      questionName: null,
-      questionId: null,
-      search: "",
-    };
-    this.props.get();
-  }
+const Followers = (props) => {
 
-  componentDidMount = () => {
-    this.props.navigation.setParams({ navigateBack: this.navigateBack });
+  const oFollowers = useSelector((state) => state.reducerFollower);
+  const session = useSelector((state) => state.reducerSession);
+
+  const dispatch = useDispatch();
+
+  const [activeTab, setActiveTab] = useState(props.navigation.getParam("tab", true));
+  const [refresh, setRefresh] = useState(false);
+  const [question, setQuestion] = useState(false);
+  const [questionUnfollow, setQuestionUnfollow] = useState(false);
+  const [questionRemove, setQuestionRemove] = useState(false);
+  const [questionName, setQuestionName] = useState(null);
+  const [questionId, setQuestionId] = useState(null);
+  const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    dispatch(actionGetFollowers());
+    dispatch(actionGetFollowing());
+    props.navigation.setParams({ navigateBack: navigateBack });
+  }, [])
+
+  const navigateBack = () => {
+    dispatch(actionCleanFollowers());
+    props.navigation.goBack();
   };
 
-  navigateBack = () => {
-    this.props.clean();
-    this.props.navigation.goBack();
+  const remove = () => {
+    dispatch(actionRemoveFollower(questionId, session.account.id));
+    setQuestionRemove(false);
+    setQuestionId(null);
+    setQuestionName(null);
   };
 
-  remove = () => {
-    this.props.remove(this.state.questionId, this.props.session.account.id);
-    this.setState({
-      questionRemove: false,
-      questionId: null,
-      questionName: null,
-    });
+  const unfollow = () => {
+    dispatch(actionUnFollow(questionId, session.account.id));
+    setQuestionUnfollow(false);
+    setQuestionId(null);
+    setQuestionName(null);
   };
 
-  unfollow = () => {
-    this.props.unfollow(this.state.questionId, this.props.session.account.id);
-    this.setState({
-      questionUnfollow: false,
-      questionId: null,
-      questionName: null,
-    });
-  };
-
-  onRefresh = () => {
-    this.props.get();
-    this.setState({ refresh: false });
+  const onRefresh = () => {
+    dispatch(actionGetFollowers());
+    dispatch(actionGetFollowing());
+    setRefresh(false);
   };
   /**
    * Function that redirected the user to the selected profile
    *
-   * @param {number} nUserId Main Identifier of the selected profile
+   * @param {number} userId Main Identifier of the selected profile
    *
    * @author Leandro Curbelo
    */
-  viewProfile = (nUserId) => {
-    this.props.getProfile(nUserId);
-    this.props.navigation.navigate("ProfileViewDetails");
+  const viewProfile = (userId) => {
+    dispatch(actionGetProfile(userId, true));
+    props.navigation.navigate("ProfileViewDetails");
   };
   /**
    * Function that filters the data based on the tab in which the user is.
@@ -90,81 +91,73 @@ class Followers extends Component {
    *
    * @author Leandro Curbelo
    */
-  getData = (nType) => {
+  const getData = (nType) => {
     if (nType === 1)
-      return this.props.oFollowers.following.filter(
+      return oFollowers.following.filter(
         (element) =>
           element.name
             .toUpperCase()
-            .includes(this.state.search.toUpperCase()) ||
+            .includes(search.toUpperCase()) ||
           element.username
             .toUpperCase()
-            .includes(this.state.search.toUpperCase())
+            .includes(search.toUpperCase())
       );
     else
-      return this.props.oFollowers.followers.filter(
+      return oFollowers.followers.filter(
         (element) =>
           element.name
             .toUpperCase()
-            .includes(this.state.search.toUpperCase()) ||
+            .includes(search.toUpperCase()) ||
           element.username
             .toUpperCase()
-            .includes(this.state.search.toUpperCase())
+            .includes(search.toUpperCase())
       );
   };
 
-  unfollowHandler = (item) => {
-    this.setState({
-      questionUnfollow: true,
-      questionId: item.id_follow,
-      questionName: item.name,
-    });
+  const unfollowHandler = (item) => {
+    setQuestionUnfollow(true);
+    setQuestionId(item.id_follow);
+    setQuestionName(item.name);
   };
 
-  removeFollowerHandler = (item) => {
-    this.setState({
-      questionRemove: true,
-      questionId: item.id_follow,
-      questionName: item.name,
-    });
+  const removeFollowerHandler = (item) => {
+    setQuestionRemove(true);
+    setQuestionId(item.id_follow);
+    setQuestionName(item.name);
   };
 
-  cancleHandler = (type) => {
+  const cancleHandler = (type) => {
     if (type === 1) {
-      this.setState({
-        questionUnfollow: false,
-        questionId: null,
-        questionName: null,
-      });
+      setQuestionUnfollow(false);
+      setQuestionId(null);
+      setQuestionName(null);
     } else {
-      this.setState({
-        questionRemove: false,
-        questionId: null,
-        questionName: null,
-      });
+      setQuestionRemove(false);
+      setQuestionId(null);
+      setQuestionName(null);
     }
   };
 
-  renderFollowing = () => {
+  const renderFollowing = () => {
     return (
       <>
-        {this.props.oFollowers.following.length > 0 &&
-        this.getData(1).length > 0 ? (
+        {oFollowers.following.length > 0 &&
+          getData(1).length > 0 ? (
           <FlatList
-            data={this.getData(1)}
+            data={getData(1)}
             keyExtractor={(item, index) => index.toString()}
-            extraData={this.state.refresh}
+            extraData={refresh}
             renderItem={({ item }) => (
               <FollowerCard
                 profileImage={item.image}
-                onPressSection={() => this.viewProfile(item.id)}
+                onPressSection={() => viewProfile(item.id)}
                 name={item.name}
                 username={item.username}
-                onPressUnfollow={() => this.unfollowHandler(item)}
+                onPressUnfollow={() => unfollowHandler(item)}
               />
             )}
           />
-        ) : this.props.oFollowers.following.length > 0 ? (
+        ) : oFollowers.following.length > 0 ? (
           <Text style={styles.textEmptyData}>No results found</Text>
         ) : (
           <Text style={styles.textEmptyData}>
@@ -175,26 +168,26 @@ class Followers extends Component {
     );
   };
 
-  renderFollowers = () => {
+  const renderFollowers = () => {
     return (
       <>
-        {this.props.oFollowers.followers.length > 0 &&
-        this.getData(2).length > 0 ? (
+        {oFollowers.followers.length > 0 &&
+          getData(2).length > 0 ? (
           <FlatList
-            data={this.getData(2)}
+            data={getData(2)}
             keyExtractor={(item, index) => index.toString()}
-            extraData={this.state.refresh}
+            extraData={refresh}
             renderItem={({ item }) => (
               <FollowerCard
                 profileImage={item.image}
-                onPressSection={() => this.viewProfile(item.id)}
+                onPressSection={() => viewProfile(item.id)}
                 name={item.name}
                 username={item.username}
-                onPressUnfollow={() => this.removeFollowerHandler(item)}
+                onPressUnfollow={() => removeFollowerHandler(item)}
               />
             )}
           />
-        ) : this.props.oFollowers.followers.length > 0 ? (
+        ) : oFollowers.followers.length > 0 ? (
           <Text style={styles.textEmptyData}>No results found</Text>
         ) : (
           <Text style={styles.textEmptyData}>You still have no followers</Text>
@@ -203,71 +196,25 @@ class Followers extends Component {
     );
   };
 
-  render = () => {
-    return (
-      <View style={styles.container}>
-        <View style={GlobalTabs.viewTabs}>
-          <FollowerTabs
-            onTabPress={() => this.setState({ activeTab: true })}
-            title="Followers"
-            leftTab={true}
-            isActive={this.state.activeTab}
-          />
-          <FollowerTabs
-            onTabPress={() => this.setState({ activeTab: false })}
-            title="Following"
-            leftTab={false}
-            isActive={!this.state.activeTab}
-          />
-        </View>
-        <View>
-          <Input
-            placeholder={"Search"}
-            value={this.state.search}
-            onChangeText={(sValue) => {
-              this.setState({ search: sValue });
-            }}
-            inputStyle={styles.textInput}
-          />
-        </View>
-        <ScrollView
-          refreshControl={
-            <RefreshControl
-              refreshing={this.state.refresh}
-              onRefresh={() => this.onRefresh()}
-              tintColor={GreenFitrecColor}
-              title="Pull to refresh..."
-            />
-          }
-        >
-          {this.state.activeTab
-            ? this.renderFollowers()
-            : this.renderFollowing()}
-        </ScrollView>
-        {this.renderQuestions()}
-      </View>
-    );
-  };
-
-  renderQuestions = () => {
+  const renderQuestions = () => {
     return (
       <>
         <ToastQuestionGeneric
-          visible={this.state.questionUnfollow}
+          visible={questionUnfollow}
           titleBig="Unfollow User"
           title={
-            "Are you sure you want to unfollow " + this.state.questionName + "?"
+            "Are you sure you want to unfollow " + questionName + "?"
           }
           options={
             <View style={ToastQuestionStyles.viewButtons}>
               <Pressable
-                onPress={() => this.cancleHandler(1)}
+                onPress={() => cancleHandler(1)}
                 style={[ToastQuestionStyles.button, styles.buttonDefault]}
               >
                 <Text style={ToastQuestionStyles.textButton}>Cancel</Text>
               </Pressable>
               <Pressable
-                onPress={() => this.unfollow()}
+                onPress={unfollow}
                 style={[
                   ToastQuestionStyles.button,
                   { backgroundColor: SignUpColor },
@@ -279,23 +226,23 @@ class Followers extends Component {
           }
         />
         <ToastQuestionGeneric
-          visible={this.state.questionRemove}
+          visible={questionRemove}
           titleBig="Unfollow User"
           title={
             "Are you sure you want to remove " +
-            this.state.questionName +
+            questionName +
             " from your followers?"
           }
           options={
             <View style={ToastQuestionStyles.viewButtons}>
               <Pressable
-                onPress={() => this.cancleHandler(2)}
+                onPress={() => cancleHandler(2)}
                 style={[ToastQuestionStyles.button, styles.buttonDefault]}
               >
                 <Text style={ToastQuestionStyles.textButton}>Cancel</Text>
               </Pressable>
               <Pressable
-                onPress={() => this.remove()}
+                onPress={remove}
                 style={[
                   ToastQuestionStyles.button,
                   { backgroundColor: SignUpColor },
@@ -309,7 +256,50 @@ class Followers extends Component {
       </>
     );
   };
+
+  return (
+    <View style={styles.container}>
+      <View style={GlobalTabs.viewTabs}>
+        <FollowerTabs
+          onTabPress={() => setActiveTab(true)}
+          title="Followers"
+          leftTab={true}
+          isActive={activeTab}
+        />
+        <FollowerTabs
+          onTabPress={() => setActiveTab(false)}
+          title="Following"
+          leftTab={false}
+          isActive={!activeTab}
+        />
+      </View>
+      <View>
+        <Input
+          placeholder={"Search"}
+          value={search}
+          onChangeText={(value) => setSearch(value)}
+          inputStyle={styles.textInput}
+        />
+      </View>
+      <ScrollView
+        refreshControl={
+          <RefreshControl
+            refreshing={refresh}
+            onRefresh={onRefresh}
+            tintColor={GreenFitrecColor}
+            title="Pull to refresh..."
+          />
+        }>
+        {activeTab
+          ? renderFollowers()
+          : renderFollowing()}
+      </ScrollView>
+      {renderQuestions()}
+    </View>
+  );
 }
+
+export default Followers;
 
 const styles = StyleSheet.create({
   container: {
@@ -388,29 +378,3 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
 });
-
-const mapStateToProps = (state) => ({
-  session: state.reducerSession,
-  oFollowers: state.reducerFollower,
-});
-
-const mapDispatchToProps = (dispatch) => ({
-  get: () => {
-    dispatch(actionGetFollowers());
-    dispatch(actionGetFollowing());
-  },
-  unfollow: (nFollowId, nUserId) => {
-    dispatch(actionUnFollow(nFollowId, nUserId));
-  },
-  remove: (nFollowId, nUserId) => {
-    dispatch(actionRemoveFollower(nFollowId, nUserId));
-  },
-  clean: () => {
-    dispatch(actionCleanFollowers());
-  },
-  getProfile: (nUserId) => {
-    dispatch(actionGetProfile(nUserId, true));
-  },
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(Followers);

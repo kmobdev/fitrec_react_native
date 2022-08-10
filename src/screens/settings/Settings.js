@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, ScrollView, Pressable, StyleSheet } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 import {
@@ -14,231 +14,200 @@ import YouTubeVideo from "../../components/login/YouTubeVideo";
 import Conditions from "../register/Conditions";
 import { Toast } from "../../components/shared/Toast";
 import ContactUsForm from "../../components/settings/ContactUsForm";
-import { connect } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { ToastQuestionGeneric } from "../../components/shared/ToastQuestionGeneric";
 import { LoadingSpinner } from "../../components/shared/LoadingSpinner";
 import { actionDesactiveAccount } from "../../redux/actions/UserActions";
 import { APP_VERSION } from "../../Constants";
 
-class Settings extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      showTutorial: false,
-      showVideoTutorial: false,
-      showConditions: false,
-      toastText: "",
-      showContact: false,
-      showToastQuestion: false,
-    };
-  }
+const Settings = (props) => {
 
-  showToast = async (sText, callback = null) => {
-    this.setState({
-      toastText: sText,
-      loading: false,
-    });
+  const session = useSelector((state) => state.reducerSession);
+
+  const dispatch = useDispatch();
+
+  const [showTutorial, setShowTutorial] = useState(false);
+  const [showVideoTutorial, setShowVideoTutorial] = useState(false);
+  const [showConditions, setShowConditions] = useState(false);
+  const [toastText, setToastText] = useState("");
+  const [showContact, setShowContact] = useState(false);
+  const [showToastQuestion, setShowToastQuestion] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const showToast = (text, callback = null) => {
+    setToastText(text);
+    setLoading(false);
     setTimeout(() => {
-      this.setState({
-        toastText: "",
-      });
+      setToastText("");
       if (null !== callback) {
         callback();
       }
     }, 2000);
   };
 
-  desactivateAccount = async () => {
-    await this.setState({
-      loading: true,
-      showToastQuestion: false,
-    });
-    this.props.desactivateAccount(this.props.session.account.key);
+  const desactivateAccount = () => {
+    setLoading(true);
+    setShowToastQuestion(false);
+    dispatch(actionDesactiveAccount(session.account.key));
   };
 
-  componentWillReceiveProps = async (nextProps) => {
-    await this.setState({
-      loading: false,
-    });
-  };
+  useEffect(() => {
+    setLoading(false);
+  }, [])
 
-  render() {
-    return (
-      <View style={styles.container}>
-        <ScrollView>
-          <View style={styles.viewOptionBorder}>
-            <Pressable onPress={() => this.setState({ showContact: true })}>
-              <View style={styles.viewOption}>
-                <View style={styles.viewLeft}>
-                  <Text style={styles.text16}>Contact us</Text>
-                </View>
-                <View style={styles.viewRight}>
-                  <Icon
-                    name="ios-arrow-forward"
-                    size={30}
-                    color={PlaceholderColor}
-                  />
-                </View>
+  return (
+    <View style={styles.container}>
+      <ScrollView>
+        <View style={styles.viewOptionBorder}>
+          <Pressable onPress={() => setShowContact(true)}>
+            <View style={styles.viewOption}>
+              <View style={styles.viewLeft}>
+                <Text style={styles.text16}>Contact us</Text>
               </View>
-            </Pressable>
-          </View>
-          <View style={styles.viewOptionBorder}>
-            <Pressable onPress={() => this.setState({ showConditions: true })}>
-              <View style={styles.viewOption}>
-                <View style={styles.viewLeft}>
-                  <Text style={styles.text16}>Terms & conditions</Text>
-                </View>
-                <View style={styles.viewRight}>
-                  <Icon
-                    name="ios-arrow-forward"
-                    size={30}
-                    color={PlaceholderColor}
-                  />
-                </View>
-              </View>
-            </Pressable>
-          </View>
-          <View style={styles.viewOptionBorder}>
-            <Pressable onPress={() => this.setState({ showTutorial: true })}>
-              <View style={styles.viewOption}>
-                <View style={styles.viewLeft}>
-                  <Text style={styles.text16}>App tutorial</Text>
-                </View>
-                <View style={styles.viewRight}>
-                  <Icon
-                    name="ios-arrow-forward"
-                    size={30}
-                    color={PlaceholderColor}
-                  />
-                </View>
-              </View>
-            </Pressable>
-          </View>
-          <View style={styles.viewOptionBorder}>
-            <Pressable
-              onPress={() => this.setState({ showVideoTutorial: true })}
-            >
-              <View style={styles.viewOption}>
-                <View style={styles.viewLeft}>
-                  <Text style={styles.text16}>Video app tutorial</Text>
-                </View>
-                <View style={styles.viewRight}>
-                  <Icon
-                    name="ios-arrow-forward"
-                    size={30}
-                    color={PlaceholderColor}
-                  />
-                </View>
-              </View>
-            </Pressable>
-          </View>
-          {/* QUEDA COMENTAOD PARA UNA ACTUALIZACION
-                    <View style={styles.viewOptionBorder}>
-                        <Pressable onPress={() => this.showToast("Function not yet implemented")}>
-                            <View style={styles.viewOption}>
-                                <View style={styles.viewLeft}>
-                                    <Text style={styles.text16}>Blocked users</Text>
-                                </View>
-                                <View style={styles.viewRight}>
-                                    <Icon name="ios-arrow-forward" size={30} color={PlaceholderColor} />
-                                </View>
-                            </View>
-                        </Pressable>
-                    </View>
-                    */}
-          <View style={styles.viewOptionBorder}>
-            <Pressable
-              onPress={() => this.setState({ showToastQuestion: true })}
-            >
-              <View style={styles.viewOption}>
-                <View style={styles.viewLeft}>
-                  <Text style={styles.text16}>Deactivate user account</Text>
-                </View>
-                <View style={styles.viewRight}>
-                  <Icon
-                    name="ios-arrow-forward"
-                    size={30}
-                    color={PlaceholderColor}
-                  />
-                </View>
-              </View>
-            </Pressable>
-          </View>
-        </ScrollView>
-        <CarouselTutorial
-          visible={this.state.showTutorial}
-          close={() => {
-            this.setState({ showTutorial: false });
-          }}
-        />
-        <YouTubeVideo
-          visible={this.state.showVideoTutorial}
-          url="https://www.youtube.com/embed/O5bwmQtr5zQ"
-          close={() => {
-            this.setState({ showVideoTutorial: false });
-          }}
-          noMargin={true}
-        />
-        {this.state.showConditions && (
-          <View style={styles.viewFullAbsolute}>
-            <View
-              style={[styles.head, this.props.noMargin && { paddingTop: 10 }]}
-            >
-              <Text style={styles.headTitle}>Terms & Conditions</Text>
-              <View
-                style={[styles.headClose, this.props.noMargin && { top: 5 }]}
-              >
-                <Pressable
-                  onPress={() => this.setState({ showConditions: false })}
-                >
-                  <Text style={styles.headCloseText}>Close</Text>
-                </Pressable>
+              <View style={styles.viewRight}>
+                <Icon
+                  name="ios-arrow-forward"
+                  size={30}
+                  color={PlaceholderColor}
+                />
               </View>
             </View>
-            <Conditions hiddenButtons={true} />
-          </View>
-        )}
-        <Toast toastText={this.state.toastText} />
-        <ContactUsForm
-          close={() => this.setState({ showContact: false })}
-          email={this.props.session.account.email}
-          visible={this.state.showContact}
-        />
-        <ToastQuestionGeneric
-          visible={this.state.showToastQuestion}
-          titleBig="Deactivate user account"
-          title="Are you sure you want to deactivate your user account?"
-          options={
-            <View style={ToastQuestionStyles.viewButtons}>
-              <Pressable
-                onPress={() => this.setState({ showToastQuestion: false })}
-                style={[
-                  ToastQuestionStyles.button,
-                  { backgroundColor: GreenFitrecColor, marginRight: 10 },
-                ]}
-              >
-                <Text style={ToastQuestionStyles.textButton}>Cancel</Text>
-              </Pressable>
-              <Pressable
-                onPress={() => this.desactivateAccount()}
-                style={[
-                  ToastQuestionStyles.button,
-                  { backgroundColor: SignUpColor },
-                ]}
-              >
-                <Text style={ToastQuestionStyles.textButton}>Ok</Text>
-              </Pressable>
-            </View>
-          }
-        />
-        <View style={styles.version}>
-          <Text style={GlobalStyles.textMuted}>{APP_VERSION}</Text>
+          </Pressable>
         </View>
-        <LoadingSpinner visible={this.state.loading} />
+        <View style={styles.viewOptionBorder}>
+          <Pressable onPress={() => setShowConditions(true)}>
+            <View style={styles.viewOption}>
+              <View style={styles.viewLeft}>
+                <Text style={styles.text16}>Terms & conditions</Text>
+              </View>
+              <View style={styles.viewRight}>
+                <Icon
+                  name="ios-arrow-forward"
+                  size={30}
+                  color={PlaceholderColor}
+                />
+              </View>
+            </View>
+          </Pressable>
+        </View>
+        <View style={styles.viewOptionBorder}>
+          <Pressable onPress={() => setShowTutorial(true)}>
+            <View style={styles.viewOption}>
+              <View style={styles.viewLeft}>
+                <Text style={styles.text16}>App tutorial</Text>
+              </View>
+              <View style={styles.viewRight}>
+                <Icon
+                  name="ios-arrow-forward"
+                  size={30}
+                  color={PlaceholderColor}
+                />
+              </View>
+            </View>
+          </Pressable>
+        </View>
+        <View style={styles.viewOptionBorder}>
+          <Pressable onPress={() => setShowVideoTutorial(true)}>
+            <View style={styles.viewOption}>
+              <View style={styles.viewLeft}>
+                <Text style={styles.text16}>Video app tutorial</Text>
+              </View>
+              <View style={styles.viewRight}>
+                <Icon
+                  name="ios-arrow-forward"
+                  size={30}
+                  color={PlaceholderColor}
+                />
+              </View>
+            </View>
+          </Pressable>
+        </View>
+        <View style={styles.viewOptionBorder}>
+          <Pressable onPress={() => setShowToastQuestion(true)}>
+            <View style={styles.viewOption}>
+              <View style={styles.viewLeft}>
+                <Text style={styles.text16}>Deactivate user account</Text>
+              </View>
+              <View style={styles.viewRight}>
+                <Icon
+                  name="ios-arrow-forward"
+                  size={30}
+                  color={PlaceholderColor}
+                />
+              </View>
+            </View>
+          </Pressable>
+        </View>
+      </ScrollView>
+      <CarouselTutorial
+        visible={showTutorial}
+        close={() => setShowTutorial(false)}
+      />
+      <YouTubeVideo
+        visible={showVideoTutorial}
+        url="https://www.youtube.com/embed/O5bwmQtr5zQ"
+        close={() => setShowVideoTutorial(false)}
+        noMargin={true}
+      />
+      {showConditions && (
+        <View style={styles.viewFullAbsolute}>
+          <View
+            style={[styles.head, props.noMargin && { paddingTop: 10 }]}
+          >
+            <Text style={styles.headTitle}>Terms & Conditions</Text>
+            <View
+              style={[styles.headClose, props.noMargin && { top: 5 }]}
+            >
+              <Pressable
+                onPress={() => setShowConditions(false)}
+              >
+                <Text style={styles.headCloseText}>Close</Text>
+              </Pressable>
+            </View>
+          </View>
+          <Conditions hiddenButtons={true} />
+        </View>
+      )}
+      <Toast toastText={toastText} />
+      <ContactUsForm
+        close={() => setShowContact(false)}
+        email={session.account.email}
+        visible={showContact}
+      />
+      <ToastQuestionGeneric
+        visible={showToastQuestion}
+        titleBig="Deactivate user account"
+        title="Are you sure you want to deactivate your user account?"
+        options={
+          <View style={ToastQuestionStyles.viewButtons}>
+            <Pressable
+              onPress={() => setShowToastQuestion(false)}
+              style={[
+                ToastQuestionStyles.button,
+                { backgroundColor: GreenFitrecColor, marginRight: 10 },
+              ]}>
+              <Text style={ToastQuestionStyles.textButton}>Cancel</Text>
+            </Pressable>
+            <Pressable
+              onPress={desactivateAccount}
+              style={[
+                ToastQuestionStyles.button,
+                { backgroundColor: SignUpColor },
+              ]}>
+              <Text style={ToastQuestionStyles.textButton}>Ok</Text>
+            </Pressable>
+          </View>
+        }
+      />
+      <View style={styles.version}>
+        <Text style={GlobalStyles.textMuted}>{APP_VERSION}</Text>
       </View>
-    );
-  }
+      <LoadingSpinner visible={loading} />
+    </View>
+  );
 }
+
+export default Settings;
 
 const styles = StyleSheet.create({
   container: {
@@ -302,16 +271,3 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 });
-
-const mapStateToProps = (state) => ({
-  session: state.reducerSession,
-  desactivateAccountProps: state.reducerDesactivateAccount,
-});
-
-const mapDispatchToProps = (dispatch) => ({
-  desactivateAccount: (sUserKey) => {
-    dispatch(actionDesactiveAccount(sUserKey));
-  },
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(Settings);
