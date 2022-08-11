@@ -1,4 +1,4 @@
-import React, { Component, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   ImageBackground,
   Text,
@@ -18,7 +18,6 @@ import {
   PlaceholderColor,
   GreenFitrecColor,
   GlobalTabs,
-  ToastQuestionGenericStyles,
   GlobalModal,
   GlobalBubble,
 } from "../../Styles";
@@ -86,10 +85,6 @@ const MyPalsList = (props) => {
   const [gyms, setGyms] = useState([]);
   const [gymsName, setGymsName] = useState([]);
 
-  // componentWillUnmount = () => {
-  //   props.getMyFriendsListener();
-  // };
-
   useEffect(() => {
     const { key: sUserKey } = session.account;
     dispatch(actionGetMyFriendsListener(sUserKey));
@@ -99,7 +94,66 @@ const MyPalsList = (props) => {
     dispatch(actionGetGyms());
   }, [])
 
-
+  useEffect(() => {
+    if (
+      null !== myPalsRequest.statusSend &&
+      myPalsRequest.statusSend
+    ) {
+      dispatch(actionResetStateRequest());
+      setSearch("");
+      setFilterRequests("");
+      searchPeople();
+      showToast("Your request has been sent");
+    } else if (
+      null !== myPalsRequest.statusSend &&
+      !myPalsRequest.statusSend
+    ) {
+      setSearch("");
+      setFilterRequests("");
+      searchPeople();
+      showToast(myPalsRequest.messageError);
+      dispatch(actionResetStateRequest());
+    }
+    if (
+      null !== myPalsRequest.statusAccept &&
+      myPalsRequest.statusAccept === true
+    ) {
+      dispatch(actionResetStateRequest());
+      showToast("Successfully accepted");
+    } else if (
+      null !== myPalsRequest.statusAccept &&
+      !myPalsRequest.statusAccept &&
+      "" !== myPalsRequest.messageError
+    ) {
+      showToast(myPalsRequest.messageError);
+      dispatch(actionResetStateRequest());
+    }
+    if (
+      null !== myPalsRequest.statusCancel &&
+      myPalsRequest.statusCancel === true
+    ) {
+      dispatch(actionResetStateRequest());
+      showToast("Successfully cancel");
+    }
+    if (activity.activities.length > 0) {
+      setActivities(activity.activities);
+    }
+    if (activity.gyms.length > 0) {
+      var aGymsName = ["None"];
+      activity.gyms.forEach((oGym) => {
+        aGymsName.push(oGym.name);
+      });
+      setGym(activity.gyms);
+      setGymsName(aGymsName);
+    }
+    if (myPals.bRequestNavigation) {
+      setTabSelectPals(false);
+      dispatch(actionCleanNavigation());
+    }
+    setRefresh(!refresh);
+    setLoading(false);
+    setRefreshing(false);
+  }, [myPalsRequest, myPals, activity])
 
   const openOptions = () => {
     Keyboard.dismiss();
@@ -115,73 +169,6 @@ const MyPalsList = (props) => {
     setLoading(true);
     dispatch(actionGetRequests(session.account.key));
   };
-
-  // componentWillReceiveProps = (nextProps) => {
-  //   if (
-  //     null !== nextProps.myPalsRequest.statusSend &&
-  //     nextProps.myPalsRequest.statusSend
-  //   ) {
-  //     props.resetStateRequest();
-  //     setState({ search: "", filterRequests: "" });
-  //     searchPeople();
-  //     showToast("Your request has been sent");
-  //   } else if (
-  //     null !== nextProps.myPalsRequest.statusSend &&
-  //     !nextProps.myPalsRequest.statusSend
-  //   ) {
-  //     setState({ search: "", filterRequests: "" });
-  //     searchPeople();
-  //     showToast(nextProps.myPalsRequest.messageError);
-  //     props.resetStateRequest();
-  //   }
-  //   if (
-  //     null !== nextProps.myPalsRequest.statusAccept &&
-  //     nextProps.myPalsRequest.statusAccept === true
-  //   ) {
-  //     props.resetStateRequest();
-  //     showToast("Successfully accepted");
-  //   } else if (
-  //     null !== nextProps.myPalsRequest.statusAccept &&
-  //     !nextProps.myPalsRequest.statusAccept &&
-  //     "" !== nextProps.myPalsRequest.messageError
-  //   ) {
-  //     showToast(nextProps.myPalsRequest.messageError);
-  //     props.resetStateRequest();
-  //   }
-  //   if (
-  //     null !== nextProps.myPalsRequest.statusCancel &&
-  //     nextProps.myPalsRequest.statusCancel === true
-  //   ) {
-  //     props.resetStateRequest();
-  //     showToast("Successfully cancel");
-  //   }
-  //   if (activity.activities.length > 0) {
-  //     setState({
-  //       activities: activity.activities,
-  //     });
-  //   }
-  //   if (activity.gyms.length > 0) {
-  //     var aGymsName = ["None"];
-  //     activity.gyms.forEach((oGym) => {
-  //       aGymsName.push(oGym.name);
-  //     });
-  //     setState({
-  //       gyms: activity.gyms,
-  //       gymsName: aGymsName,
-  //     });
-  //   }
-
-  //   if (nextProps.myPals.bRequestNavigation) {
-  //     setState({ tabSelectPals: false });
-  //     props.cleanNavigation();
-  //   }
-
-  //   setState({
-  //     refresh: !refresh,
-  //     loading: false,
-  //     refreshing: false,
-  //   });
-  // };
 
   const searchPeople = () => {
     setFilterRequests(search);
@@ -212,54 +199,62 @@ const MyPalsList = (props) => {
               nLongitude = position.coords.longitude;
               nLatitude = position.coords.latitude;
             }
-            props.getPeople(
-              sFilter,
-              nMinAge,
-              nMaxAge,
-              nLatitude,
-              nLongitude,
-              nDistance,
-              nGymId,
-              aActivities
-            );
+            dispatch(
+              actionGetPeople(
+                sFilter,
+                nMinAge,
+                nMaxAge,
+                nLatitude,
+                nLongitude,
+                nDistance,
+                nGymId,
+                aActivities
+              ));
           },
           () => {
-            props.getPeople(
-              sFilter,
-              nMinAge,
-              nMaxAge,
-              nLatitude,
-              nLongitude,
-              nDistance,
-              nGymId,
-              aActivities
+            dispatch(
+              actionGetPeople(
+                sFilter,
+                nMinAge,
+                nMaxAge,
+                nLatitude,
+                nLongitude,
+                nDistance,
+                nGymId,
+                aActivities
+              )
             );
           },
           OPTIONS_GEOLOCATION_GET_POSITION
         );
       } catch (oError) {
-        props.getPeople(
+        dispatch(
+          actionGetPeople(
+            sFilter,
+            nMinAge,
+            nMaxAge,
+            nLatitude,
+            nLongitude,
+            nDistance,
+            nGymId,
+            aActivities
+          )
+        );
+      }
+    else {
+      dispatch(
+        actionGetPeople(
           sFilter,
           nMinAge,
           nMaxAge,
           nLatitude,
           nLongitude,
-          nDistance,
+          null,
           nGymId,
           aActivities
-        );
-      }
-    else
-      props.getPeople(
-        sFilter,
-        nMinAge,
-        nMaxAge,
-        nLatitude,
-        nLongitude,
-        null,
-        nGymId,
-        aActivities
+        )
       );
+    }
   };
 
   const notOtherArray = (nIdFitrec) => {
@@ -928,6 +923,8 @@ const MyPalsList = (props) => {
   );
 }
 
+export default MyPalsList;
+
 const styles = StyleSheet.create({
   textABC: {
     color: SignUpColor,
@@ -1072,72 +1069,3 @@ const styles = StyleSheet.create({
   },
 });
 
-
-
-const mapStateToProps = (state) => ({
-  session: state.reducerSession,
-  myPals: state.reducerMyPals,
-  myPalsRequest: state.reducerRequests,
-  activity: state.reducerActivity,
-});
-
-const mapDispatchToProps = (dispatch) => ({
-  getMyFriendsListener: (sUserKey = null) => {
-    dispatch(actionGetMyFriendsListener(sUserKey));
-  },
-  getMyFriends: () => {
-    dispatch(actionGetMyFriends());
-  },
-  getRequests: (sUserKey) => {
-    dispatch(actionGetRequests(sUserKey));
-  },
-  getPeople: (
-    sFilter,
-    nMinAge,
-    nMaxAge,
-    nLatitude,
-    nLongitude,
-    nDistance,
-    nGymId,
-    aActivities
-  ) => {
-    dispatch(
-      actionGetPeople(
-        sFilter,
-        nMinAge,
-        nMaxAge,
-        nLatitude,
-        nLongitude,
-        nDistance,
-        nGymId,
-        aActivities
-      )
-    );
-  },
-  resetStateRequest: () => {
-    dispatch(actionResetStateRequest());
-  },
-  sendRequest: (sUserPalKey, sUserKey, sUsername, bIsHome) => {
-    dispatch(actionSendRequest(sUserPalKey, sUserKey, sUsername, bIsHome));
-  },
-  acceptRequest: (nPalId, sPalKey, sUserKey) => {
-    dispatch(actionAcceptRequest(nPalId, sPalKey, sUserKey));
-  },
-  cancelRequest: (data) => {
-    dispatch(actionCancelRequest(data));
-  },
-  getProfile: (data) => {
-    dispatch(actionGetProfile(data, true));
-  },
-  getAllActivities: () => {
-    dispatch(actionGetAllActivities());
-  },
-  getGyms: () => {
-    dispatch(actionGetGyms());
-  },
-  cleanNavigation: () => {
-    dispatch(actionCleanNavigation());
-  },
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(MyPalsList);
