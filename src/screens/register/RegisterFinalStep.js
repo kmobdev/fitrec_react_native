@@ -5,7 +5,7 @@ import {
   StyleSheet,
   TextInput,
   ScrollView,
-  Pressable,
+  Pressable, SafeAreaView,
 } from "react-native";
 import { GlobalStyles, PlaceholderColor, SignUpColor } from "../../Styles";
 import Icon from "react-native-vector-icons/Ionicons";
@@ -181,7 +181,7 @@ const RegisterFinalStep = ({ navigation }) => {
   }
 
   return (
-    <View style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.header}>
         <Pressable onPress={backHandler}>
           <Icon name="arrow-back" color={SignUpColor} size={32} />
@@ -394,7 +394,7 @@ const RegisterFinalStep = ({ navigation }) => {
       />
       <Toast toastText={toastText} />
       <LoadingSpinner visible={loading} />
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -402,7 +402,6 @@ const styles = StyleSheet.create({
   header: {
     height: "7%",
     width: '100%',
-    backgroundColor: "#ffff",
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',

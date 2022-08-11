@@ -7,7 +7,7 @@ import {
   ScrollView,
   Image,
   Pressable,
-  Platform,
+  Platform, SafeAreaView,
 } from "react-native";
 import { ButtonFacebook } from "../../components/shared/ButtonFacebook";
 import { Toast } from "../../components/shared/Toast";
@@ -409,7 +409,7 @@ const Register = ({ navigation }) => {
   };
 
   return (
-    <View style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1 }}>
       <ScrollView ref={scrollViewRef}>
         <View style={GlobalStyles.photoProfileViewSectionPhotos}>
           {null !== user.background ? (
@@ -840,7 +840,7 @@ const Register = ({ navigation }) => {
         functionCamera={() => addImageCover("camera")}
         functionGallery={() => addImageCover("gallery")}
       />
-    </View>
+    </SafeAreaView>
   );
 }
 
