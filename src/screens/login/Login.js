@@ -300,7 +300,6 @@ const styles = StyleSheet.create({
   roundButtonSwitchLeft: {
     borderRadius: 50,
     justifyContent: "center",
-    backgroundColor: WhiteColor,
     alignItems: "center",
     height: 40,
     width: "47%",
@@ -309,10 +308,8 @@ const styles = StyleSheet.create({
     backgroundColor: GreenFitrecColor,
   },
   roundButtonSwitchRight: {
-    width: "95%",
     borderRadius: 50,
     justifyContent: "center",
-    backgroundColor: WhiteColor,
     alignItems: "center",
     height: 40,
     width: "47%",
