@@ -21,7 +21,6 @@ import { actionGetProfile } from "../../redux/actions/ProfileActions";
 import FastImage from "react-native-fast-image";
 
 const ShowPeople = (props) => {
-
   const scrollView = useRef();
 
   const dispatch = useDispatch();
@@ -31,8 +30,7 @@ const ShowPeople = (props) => {
   const [toastText, setToastText] = useState("");
 
   const checkElement = (nIndex) => {
-    props.activity.users[nIndex].check =
-      !props.activity.users[nIndex].check;
+    props.activity.users[nIndex].check = !props.activity.users[nIndex].check;
     setRefresh(!refresh);
   };
 
@@ -81,7 +79,6 @@ const ShowPeople = (props) => {
     });
   };
 
-
   const renderImage = (image = null) => {
     return (
       <>
@@ -108,9 +105,7 @@ const ShowPeople = (props) => {
     null !== props.activity && (
       <View style={GlobalModal.viewContent}>
         <View style={GlobalModal.viewHead}>
-          <Text style={GlobalModal.headTitle}>
-            {props.activity.name}
-          </Text>
+          <Text style={GlobalModal.headTitle}>{props.activity.name}</Text>
           <Pressable
             style={GlobalModal.buttonClose}
             onPress={() => {
@@ -147,10 +142,7 @@ const ShowPeople = (props) => {
               ]}
               onChangeText={(text) => changeText(text)}
             />
-            <Pressable
-              onPress={() => sendMessage()}
-              style={styles.sendIcon}
-            >
+            <Pressable onPress={() => sendMessage()} style={styles.sendIcon}>
               <Icon
                 name={message !== "" ? "md-send" : "md-text"}
                 size={28}
@@ -172,9 +164,7 @@ const ShowPeople = (props) => {
                 style={styles.itemContainer}
               >
                 {renderImage(element.image)}
-                <Text
-                  style={{ color: PlaceholderColor, textAlign: "center" }}
-                >
+                <Text style={{ color: PlaceholderColor, textAlign: "center" }}>
                   {element.username}
                 </Text>
                 {message !== "" && (
@@ -202,8 +192,7 @@ const ShowPeople = (props) => {
       </View>
     )
   );
-
-}
+};
 
 const styles = StyleSheet.create({
   peopleContainer: {

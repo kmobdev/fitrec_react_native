@@ -4,9 +4,7 @@ import { PlaceholderColor, GlobalModal } from "../../Styles";
 import { lActivitiesIcon } from "../../Constants";
 
 const SelectActivities = (props) => {
-
   const [refresh, setRefresh] = useState(false);
-
 
   const getIcon = (sActivityName) => {
     var lActivityIcon = lActivitiesIcon.find(
@@ -15,7 +13,7 @@ const SelectActivities = (props) => {
     if (undefined !== lActivityIcon) {
       return lActivityIcon.icon;
     }
-  }
+  };
 
   const selectAll = () => {
     props.activities.forEach((oActivity) => {
@@ -31,32 +29,21 @@ const SelectActivities = (props) => {
     setRefresh(!refresh);
   };
 
-
   return (
     props.visible && (
       <View style={GlobalModal.viewContent}>
         <View style={GlobalModal.viewHead}>
-          {props.activities.filter((element) => element.selected)
-            .length > 0 ? (
-            <Pressable
-              style={GlobalModal.buttonLeft}
-              onPress={clear}
-            >
+          {props.activities.filter((element) => element.selected).length > 0 ? (
+            <Pressable style={GlobalModal.buttonLeft} onPress={clear}>
               <Text style={GlobalModal.titleClose}>Clear</Text>
             </Pressable>
           ) : (
-            <Pressable
-              style={GlobalModal.buttonLeft}
-              onPress={selectAll}
-            >
+            <Pressable style={GlobalModal.buttonLeft} onPress={selectAll}>
               <Text style={GlobalModal.titleClose}>Select All</Text>
             </Pressable>
           )}
           <Text style={GlobalModal.headTitle}>Select Activities</Text>
-          <Pressable
-            style={GlobalModal.buttonClose}
-            onPress={props.close}
-          >
+          <Pressable style={GlobalModal.buttonClose} onPress={props.close}>
             <Text style={GlobalModal.titleClose}>OK</Text>
           </Pressable>
         </View>
@@ -114,6 +101,6 @@ const SelectActivities = (props) => {
       </View>
     )
   );
-}
+};
 
 export default SelectActivities;

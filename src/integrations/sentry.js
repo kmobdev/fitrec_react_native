@@ -1,4 +1,5 @@
 import * as Sentry from "@sentry/react-native";
+import { APP_VERSION, DEBUG, SENTRY_DNS } from "../Constants";
 
 /*
  * docs for Sentry: https://docs.sentry.io/platforms/javascript/configuration/options/
@@ -7,11 +8,13 @@ import * as Sentry from "@sentry/react-native";
 
 export const initSentry = () => {
   Sentry.init({
-    dsn: "https://982cc31971cd4d48ad5ec746c965eda6@o1335969.ingest.sentry.io/6604329",
+    dsn: SENTRY_DNS,
     // Set tracesSampleRate to 1.0 to capture 100% of transactions for performance monitoring.
-    // We recommend adjusting this value in production.
     tracesSampleRate: 1.0,
-    enableNative: false,
-    debug: true, // hard code to false for now but can set to true to turn off dev events
+    enableNative: true,
+    debug: DEBUG,
+    enabled: true,
+    environment: DEBUG ? "development" : "production",
+    release: APP_VERSION,
   });
 };
