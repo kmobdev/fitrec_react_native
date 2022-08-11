@@ -24,7 +24,6 @@ import Geolocation from "@react-native-community/geolocation";
 import SelectDropdown from "react-native-select-dropdown";
 
 const RegisterFinalStep = ({ navigation }) => {
-
   const weightRef = useRef();
   const scrollViewRef = useRef();
 
@@ -57,7 +56,6 @@ const RegisterFinalStep = ({ navigation }) => {
     dispatch(actionGetAllActivities());
   }, []);
 
-
   useEffect(() => {
     if (activity.length > 0) {
       setActivities(activity);
@@ -72,7 +70,7 @@ const RegisterFinalStep = ({ navigation }) => {
     ) {
       showToast(register.messageError);
     }
-    setLoading(false)
+    setLoading(false);
   }, [register]);
 
   const registerHandler = async () => {
@@ -81,7 +79,7 @@ const RegisterFinalStep = ({ navigation }) => {
       activities: activities.filter((element) => element.selected),
       personalTrainer: user.personalTrainer === true ? true : false,
       goals: user.goals === "" ? null : user.goals,
-    })
+    });
     let lErrors = await validate(user);
     if (lErrors.haveError) {
       setErrors(lErrors);
@@ -92,34 +90,42 @@ const RegisterFinalStep = ({ navigation }) => {
         Geolocation.getCurrentPosition(
           (position) => {
             if (position && undefined !== position.coords) {
-              dispatch(actionUserRegister({
-                ...user,
-                longitude: position.coords.longitude,
-                latitude: position.coords.latitude,
-              }));
+              dispatch(
+                actionUserRegister({
+                  ...user,
+                  longitude: position.coords.longitude,
+                  latitude: position.coords.latitude,
+                })
+              );
             } else {
-              dispatch(actionUserRegister({
-                ...user,
-                longitude: null,
-                latitude: null,
-              }));
+              dispatch(
+                actionUserRegister({
+                  ...user,
+                  longitude: null,
+                  latitude: null,
+                })
+              );
             }
           },
           () => {
-            dispatch(actionUserRegister({
-              ...user,
-              longitude: null,
-              latitude: null,
-            }));
+            dispatch(
+              actionUserRegister({
+                ...user,
+                longitude: null,
+                latitude: null,
+              })
+            );
           },
           OPTIONS_GEOLOCATION_GET_POSITION
         );
       } catch (oError) {
-        dispatch(actionUserRegister({
-          ...user,
-          longitude: null,
-          latitude: null,
-        }));
+        dispatch(
+          actionUserRegister({
+            ...user,
+            longitude: null,
+            latitude: null,
+          })
+        );
       }
     }
   };
@@ -174,11 +180,11 @@ const RegisterFinalStep = ({ navigation }) => {
 
   const backHandler = () => {
     navigation.goBack();
-  }
+  };
 
   const onNextHandler = () => {
     registerHandler();
-  }
+  };
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -186,17 +192,12 @@ const RegisterFinalStep = ({ navigation }) => {
         <Pressable onPress={backHandler}>
           <Icon name="arrow-back" color={SignUpColor} size={32} />
         </Pressable>
-        <Text style={styles.headerTitle}>
-          Fill in your profile details
-        </Text>
+        <Text style={styles.headerTitle}>Fill in your profile details</Text>
         <Pressable onPress={onNextHandler}>
           <Text style={styles.headerRightButton}>Next</Text>
         </Pressable>
       </View>
-      <ScrollView
-        ref={scrollViewRef}
-        style={{ flex: 1 }}
-      >
+      <ScrollView ref={scrollViewRef} style={{ flex: 1 }}>
         <View style={{ flex: 1, paddingBottom: 35 }}>
           <Text style={styles.titleText}>
             We need a little more information about you setup profile.
@@ -257,16 +258,14 @@ const RegisterFinalStep = ({ navigation }) => {
                   keyboardType="number-pad"
                   onChangeText={(text) => {
                     text < 1000
-                      ?
-                      setUser({
-                        ...user,
-                        weight: text
-                      })
-                      :
-                      setUser({
-                        ...user,
-                        weight: "1000"
-                      })
+                      ? setUser({
+                          ...user,
+                          weight: text,
+                        })
+                      : setUser({
+                          ...user,
+                          weight: "1000",
+                        });
                   }}
                 />
               </View>
@@ -279,7 +278,7 @@ const RegisterFinalStep = ({ navigation }) => {
                 setUser({
                   ...user,
                   displayWeight: !user.displayWeight,
-                })
+                });
               }}
               isCheck={user.displayWeight ? true : false}
               title="Yes"
@@ -289,7 +288,7 @@ const RegisterFinalStep = ({ navigation }) => {
                 setUser({
                   ...user,
                   displayWeight: !user.displayWeight,
-                })
+                });
               }}
               isCheck={!user.displayWeight ? true : false}
               title="No"
@@ -300,8 +299,7 @@ const RegisterFinalStep = ({ navigation }) => {
               styles.viewSection,
               styles.checkInput,
               { alignItems: "flex-end", borderBottomWidth: 0 },
-              errors.showActivitiesError &&
-              GlobalStyles.errorBorder,
+              errors.showActivitiesError && GlobalStyles.errorBorder,
             ]}
           >
             <Text style={styles.textLabel}>Activities</Text>
@@ -324,12 +322,8 @@ const RegisterFinalStep = ({ navigation }) => {
             {activities
               .filter((item) => item.selected)
               .map((element) => (
-                <View
-                  style={styles.acticityMain}
-                  key={element.id}>
-                  <Text style={styles.activityName}>
-                    {element.name}
-                  </Text>
+                <View style={styles.acticityMain} key={element.id}>
+                  <Text style={styles.activityName}>{element.name}</Text>
                 </View>
               ))}
           </View>
@@ -348,7 +342,7 @@ const RegisterFinalStep = ({ navigation }) => {
                 setUser({
                   ...user,
                   personalTrainer: !user.personalTrainer,
-                })
+                });
               }}
               isCheck={user.personalTrainer ? true : false}
               title="Yes"
@@ -358,7 +352,7 @@ const RegisterFinalStep = ({ navigation }) => {
                 setUser({
                   ...user,
                   personalTrainer: !user.personalTrainer,
-                })
+                });
               }}
               isCheck={!user.personalTrainer ? true : false}
               title="No"
@@ -370,7 +364,9 @@ const RegisterFinalStep = ({ navigation }) => {
             </Text>
             <TextInput
               style={[styles.checkInput, styles.inputTextArea]}
-              onFocus={() => scrollViewRef.current.scrollToEnd({ animated: true })}
+              onFocus={() =>
+                scrollViewRef.current.scrollToEnd({ animated: true })
+              }
               multiline={true}
               numberOfLines={4}
               textAlign="left"
@@ -379,7 +375,7 @@ const RegisterFinalStep = ({ navigation }) => {
               onChangeText={(text) =>
                 setUser({
                   ...user,
-                  goals: text
+                  goals: text,
                 })
               }
               value={user.goals}
@@ -396,26 +392,27 @@ const RegisterFinalStep = ({ navigation }) => {
       <LoadingSpinner visible={loading} />
     </SafeAreaView>
   );
-}
+};
 
 const styles = StyleSheet.create({
   header: {
     height: "7%",
     width: '100%',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    backgroundColor: "#ffff",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     paddingHorizontal: 10,
-    marginBottom: 15
+    marginBottom: 15,
   },
   headerTitle: {
     fontSize: 18,
-    color: '#000'
+    color: "#000",
   },
   headerRightButton: {
     ...GlobalStyles.backIcon,
     color: SignUpColor,
-    fontSize: 18
+    fontSize: 18,
   },
   viewSection: {
     width: "100%",

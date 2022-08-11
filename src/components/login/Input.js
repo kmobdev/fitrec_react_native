@@ -14,7 +14,7 @@ const Input = forwardRef((props, ref) => {
     autoCapitalize,
     autoCompleteType,
     placeholder,
-    inputStyle
+    inputStyle,
   } = props;
   return (
     <>
@@ -33,8 +33,8 @@ const Input = forwardRef((props, ref) => {
         onChangeText={onChangeText}
       />
     </>
-  )
-})
+  );
+});
 
 export default Input;
 

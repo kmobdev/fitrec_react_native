@@ -23,14 +23,16 @@ import { ToastQuestion } from "../../components/shared/ToastQuestion";
 import { GlobalCheckBox } from "../../components/shared/GlobalCheckBox";
 import { useDispatch, useSelector } from "react-redux";
 import RNFetchBlob from "rn-fetch-blob";
-import { actionUserRegisterValidate, actionUserLoginFB } from "../../redux/actions/UserActions";
+import {
+  actionUserRegisterValidate,
+  actionUserLoginFB,
+} from "../../redux/actions/UserActions";
 import { UpdateCoverPhoto } from "../../components/shared/UpdateCoverPhoto";
 import { actionGetGyms } from "../../redux/actions/ActivityActions";
 import SelectDropdown from "react-native-select-dropdown";
 import Input from "../../components/login/Input";
 
 const Register = ({ navigation }) => {
-
   let lUserFBData = navigation.getParam("userFBData", null);
   let aAppleData = navigation.getParam("appleCredentials", null);
 
@@ -47,24 +49,28 @@ const Register = ({ navigation }) => {
 
   const dispatch = useDispatch();
 
-  const [dateSelect, setDateSelect] = useState(moment().subtract(16, "years").format("YYYY-MM-DD"));
+  const [dateSelect, setDateSelect] = useState(
+    moment().subtract(16, "years").format("YYYY-MM-DD")
+  );
   const [errors, setErrors] = useState({});
   const [showProfilePhoto, setShowProfilePhoto] = useState(false);
   const [showCoverPhoto, setShowCoverPhoto] = useState(false);
-  const [showPassword, setShowPassword] = useState(lUserFBData !== null ? false : true);
+  const [showPassword, setShowPassword] = useState(
+    lUserFBData !== null ? false : true
+  );
   const [user, setUser] = useState({
     username:
       null !== lUserFBData
         ? lUserFBData.name.replace(" ", "")
         : aAppleData !== null
-          ? aAppleData.name
-          : "",
+        ? aAppleData.name
+        : "",
     email:
       null !== lUserFBData
         ? lUserFBData.email
         : aAppleData !== null
-          ? aAppleData.email
-          : "",
+        ? aAppleData.email
+        : "",
     password:
       null !== lUserFBData
         ? lUserFBData.id.replace(0, "z").replace(2, "A")
@@ -86,8 +92,8 @@ const Register = ({ navigation }) => {
     newGym: false,
   });
   const [age, setAge] = useState([
-    16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33,
-    34, 35, 36, 37,
+    16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34,
+    35, 36, 37,
   ]);
   const [isLoading, setIsLoading] = useState(false);
   const [toastText, setToastText] = useState("");
@@ -99,20 +105,15 @@ const Register = ({ navigation }) => {
   useEffect(() => {
     getFacebookPhoto();
     dispatch(actionGetGyms());
-  }, [])
+  }, []);
 
   useEffect(() => {
-    if (
-      !login.status &&
-      login.redirectSignIn &&
-      login.appleAccount === null
-    ) {
+    if (!login.status && login.redirectSignIn && login.appleAccount === null) {
       let lUserFBData = login.userFBData;
       setShowPassword(null !== lUserFBData ? false : true);
       setErrors({});
       setUser({
-        username:
-          null !== lUserFBData ? lUserFBData.name.replace(" ", "") : "",
+        username: null !== lUserFBData ? lUserFBData.name.replace(" ", "") : "",
         email: null !== lUserFBData ? lUserFBData.email : "",
         password: lUserFBData.id.replace(0, "z").replace(2, "A"),
         confirmPassword: lUserFBData.id.replace(0, "z").replace(2, "A"),
@@ -127,7 +128,7 @@ const Register = ({ navigation }) => {
       });
       getFacebookPhoto();
     }
-  }, [login])
+  }, [login]);
 
   useEffect(() => {
     if (
@@ -140,19 +141,17 @@ const Register = ({ navigation }) => {
     if (register.redirectConditions) {
       if (user.newGym) {
         user.gymId = 0;
-        if (null === user.gym || "" === user.gym.trim())
-          user.gym = null;
+        if (null === user.gym || "" === user.gym.trim()) user.gym = null;
       } else {
         if ("None" === user.gym) user.gym = null;
         else
           gyms.forEach((oGym) => {
-            if (oGym.name === user.gym)
-              user.gymId = oGym.id;
+            if (oGym.name === user.gym) user.gymId = oGym.id;
           });
       }
       navigation.navigate("Conditions", { user: user });
     }
-  }, [register])
+  }, [register]);
 
   useEffect(() => {
     if (activity.gyms.length > 0 && gyms.length === 0) {
@@ -163,7 +162,7 @@ const Register = ({ navigation }) => {
       setGyms(activity.gyms);
       setGymsName(aGymsName);
     }
-  }, [activity])
+  }, [activity]);
 
   const scrollToEnd = () => {
     if (null !== scrollViewRef && undefined !== scrollViewRef)
@@ -172,17 +171,15 @@ const Register = ({ navigation }) => {
 
   const getFacebookPhoto = async () => {
     if (!showPassword) {
-      await RNFetchBlob.fetch("GET", user.image, {}).then(
-        async (res) => {
-          let status = res.info().status;
-          if (status == 200) {
-            setUser({
-              ...user,
-              image: res.base64(),
-            });
-          }
+      await RNFetchBlob.fetch("GET", user.image, {}).then(async (res) => {
+        let status = res.info().status;
+        if (status == 200) {
+          setUser({
+            ...user,
+            image: res.base64(),
+          });
         }
-      );
+      });
     }
   };
 
@@ -201,21 +198,19 @@ const Register = ({ navigation }) => {
         .then((image) => {
           setUser({
             ...user,
-            background: image.data
+            background: image.data,
           });
         })
-        .catch((error) => {
-        });
+        .catch((error) => {});
     } else {
       ImagePicker.openPicker(oOptions)
         .then((image) => {
           setUser({
             ...user,
-            background: image.data
+            background: image.data,
           });
         })
-        .catch((error) => {
-        });
+        .catch((error) => {});
     }
   };
 
@@ -234,21 +229,19 @@ const Register = ({ navigation }) => {
         .then((image) => {
           setUser({
             ...user,
-            background: image.data
+            background: image.data,
           });
         })
-        .catch((error) => {
-        });
+        .catch((error) => {});
     } else {
       ImagePicker.openPicker(oOptions)
         .then((image) => {
           setUser({
             ...user,
-            background: image.data
+            background: image.data,
           });
         })
-        .catch((error) => {
-        });
+        .catch((error) => {});
     }
   };
 
@@ -368,10 +361,10 @@ const Register = ({ navigation }) => {
   };
 
   const showToast = (text) => {
-    setIsLoading(true)
+    setIsLoading(true);
     setToastText(text);
     setTimeout(() => {
-      setIsLoading(false)
+      setIsLoading(false);
       setToastText("");
     }, 2000);
   };
@@ -392,7 +385,7 @@ const Register = ({ navigation }) => {
       aAges.push("" + nCount);
       nCount++;
     }
-    console.log('aAges ====>>>>> ', aAges);
+    console.log("aAges ====>>>>> ", aAges);
     return aAges;
   };
 
@@ -403,7 +396,7 @@ const Register = ({ navigation }) => {
   const onDropdownSelectionHandler = (selectedItem, index) => {
     setUser({
       ...user,
-      age: selectedItem
+      age: selectedItem,
     });
     console.log(selectedItem, index);
   };
@@ -484,9 +477,7 @@ const Register = ({ navigation }) => {
                 }}
                 value={user.username}
                 autoCapitalize="none"
-                onSubmitEditing={() =>
-                  handleOnPressLabel(emailRef)
-                }
+                onSubmitEditing={() => handleOnPressLabel(emailRef)}
               />
             </View>
           </View>
@@ -520,9 +511,7 @@ const Register = ({ navigation }) => {
                 }}
                 value={user.email}
                 editable={showPassword ? true : false}
-                onSubmitEditing={() =>
-                  handleOnPressLabel(passwordRef)
-                }
+                onSubmitEditing={() => handleOnPressLabel(passwordRef)}
                 autoCapitalize="none"
                 keyboardType="email-address"
                 textContentType={"emailAddress"}
@@ -554,13 +543,12 @@ const Register = ({ navigation }) => {
                     onChangeText={(text) => {
                       setUser({
                         ...user,
-                        password: text
+                        password: text,
                       });
                     }}
                     value={user.password}
                     autoCapitalize="none"
                     secureTextEntry={true}
-
                     onSubmitEditing={() =>
                       handleOnPressLabel(confirmPasswordRef)
                     }
@@ -570,16 +558,13 @@ const Register = ({ navigation }) => {
             </View>
             <View
               style={[
-                errors.showConfirmPasswordError &&
-                GlobalStyles.errorBorder,
+                errors.showConfirmPasswordError && GlobalStyles.errorBorder,
                 styles.row,
               ]}
             >
               <Pressable
                 style={styles.colLabel}
-                onPress={() =>
-                  handleOnPressLabel(confirmPasswordRef)
-                }
+                onPress={() => handleOnPressLabel(confirmPasswordRef)}
                 activeOpacity={1}
               >
                 <Text style={styles.textLabelColumn}>Confirm Password</Text>
@@ -593,15 +578,13 @@ const Register = ({ navigation }) => {
                     onChangeText={(text) => {
                       setUser({
                         ...user,
-                        confirmPassword: text
+                        confirmPassword: text,
                       });
                     }}
                     value={user.confirmPassword}
                     autoCapitalize="none"
                     secureTextEntry={true}
-                    onSubmitEditing={() =>
-                      handleOnPressLabel(nameRef)
-                    }
+                    onSubmitEditing={() => handleOnPressLabel(nameRef)}
                   />
                 </View>
               </View>
@@ -630,7 +613,7 @@ const Register = ({ navigation }) => {
                 onChangeText={(text) => {
                   setUser({
                     ...user,
-                    name: text
+                    name: text,
                   });
                 }}
                 value={user.name}
@@ -674,7 +657,7 @@ const Register = ({ navigation }) => {
             onPress={() => {
               setUser({
                 ...user,
-                displayAge: !user.displayAge
+                displayAge: !user.displayAge,
               });
             }}
             isCheck={!user.displayAge ? true : false}
@@ -684,7 +667,7 @@ const Register = ({ navigation }) => {
             onPress={() => {
               setUser({
                 ...user,
-                displayAge: !user.displayAge
+                displayAge: !user.displayAge,
               });
             }}
             isCheck={user.displayAge ? true : false}
@@ -813,7 +796,7 @@ const Register = ({ navigation }) => {
               onChangeText={(text) => {
                 setUser({
                   ...user,
-                  gym: text
+                  gym: text,
                 });
               }}
               value={user.gym}
@@ -821,10 +804,7 @@ const Register = ({ navigation }) => {
           </View>
         )}
         <View style={[styles.viewSection, styles.viewSignUpButton]}>
-          <Pressable
-            onPress={registerHandler}
-            style={styles.signUpButton}
-          >
+          <Pressable onPress={registerHandler} style={styles.signUpButton}>
             <Text style={styles.signUpText}>SIGN UP</Text>
           </Pressable>
         </View>
@@ -842,7 +822,7 @@ const Register = ({ navigation }) => {
       />
     </SafeAreaView>
   );
-}
+};
 
 export default Register;
 
@@ -947,5 +927,3 @@ const styles = StyleSheet.create({
     paddingStart: 15,
   },
 });
-
-

@@ -1,11 +1,5 @@
 import React, { Component, useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TextInput,
-  Pressable,
-} from "react-native";
+import { View, Text, StyleSheet, TextInput, Pressable } from "react-native";
 import {
   GreenFitrecColor,
   PlaceholderColor,
@@ -19,20 +13,16 @@ import { LoadingSpinner } from "../../components/shared/LoadingSpinner";
 import { Input } from "../../components";
 
 const ForgotPassword = (props) => {
-
   const screenProps = useSelector((state) => state.reducerForgotPassword);
 
-  const [email, setEmail] = useState('');
-  const [toastText, setToastText] = useState('');
+  const [email, setEmail] = useState("");
+  const [toastText, setToastText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (
-      !screenProps.success &&
-      "" !== screenProps.messageError
-    ) {
+    if (!screenProps.success && "" !== screenProps.messageError) {
       showToast(screenProps.messageError);
     } else if (screenProps.success) {
       showToast(
@@ -40,14 +30,14 @@ const ForgotPassword = (props) => {
         () => props.navigation.navigate("Login")
       );
     }
-    setIsLoading(false)
-  }, [screenProps])
+    setIsLoading(false);
+  }, [screenProps]);
 
   const showToast = (Text, callback = null) => {
     setToastText(Text);
-    setIsLoading(false)
+    setIsLoading(false);
     setTimeout(() => {
-      setToastText('');
+      setToastText("");
       if (null !== callback) {
         callback();
       }
@@ -56,7 +46,7 @@ const ForgotPassword = (props) => {
 
   const forgotPassword = () => {
     dispatch(actionUserForgotPassword(email));
-    setIsLoading(true)
+    setIsLoading(true);
   };
 
   return (
@@ -74,17 +64,14 @@ const ForgotPassword = (props) => {
           autoCapitalize="none"
         />
       </View>
-      <Pressable
-        style={styles.button}
-        onPress={forgotPassword}
-      >
+      <Pressable style={styles.button} onPress={forgotPassword}>
         <Text style={{ color: WhiteColor }}>NEXT</Text>
       </Pressable>
       <Toast toastText={toastText} />
       <LoadingSpinner visible={isLoading} />
     </View>
   );
-}
+};
 
 export default ForgotPassword;
 

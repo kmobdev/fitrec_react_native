@@ -3,7 +3,7 @@
  */
 export const APP_VERSION = "v1.2.9.26";
 // Constant that determines the application environment
-const DEBUG = false;
+export const DEBUG = false;
 // Constant that being debug in True, determines that test environment is used, if True is used by localhost
 const LOCAL_ENVIRONMENT = false;
 // URLS OF SERVICES
@@ -77,7 +77,6 @@ export const OPTIONS_IMAGE_CROP_PROFILE = {
   freeStyleCropEnabled: true,
   compressImageQuality: 0.5,
   writeTempFile: false,
-  freeStyleCropEnabled: true,
 };
 /**
  * Configuration for the cut of the images that are sent by chat, in this way all the images are sent with the same configuration
