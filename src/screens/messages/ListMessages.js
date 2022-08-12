@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -20,12 +20,11 @@ import {
   GreenFitrecColor,
 } from "../../Styles";
 import Icon from "react-native-vector-icons/Ionicons";
-import { connect } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { SearchUsername } from "../../components/chat/SearchUsername";
 import Conversation from "../../components/chat/Conversation";
 import {
   actionListMessages,
-  actionConfirmMessageRead,
   actionDeleteConversation,
   actionCreateChatGroup,
   actionGetMessages,
@@ -45,114 +44,106 @@ import FastImage from "react-native-fast-image";
 import PalsOptions from "../../components/pals/PalsOptions";
 import { actionCleanNavigation } from "../../redux/actions/NavigationActions";
 
-class ListMessages extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      showToastQuestion: false,
-      showConversation: false,
-      showDelete: false,
-      refresh: false,
-      conversationSelect: null,
-      loading: false,
-      toastText: "",
-      refreshing: false,
-      search: "",
-      showListPals: false,
-      showGroupConversation: false,
-      conversationSelect: null,
-      showNameNewChatGroup: false,
-      nameChatGroup: "",
-      showOptions: false,
-    };
-    this.oConversationRows = [];
-  }
+const ListMessages = (props) => {
 
-  componentDidMount = () => {
-    this.setState({
-      loading: true,
-    });
-    this.props.getListMessages(this.props.session.account.key);
+  const oConversationRows = useRef([]);
+
+  const session = useSelector((state) => state.reducerSession);
+  const messages = useSelector((state) => state.reducerListMessages);
+  const palsProps = useSelector((state) => state.reducerMyPals);
+
+  const dispatch = useDispatch();
+
+  const [showToastQuestion, setShowToastQuestion] = useState(false);
+  const [showConversation, setShowConversation] = useState(false);
+  const [showDelete, setShowDelete] = useState(false);
+  const [refresh, setRefresh] = useState(false);
+  const [conversationSelect, setConversationSelect] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [toastText, setToastText] = useState("");
+  const [refreshing, setRefreshing] = useState(false);
+  const [search, setSearch] = useState("");
+  const [showListPals, setShowListPals] = useState(false);
+  const [showGroupConversation, setShowGroupConversation] = useState(false);
+  const [showNameNewChatGroup, setShowNameNewChatGroup] = useState(false);
+  const [nameChatGroup, setNameChatGroup] = useState("");
+  const [showOptions, setShowOptions] = useState(false);
+  const [membersNewChatGroup, setMembersNewChatGroup] = useState([]);
+
+  useEffect(() => {
+    setLoading(true);
+    dispatch(actionListMessages(session.account.key));
     if (
-      this.props.palsProps.myFriends.status !== true &&
-      this.props.palsProps.myFriends.length === 0
-    )
-      this.props.getFriends(this.props.session.account.key);
+      palsProps.myFriends.status !== true &&
+      palsProps.myFriends.length === 0
+    ) {
+      dispatch(actionGetMyFriends(session.account.key));
+    }
+    if (null !== conversationSelect) {
+      for (var i = 0; i < nextProps.messages.messages.length; i++) {
+        if (
+          nextProps.messages.messages[i].key ===
+          conversationSelect.key
+        ) {
+          setConversationSelect(nextProps.messages.messages[i]);
+        }
+      }
+    }
+    var sConversationKey = messages.sConversationKey;
+    if (null !== sConversationKey && messages.messages.length > 0) {
+      messages.messages.forEach((oElement) => {
+        if (oElement.key === sConversationKey) {
+          showConversationHandler(oElement);
+        }
+      });
+      dispatch(actionCleanNavigation());
+    }
+    setLoading(false);
+    setRefreshing(false);
+    setRefresh(!refresh);
+
+  }, [])
+
+  const redirectNewMessage = () => {
+    props.navigation.navigate("NewEditMessage");
+    setShowOptions(false);
   };
 
-  redirectNewMessage = () => {
-    this.props.navigation.navigate("NewEditMessage");
-    this.setState({
-      showOptions: false,
-    });
+  const setShowDeleteHandler = () => {
+    setShowDelete(true);
+    setShowOptions(false);
   };
 
-  setShowDelete = () => {
-    this.setState({ showDelete: true, showOptions: false });
-  };
-
-  showConversation = (conversation) => {
-    let oConversation = {
+  const showConversationHandler = (conversation) => {
+    let conversationObj = {
       key: conversation.key,
       type: conversation.type,
       users: conversation.users,
     };
-    this.props.setConversationData(oConversation);
-    this.props.getMessages(conversation.key, this.props.session.account.key);
-    this.props.navigation.navigate("Messages");
+    dispatch(actionSetConversation(conversationObj));
+    dispatch(actionGetMessages(conversation.key, session.account.key));
+    props.navigation.navigate("Messages");
   };
 
-  componentWillReceiveProps = (nextProps) => {
-    if (null !== this.state.conversationSelect) {
-      for (var i = 0; i < nextProps.messages.messages.length; i++) {
-        if (
-          nextProps.messages.messages[i].key ===
-          this.state.conversationSelect.key
-        ) {
-          this.setState({
-            conversationSelect: nextProps.messages.messages[i],
-          });
-        }
-      }
-    }
-    var sConversationKey = this.props.messages.sConversationKey;
-    if (null !== sConversationKey && this.props.messages.messages.length > 0) {
-      this.props.messages.messages.forEach((oElement) => {
-        if (oElement.key === sConversationKey) this.showConversation(oElement);
-      });
-      this.props.cleanNavigation();
-    }
-    this.setState({
-      loading: false,
-      refreshing: false,
-      refresh: !this.state.refresh,
-    });
-  };
 
-  showToast = (sText, callback = null) => {
-    this.setState({
-      toastText: sText,
-      loading: false,
-    });
+  const showToast = (text, callback = null) => {
+    setToastText(text);
+    setLoading(false);
     setTimeout(() => {
-      this.setState({
-        toastText: "",
-      });
+      setToastText("");
       if (null !== callback) {
         callback();
       }
     }, 2000);
   };
 
-  onRefresh = () => {
-    this.setState({
-      refreshing: true,
-    });
-    this.props.getListMessages(this.props.session.account.key);
+  const onRefresh = () => {
+    setRefresh(true);
+    dispatch(actionListMessages(session.account.key));
   };
 
-  searchPeople = (sSearch) => {
-    return this.props.messages.messages.filter(function (item) {
+  const searchPeople = (sSearch) => {
+    return messages.messages.filter(function (item) {
       if (item.type === 1)
         return (
           item.users[0].name.toUpperCase().includes(sSearch.toUpperCase()) ||
@@ -166,325 +157,321 @@ class ListMessages extends Component {
     });
   };
 
-  deleteConversation = (oConversation) => {
-    this.setState({ loading: true });
-    this.props.deleteConversation(
-      this.props.session.account.key,
-      oConversation.key,
-      oConversation.type
-    );
-    this.oConversationRows[oConversation.key].close();
+  const deleteConversation = (conversation) => {
+    setLoading(true);
+    dispatch(actionDeleteConversation(
+      session.account.key,
+      conversation.key,
+      conversation.type
+    ));
+    oConversationRows[conversation.key].close();
   };
 
-  viewProfile = (oUser) => {
-    if (oUser.sender !== undefined) {
-      GetUserAccount(oUser.sender).then((userAccountSnapshot) => {
-        var oUserAccount = userAccountSnapshot.val();
-        this.props.getProfile(oUserAccount.id);
-        this.props.navigation.navigate("ProfileViewDetails");
+  const viewProfile = (user) => {
+    if (user.sender !== undefined) {
+      GetUserAccount(user.sender).then((userAccountSnapshot) => {
+        var userAccount = userAccountSnapshot.val();
+        dispatch(actionGetProfile(userAccount.id, true));
+        props.navigation.navigate("ProfileViewDetails");
       });
     } else {
-      this.props.getProfile(oUser.id);
-      this.props.navigation.navigate("ProfileViewDetails");
+      dispatch(actionGetProfile(user.id, true));
+      props.navigation.navigate("ProfileViewDetails");
     }
   };
 
-  closePeopleList = () => {
-    this.clearPeopleSelect();
-    this.setState({ showListPals: false });
+  const closePeopleList = () => {
+    clearPeopleSelect();
+    setShowListPals(false);
   };
 
-  clearPeopleSelect = () => {
-    this.props.palsProps.myFriends.forEach((oPal) => {
+  const clearPeopleSelect = () => {
+    palsProps.myFriends.forEach((oPal) => {
       oPal.selected = false;
     });
   };
 
-  confirmMembers = () => {
-    var aMembers = [];
-    this.props.palsProps.myFriends.forEach((oPal) => {
-      if (oPal.selected) aMembers.push({ key: oPal.key, id: oPal.id });
+  const confirmMembers = () => {
+    var members = [];
+    palsProps.myFriends.forEach((oPal) => {
+      if (oPal.selected) members.push({ key: oPal.key, id: oPal.id });
     });
-    if (aMembers.length > 1) {
-      aMembers.push({
-        key: this.props.session.account.key,
-        id: this.props.session.account.id,
+    if (members.length > 1) {
+      members.push({
+        key: session.account.key,
+        id: session.account.id,
       });
-      this.setState({
-        membersNewChatGroup: aMembers,
-        showNameNewChatGroup: true,
-      });
+      setMembersNewChatGroup(members);
+      setShowNameNewChatGroup(true);
     } else {
       // TODO: If the length is equal to one, redirect messages with the search equal to the name of that user
-      if (aMembers.length == 1) this.redirectNewMessage();
+      if (members.length == 1) redirectNewMessage();
     }
-    this.clearPeopleSelect();
-    this.setState({
-      showListPals: false,
-    });
+    clearPeopleSelect();
+    setShowListPals(false);
   };
 
-  crateNewChatGroup = () => {
-    if ("" !== this.state.nameChatGroup) {
-      this.props.createChatGroup(
-        this.state.nameChatGroup,
-        this.props.session.account.key,
-        this.props.session.account.name,
-        this.state.membersNewChatGroup
-      );
-      this.setState({
-        nameChatGroup: "",
-        membersNewChatGroup: [],
-        showNameNewChatGroup: false,
-      });
-    } else this.showToast("The name cannot be empty");
+  const crateNewChatGroup = () => {
+    if ("" !== nameChatGroup) {
+      dispatch(actionCreateChatGroup(
+        nameChatGroup,
+        session.account.key,
+        session.account.name,
+        membersNewChatGroup
+      ));
+      setNameChatGroup("");
+      setMembersNewChatGroup([]);
+      setShowNameNewChatGroup(false);
+    } else {
+      showToast("The name cannot be empty");
+    }
   };
 
-  render() {
-    return (
-      <ImageBackground
-        source={require("../../assets/bk.png")}
-        resizeMode="stretch"
-        style={GlobalStyles.fullImageWidht}
-      >
-        {this.props.messages.messages.length > 0 ? (
-          <FlatList
-            refreshControl={
-              <RefreshControl
-                refreshing={this.state.refreshing}
-                onRefresh={this.onRefresh}
-                tintColor={GreenFitrecColor}
-                title="Pull to refresh..."
-              />
-            }
-            ListHeaderComponent={
-              <SearchUsername
-                value={this.state.search}
-                change={(text) => this.setState({ search: text })}
-                clean={() => this.setState({ search: "" })}
-              />
-            }
-            refresh={this.state.refresh}
-            keyExtractor={(item, index) => index.toString()}
-            data={this.searchPeople(this.state.search)}
-            extraData={this.state.refresh}
-            renderItem={({ item }) => (
-              <View
-                style={[styles.viewMessageItem, { backgroundColor: "white" }]}
+  return (
+    <ImageBackground
+      source={require("../../assets/bk.png")}
+      resizeMode="stretch"
+      style={GlobalStyles.fullImageWidht}
+    >
+      {messages.messages.length > 0 ? (
+        <FlatList
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              tintColor={GreenFitrecColor}
+              title="Pull to refresh..."
+            />
+          }
+          ListHeaderComponent={
+            <SearchUsername
+              value={search}
+              change={(text) => setSearch(text)}
+              clean={() => setSearch("")}
+            />
+          }
+          refresh={refresh}
+          keyExtractor={(item, index) => index.toString()}
+          data={searchPeople(search)}
+          extraData={refresh}
+          renderItem={({ item }) => (
+            <View
+              style={[styles.viewMessageItem, { backgroundColor: "white" }]}
+            >
+              <Swipeable
+                renderRightActions={() => (
+                  <Pressable
+                    style={styles.buttonDelete}
+                    onPress={() => {
+                      deleteConversation(item);
+                    }}
+                  >
+                    <Icon name="trash" size={30} color={WhiteColor} />
+                  </Pressable>
+                )}
+                ref={oConversationRows[item.key]}
               >
-                <Swipeable
-                  renderRightActions={() => (
+                <View style={styles.viewMessageItemDetails}>
+                  <View style={{ width: "100%" }}>
                     <Pressable
-                      style={styles.buttonDelete}
-                      onPress={() => {
-                        this.deleteConversation(item);
-                      }}
+                      onPress={() => showConversationHandler(item)}
+                      style={{ flexDirection: "row" }}
                     >
-                      <Icon name="trash" size={30} color={WhiteColor} />
-                    </Pressable>
-                  )}
-                  ref={(oRef) => (this.oConversationRows[item.key] = oRef)}
-                >
-                  <View style={styles.viewMessageItemDetails}>
-                    <View style={{ width: "100%" }}>
-                      <Pressable
-                        onPress={() => this.showConversation(item)}
-                        style={{ flexDirection: "row" }}
-                      >
-                        {this.state.showDelete && (
-                          <View style={{ justifyContent: "center" }}>
-                            <Icon
-                              name="radio-button-on"
-                              size={30}
-                              color={SignUpColor}
-                            />
-                          </View>
-                        )}
-                        {1 === item.type ? (
-                          null !== item.image ? (
-                            <FastImage
-                              style={[
-                                styles.viewMessageItemImageProfile,
-                                { borderRadius: 100 },
-                              ]}
-                              source={{
-                                uri: item.image,
-                                priority: FastImage.priority.high,
-                              }}
-                              resizeMode={FastImage.resizeMode.cover}
-                            />
-                          ) : (
-                            <Image
-                              style={[
-                                styles.viewMessageItemImageProfile,
-                                { borderRadius: 100 },
-                              ]}
-                              source={require("../../assets/imgProfileReadOnly.png")}
-                            />
-                          )
+                      {showDelete && (
+                        <View style={{ justifyContent: "center" }}>
+                          <Icon
+                            name="radio-button-on"
+                            size={30}
+                            color={SignUpColor}
+                          />
+                        </View>
+                      )}
+                      {1 === item.type ? (
+                        null !== item.image ? (
+                          <FastImage
+                            style={[
+                              styles.viewMessageItemImageProfile,
+                              { borderRadius: 100 },
+                            ]}
+                            source={{
+                              uri: item.image,
+                              priority: FastImage.priority.high,
+                            }}
+                            resizeMode={FastImage.resizeMode.cover}
+                          />
                         ) : (
                           <Image
                             style={[
                               styles.viewMessageItemImageProfile,
                               { borderRadius: 100 },
                             ]}
-                            source={require("../../assets/imgGroup.png")}
+                            source={require("../../assets/imgProfileReadOnly.png")}
                           />
-                        )}
-                        <View style={styles.viewMessageData}>
-                          <Text style={styles.messageName}>{item.name}</Text>
-                          <Text
-                            style={[
-                              styles.messagePreview,
-                              GlobalStyles.textMuted,
-                            ]}
-                            numberOfLines={1}
-                          >
-                            {item.message}
-                          </Text>
-                          <Text style={GlobalStyles.textMuted}>
-                            {item.time}
-                          </Text>
+                        )
+                      ) : (
+                        <Image
+                          style={[
+                            styles.viewMessageItemImageProfile,
+                            { borderRadius: 100 },
+                          ]}
+                          source={require("../../assets/imgGroup.png")}
+                        />
+                      )}
+                      <View style={styles.viewMessageData}>
+                        <Text style={styles.messageName}>{item.name}</Text>
+                        <Text
+                          style={[
+                            styles.messagePreview,
+                            GlobalStyles.textMuted,
+                          ]}
+                          numberOfLines={1}
+                        >
+                          {item.message}
+                        </Text>
+                        <Text style={GlobalStyles.textMuted}>
+                          {item.time}
+                        </Text>
+                      </View>
+                      <View style={styles.viewDetailsDate}>
+                        <View style={styles.viewDateAndIcon}>
+                          <Icon
+                            name="md-time"
+                            size={16}
+                            color={PlaceholderColor}
+                            style={styles.icon}
+                          />
+                          <Text>{item.date}</Text>
                         </View>
-                        <View style={styles.viewDetailsDate}>
-                          <View style={styles.viewDateAndIcon}>
-                            <Icon
-                              name="md-time"
-                              size={16}
-                              color={PlaceholderColor}
-                              style={styles.icon}
-                            />
-                            <Text>{item.date}</Text>
-                          </View>
-                          {item.messagesRead > 0 && (
-                            <View style={GlobalMessages.viewGlobalBubble}>
-                              <View style={GlobalMessages.viewBubble}>
-                                <Text style={GlobalMessages.text}>
-                                  {item.messagesRead}
-                                </Text>
-                              </View>
+                        {item.messagesRead > 0 && (
+                          <View style={GlobalMessages.viewGlobalBubble}>
+                            <View style={GlobalMessages.viewBubble}>
+                              <Text style={GlobalMessages.text}>
+                                {item.messagesRead}
+                              </Text>
                             </View>
-                          )}
-                        </View>
-                      </Pressable>
-                    </View>
+                          </View>
+                        )}
+                      </View>
+                    </Pressable>
                   </View>
-                </Swipeable>
+                </View>
+              </Swipeable>
+            </View>
+          )}
+        />
+      ) : (
+        <View style={{ alignItems: "center" }}>
+          <Text
+            style={[
+              styles.textCenter,
+              styles.textGray,
+              styles.pd10,
+              styles.fontBold,
+            ]}
+          >
+            Here you will find the chats with other users
+          </Text>
+          <Text style={[styles.textCenter, styles.textGray, styles.fontBold]}>
+            Start chatting!
+          </Text>
+        </View>
+      )}
+      {showDelete && (
+        <View style={styles.viewButtonDeleteMessages}>
+          <Pressable
+            style={{ flexDirection: "row", justifyContent: "center" }}
+          >
+            <Icon
+              name="ios-trash"
+              size={20}
+              color={SignUpColor}
+              style={styles.icon}
+            />
+            <Text style={{ fontSize: 18, color: SignUpColor }}>
+              Delete messages
+            </Text>
+          </Pressable>
+        </View>
+      )}
+      <Conversation
+        visible={showConversation}
+        conversation={conversationSelect}
+        close={() => setShowConversation(false)}
+        viewProfile={(item) => viewProfile(item)}
+      />
+      <GroupChat
+        close={() => setShowGroupConversation(false)}
+        visible={showGroupConversation}
+        conversation={conversationSelect}
+        viewProfile={(item) => viewProfile(item)}
+      />
+      {showNameNewChatGroup && (
+        <View style={ToastQuestionGenericStyles.contentToast}>
+          <View style={ToastQuestionGenericStyles.viewToast}>
+            <Text style={ToastQuestionGenericStyles.textToast}>
+              Name of the new group chat?
+            </Text>
+            <TextInput
+              numberOfLines={4}
+              multiline={false}
+              style={ToastQuestionGenericStyles.inputSimple}
+              value={textNotification}
+              onChangeText={(text) =>
+                text.length < 31 && setNameChatGroup(text)
+              }
+            />
+            <View style={{ flexDirection: "row", marginTop: 10 }}>
+              <View style={{ width: "50%" }}>
+                <Pressable
+                  style={[GlobalStyles.buttonCancel, { marginRight: 10 }]}
+                  onPress={() => {
+                    setShowNameNewChatGroup(false);
+                    setMembersNewChatGroup(null);
+                  }}
+                >
+                  <Text style={GlobalStyles.textButton}>Cancel</Text>
+                </Pressable>
               </View>
-            )}
-          />
-        ) : (
-          <View style={{ alignItems: "center" }}>
-            <Text
-              style={[
-                styles.textCenter,
-                styles.textGray,
-                styles.pd10,
-                styles.fontBold,
-              ]}
-            >
-              Here you will find the chats with other users
-            </Text>
-            <Text style={[styles.textCenter, styles.textGray, styles.fontBold]}>
-              Start chatting!
-            </Text>
-          </View>
-        )}
-        {this.state.showDelete && (
-          <View style={styles.viewButtonDeleteMessages}>
-            <Pressable
-              style={{ flexDirection: "row", justifyContent: "center" }}
-            >
-              <Icon
-                name="ios-trash"
-                size={20}
-                color={SignUpColor}
-                style={styles.icon}
-              />
-              <Text style={{ fontSize: 18, color: SignUpColor }}>
-                Delete messages
-              </Text>
-            </Pressable>
-          </View>
-        )}
-        <Conversation
-          visible={this.state.showConversation}
-          conversation={this.state.conversationSelect}
-          close={() => this.setState({ showConversation: false })}
-          viewProfile={(item) => this.viewProfile(item)}
-        />
-        <GroupChat
-          close={() => this.setState({ showGroupConversation: false })}
-          visible={this.state.showGroupConversation}
-          conversation={this.state.conversationSelect}
-          viewProfile={(item) => this.viewProfile(item)}
-        />
-        {this.state.showNameNewChatGroup && (
-          <View style={ToastQuestionGenericStyles.contentToast}>
-            <View style={ToastQuestionGenericStyles.viewToast}>
-              <Text style={ToastQuestionGenericStyles.textToast}>
-                Name of the new group chat?
-              </Text>
-              <TextInput
-                numberOfLines={4}
-                multiline={false}
-                style={ToastQuestionGenericStyles.inputSimple}
-                value={this.state.textNotification}
-                onChangeText={(text) =>
-                  text.length < 31 && this.setState({ nameChatGroup: text })
-                }
-              />
-              <View style={{ flexDirection: "row", marginTop: 10 }}>
-                <View style={{ width: "50%" }}>
-                  <Pressable
-                    style={[GlobalStyles.buttonCancel, { marginRight: 10 }]}
-                    onPress={() =>
-                      this.setState({
-                        showNameNewChatGroup: false,
-                        membersNewChatGroup: null,
-                      })
-                    }
-                  >
-                    <Text style={GlobalStyles.textButton}>Cancel</Text>
-                  </Pressable>
-                </View>
-                <View style={{ width: "50%" }}>
-                  <Pressable
-                    style={GlobalStyles.buttonConfirm}
-                    onPress={() => this.crateNewChatGroup()}
-                  >
-                    <Text style={GlobalStyles.textButton}>Confirm</Text>
-                  </Pressable>
-                </View>
+              <View style={{ width: "50%" }}>
+                <Pressable
+                  style={GlobalStyles.buttonConfirm}
+                  onPress={() => crateNewChatGroup()}
+                >
+                  <Text style={GlobalStyles.textButton}>Confirm</Text>
+                </Pressable>
               </View>
             </View>
           </View>
-        )}
-        {this.state.showGroupConversation ||
-          (!this.state.showConversation && (
-            <PalsOptions
-              visible={this.state.showOptions}
-              groupMessage={() =>
-                this.setState({ showListPals: true, showOptions: false })
-              }
-              newMessage={() => this.redirectNewMessage()}
-              openOptions={() =>
-                this.setState({ showOptions: !this.state.showOptions })
-              }
-            />
-          ))}
-        <PeopleList
-          visible={this.state.showListPals}
-          close={() => this.closePeopleList()}
-          pals={this.props.palsProps.myFriends}
-          confirm={() => this.confirmMembers()}
-        />
-        <LoadingSpinner visible={this.state.loading} />
-        <Toast toastText={this.state.toastText} />
-      </ImageBackground>
-    );
-  }
+        </View>
+      )
+      }
+      {
+        showGroupConversation ||
+        (!showConversation && (
+          <PalsOptions
+            visible={showOptions}
+            groupMessage={() => {
+              setShowListPals(true);
+              setShowOptions(false);
+            }}
+            newMessage={() => redirectNewMessage()}
+            openOptions={() => setShowOptions(!showOptions)}
+          />
+        ))
+      }
+      <PeopleList
+        visible={showListPals}
+        close={() => closePeopleList()}
+        pals={palsProps.myFriends}
+        confirm={() => confirmMembers()}
+      />
+      <LoadingSpinner visible={loading} />
+      <Toast toastText={toastText} />
+    </ImageBackground >
+  );
 }
+
+export default ListMessages;
 
 const styles = StyleSheet.create({
   viewMessageItem: {
@@ -563,40 +550,3 @@ const styles = StyleSheet.create({
   },
 });
 
-const mapStateToProps = (state) => ({
-  session: state.reducerSession,
-  messages: state.reducerListMessages,
-  palsProps: state.reducerMyPals,
-});
-
-const mapDispatchToProps = (dispatch) => ({
-  getListMessages: (sUserKey) => {
-    dispatch(actionListMessages(sUserKey));
-  },
-  confirmReadMessage: (data) => {
-    dispatch(actionConfirmMessageRead(data));
-  },
-  deleteConversation: (sAccountKey, sConversationKey, nType) => {
-    dispatch(actionDeleteConversation(sAccountKey, sConversationKey, nType));
-  },
-  getProfile: (data) => {
-    dispatch(actionGetProfile(data, true));
-  },
-  createChatGroup: (sGroupName, sUserKey, sUserName, aMemebers) => {
-    dispatch(actionCreateChatGroup(sGroupName, sUserKey, sUserName, aMemebers));
-  },
-  getFriends: (sUserKey) => {
-    dispatch(actionGetMyFriends(sUserKey));
-  },
-  getMessages: (sConversationId, sUserKey) => {
-    dispatch(actionGetMessages(sConversationId, sUserKey));
-  },
-  setConversationData: (oConversation) => {
-    dispatch(actionSetConversation(oConversation));
-  },
-  cleanNavigation: () => {
-    dispatch(actionCleanNavigation());
-  },
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(ListMessages);

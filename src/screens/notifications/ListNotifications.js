@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, useEffect, useRef, useState } from "react";
 import {
   Text,
   ImageBackground,
@@ -21,7 +21,7 @@ import {
 import Icon from "react-native-vector-icons/Ionicons";
 import { StyleSheet } from "react-native";
 import Swipeable from "react-native-gesture-handler/Swipeable";
-import { connect } from "react-redux";
+import { connect, useDispatch, useSelector } from "react-redux";
 import {
   actionGetNotifications,
   actionViewNotification,
@@ -62,142 +62,137 @@ import {
 } from "../../redux/actions/NavigationActions";
 import { actionGetProfile } from "../../redux/actions/ProfileActions";
 
-class ListNotifications extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      toastText: "",
-      refreshing: false,
-      loading: false,
-      showGroupInvitation: false,
-      toastText: "",
-      group: null,
-      isRequestPending: true,
-      journeySelect: [],
-      showQuestionDeleteAll: false,
-      showNotificationGroup: false,
-      notificationText: "",
-      capitanName: "",
-      groupName: "",
-      groupKey: "",
-    };
-    this.oNotificationRows = [];
-  }
+const ListNotifications = (props) => {
 
-  componentDidMount = () => {
-    this.props.navigation.setParams({
-      deleteAll: this.deleteAllNotificationsQuestion,
+  const oNotificationRows = useRef();
+
+
+  const session = useSelector((state) => state.reducerSession);
+  const groupProps = useSelector((state) => state.reducerGroup);
+  const journeyProps = useSelector((state) => state.reducerJourney);
+  const invitationsProps = useSelector((state) => state.reducerInvitationsGroup);
+  const notificationProps = useSelector((state) => state.reducerNotification);
+
+  const dispatch = useDispatch();
+
+  const [toastText, setToastText] = useState("");
+  const [refreshing, setRefreshing] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [showGroupInvitation, setShowGroupInvitation] = useState(false);
+  const [group, setGroup] = useState(null);
+  const [isRequestPending, setIsRequestPending] = useState(true);
+  const [journeySelect, setJourneySelect] = useState([]);
+  const [showQuestionDeleteAll, setShowQuestionDeleteAll] = useState(false);
+  const [showNotificationGroup, setShowNotificationGroup] = useState(false);
+  const [notificationText, setNotificationText] = useState("");
+  const [capitanName, setCapitanName] = useState("");
+  const [groupName, setGroupName] = useState("");
+  const [groupKey, setGroupKey] = useState("");
+
+  useEffect(() => {
+    props.navigation.setParams({
+      deleteAll: deleteAllNotificationsQuestion,
     });
-    this.props.getNotifications();
-    this.props.getJourneyList();
-    var nNotificationId = this.props.navigation.getParam(
+    dispatch(actionGetNotifications());
+    dispatch(actionGetJourneyList());
+    var nNotificationId = props.navigation.getParam(
       "notificationId",
       null
     );
     if (null !== nNotificationId) {
-      this.props.notificationProps.notifications.forEach((oElement) => {
+      props.notificationProps.notifications.forEach((oElement) => {
         if (oElement.id === nNotificationId) {
-          this.openNotification(oElement);
+          openNotification(oElement);
         }
       });
     }
-  };
+    setRefreshing(false);
+    setLoading(false);
+  }, [])
 
-  componentWillReceiveProps = (nextProps) => {
-    this.setState({
-      refreshing: false,
-      loading: false,
-    });
+
+  useEffect(() => {
     if (
-      this.props.invitationsProps !== nextProps.invitationsProps &&
-      nextProps.invitationsProps.invitationAction
+      props.invitationsProps !== invitationsProps &&
+      invitationsProps.invitationAction
     ) {
-      this.openRequestGroup(this.props.invitationsProps.groupId);
+      openRequestGroup(props.invitationsProps.groupId);
     }
-    if (nextProps.notificationProps.status) {
-      this.props.cleanGroupNotification();
-      this.setState({
-        group: nextProps.notificationProps.group,
-        showGroupInvitation: true,
-        loading: false,
-        isRequestPending: nextProps.notificationProps.group.requestPending,
-      });
+    if (notificationProps.status) {
+      dispatch(actionCleanOpenGroup());
+      setGroup(notificationProps.group);
+      setShowGroupInvitation(true);
+      setLoading(false);
+      setIsRequestPending(notificationProps.group.requestPending);
     }
-    if (nextProps.notificationProps.nNotificationId !== null) {
-      let oNotification = this.props.notificationProps.notifications.filter(
+    if (notificationProps.nNotificationId !== null) {
+      let oNotification = props.notificationProps.notifications.filter(
         (oNotification) =>
-          oNotification.id === nextProps.notificationProps.nNotificationId
+          oNotification.id === notificationProps.nNotificationId
       );
       if (oNotification.length > 0) {
-        this.openNotification(oNotification[0]);
-        this.props.cleanNavigation();
+        openNotification(oNotification[0]);
+        dispatch(actionCleanNavigation());
       }
     }
-  };
+  }, [invitationsProps, notificationProps])
 
-  showToast = (sText, callback = null) => {
-    this.setState({
-      toastText: sText,
-      loading: false,
-    });
+  const showToast = (text, callback = null) => {
+    setToastText(text);
+    setLoading(false);
     setTimeout(() => {
-      this.setState({
-        toastText: "",
-      });
+      setToastText("");
       if (null !== callback) {
         callback();
       }
     }, 2000);
   };
 
-  refreshNotifications = () => {
-    this.props.getNotifications();
-    this.props.getJourneyList();
-    this.setState({
-      loading: true,
-      refreshing: true,
-    });
+  const refreshNotifications = () => {
+    dispatch(actionGetNotifications());
+    dispatch(actionGetJourneyList());
+    setLoading(true);
+    setRefreshing(true);
   };
 
-  openNotification = (oNotification) => {
-    if (!this.state.loading) {
-      this.props.viewNotification(oNotification.id);
+  const openNotification = (oNotification) => {
+    if (!loading) {
+      props.viewNotification(oNotification.id);
       switch (oNotification.type) {
         case NOTIFICATION_TYPE_GROUP_CHAT:
-          this.props.navigation.navigate("ListMessages");
+          props.navigation.navigate("ListMessages");
           break;
         case NOTIFICATION_SEND_REQUEST:
-          this.props.navigation.navigate("MyPals");
-          this.props.navigatePals();
+          props.navigation.navigate("MyPals");
+          dispatch(actionNavigateToMyPals());
           break;
         case NOTIFICATION_TYPE_NEW_CAPTAIN:
           if (!oNotification.group) break;
           const { key: sKey } = oNotification.group;
-          this.props.navigateToGroup(sKey);
-          this.props.navigation.navigate("Groups");
+          dispatch(actionNavigateToGroup(sKey));
+          props.navigation.navigate("Groups");
           break;
         case NOTIFICATION_INVITATION_GROUP:
         case NOTIFICATION_REQUEST_GROUP:
-          this.openRequestGroup(oNotification.group.key);
+          openRequestGroup(oNotification.group.key);
           break;
         case NOTIFICATION_CAPITAN_MESSAGE_GROUP:
-          this.setState({
-            showNotificationGroup: true,
-            notificationText: oNotification.description,
-            capitanName: oNotification.user.name,
-            groupName: oNotification.group.name,
-            groupKey: oNotification.group.key,
-          });
+          setShowNotificationGroup(true);
+          setNotificationText(oNotification.description);
+          setCapitanName(oNotification.user.name);
+          setGroupName(oNotification.group.name);
+          setGroupKey(oNotification.group.key)
+
           break;
         case NOTIFICATION_TYPE_LIKE_JOURNEY:
         case NOTIFICATION_TYPE_TAG_JOURNEY:
-          this.props.navigation.navigate("ShowJourney", {
+          props.navigation.navigate("ShowJourney", {
             id: oNotification.journey.id,
           });
           break;
         case NOTIFICATION_TYPE_NEW_FOLLOWER:
-          this.props.getProfile(oNotification.id_send);
-          this.props.navigation.navigate("ProfileViewDetails");
+          props.getProfile(oNotification.id_send);
+          props.navigation.navigate("ProfileViewDetails");
           break;
         default:
           break;
@@ -205,85 +200,66 @@ class ListNotifications extends Component {
     }
   };
 
-  openRequestGroup = (groupId) => {
-    this.props.openGroupNotification(groupId, this.props.session.account.key);
+  const openRequestGroup = (groupId) => {
+    dispatch(actionOpenGroupNotification(groupId, session.account.key));
   };
 
-  navigateGroup = (sGroupKey) => {
-    this.props.getGroup(sGroupKey, this.props.session.account.key);
-    this.props.navigation.navigate("DetailsGroup");
+  const navigateGroup = (sGroupKey) => {
+    dispatch(actionGetGroup(sGroupKey, session.account.key));
+    props.navigation.navigate("DetailsGroup");
   };
 
-  showToast = (sText) => {
-    this.setState({
-      toastText: sText,
-      loading: false,
-    });
-    setTimeout(() => {
-      this.setState({
-        toastText: "",
-      });
-    }, 2000);
+  const rejectRequest = () => {
+    setLoading(true);
+    dispatch(actionRejectInvitationGroup({
+      accountId: session.account.key,
+      groupId: group.key,
+    }));
   };
 
-  rejectRequest = () => {
-    this.setState({
-      loading: true,
-    });
-    this.props.rejectInvitationGroup({
-      accountId: this.props.session.account.key,
-      groupId: this.state.group.key,
-    });
-  };
-
-  acceptRequest = () => {
-    this.setState({
-      loading: true,
-    });
-    let nGroupId = this.state.group.id,
-      sGroupKey = this.state.group.key,
-      nUserId = this.props.session.account.id,
-      sUserKey = this.props.session.account.key,
-      sUserName = this.props.session.account.name;
-    this.props.acceptInvitationGroup(
-      nGroupId,
-      sGroupKey,
-      nUserId,
-      sUserKey,
-      sUserName
+  const acceptRequest = () => {
+    setLoading(true);
+    let nGroupId = group.id,
+      sGroupKey = group.key,
+      nUserId = session.account.id,
+      sUserKey = session.account.key,
+      sUserName = session.account.name;
+    dispatch(
+      actionAcceptInvitationGroup(
+        nGroupId,
+        sGroupKey,
+        nUserId,
+        sUserKey,
+        sUserName
+      )
     );
   };
 
-  deleteNotification = (oNotification) => {
-    this.setState({
-      loading: true,
-    });
-    this.props.deleteNotification(oNotification.id);
-    this.oNotificationRows[oNotification.id].close();
+  const deleteNotification = (oNotification) => {
+    setLoading(true);
+    dispatch(actionDeleteNotification(oNotification.id));
+    oNotificationRows[oNotification.id].close();
   };
 
-  deleteAllNotificationsQuestion = () => {
-    this.props.notificationProps.notifications.length > 0
-      ? this.setState({
-          showQuestionDeleteAll: true,
-        })
-      : this.showToast("You have no notifications to delete");
+  const deleteAllNotificationsQuestion = () => {
+    props.notificationProps.notifications.length > 0
+      ?
+      setShowQuestionDeleteAll(true)
+      : showToast("You have no notifications to delete");
   };
 
-  deleteAllNotifications = () => {
-    this.setState({
-      loading: true,
-      showQuestionDeleteAll: false,
-    });
-    this.props.deleteAllNotification();
+  const deleteAllNotifications = () => {
+    setLoading(true);
+    setShowQuestionDeleteAll(false);
+    dispatch(actionDeleteAllNotification());
   };
 
-  deleteButtonRender = (item) => {
+  const deleteButtonRender = (item) => {
     return (
       <TouchableHighlight>
         <Pressable
           style={styles.buttonDelete}
-          onPress={() => this.deleteNotification(item)}
+          onPress={() => deleteNotification(item)}
         >
           <Icon name="trash" size={26} color={WhiteColor} />
         </Pressable>
@@ -291,231 +267,220 @@ class ListNotifications extends Component {
     );
   };
 
-  expandImage = (sUrlToImage) => {
-    this.props.expandImage(sUrlToImage);
+  const expandImage = (urlToImage) => {
+    dispatch(actionExpandImage(urlToImage));
   };
 
-  onCancleHandler = () => {
-    this.setState({
-      showNotificationGroup: false,
-      capitanName: "",
-      notificationText: "",
-      groupName: "",
-      groupKey: "",
-    });
+  const onCancleHandler = () => {
+    setShowNotificationGroup(false);
+    setCapitanName("");
+    setNotificationText("");
+    setGroupName("");
+    setGroupKey("");
   };
 
-  onViewGroupHandler = () => {
-    this.navigateGroup(this.state.groupKey);
-    this.setState({
-      showNotificationGroup: false,
-      capitanName: "",
-      notificationText: "",
-      groupName: "",
-      groupKey: "",
-    });
+  const onViewGroupHandler = () => {
+    navigateGroup(groupKey);
+    setShowNotificationGroup(false);
+    setCapitanName("");
+    setNotificationText("");
+    setGroupName("");
+    setGroupKey("");
   };
 
-  render = () => {
-    return (
-      <ImageBackground
-        source={require("../../assets/bk.png")}
-        resizeMode="cover"
-        style={GlobalStyles.fullImageGroups}
+  return (
+    <ImageBackground
+      source={require("../../assets/bk.png")}
+      resizeMode="cover"
+      style={GlobalStyles.fullImageGroups}
+    >
+      <ScrollView
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={() => refreshNotifications()}
+            tintColor={GreenFitrecColor}
+            title="Pull to refresh..."
+          />
+        }
       >
-        <ScrollView
-          refreshControl={
-            <RefreshControl
-              refreshing={this.state.refreshing}
-              onRefresh={() => this.refreshNotifications()}
-              tintColor={GreenFitrecColor}
-              title="Pull to refresh..."
-            />
-          }
-        >
-          <FlatList
-            keyExtractor={(item, index) => index.toString()}
-            data={this.props.notificationProps.notifications}
-            renderItem={({ item }) => (
-              <View>
-                <Swipeable
-                  renderRightActions={() => this.deleteButtonRender(item)}
-                  ref={(ref) => (this.oNotificationRows[item.id] = ref)}
-                >
-                  <Pressable onPress={() => this.openNotification(item)}>
-                    <View
-                      style={[
-                        styles.viewNotificaton,
-                        {
-                          backgroundColor:
-                            1 == item.view ? WhiteColor : "#EDEDED",
-                        },
-                      ]}
-                    >
-                      {null !== item.image ? (
-                        <Image
-                          style={styles.notificationImage}
-                          source={{ uri: item.image }}
-                        />
-                      ) : (
-                        <Image
-                          style={styles.notificationImage}
-                          source={require("../../assets/imgProfileReadOnly.png")}
-                        />
-                      )}
-                      <View style={styles.userNameMain}>
-                        <Text
-                          style={styles.textUserReference}
-                          numberOfLines={1}
-                        >
-                          {item.user.name}(@{item.user.username})
-                        </Text>
-                        <View style={styles.iconMainView}>
-                          {item.type == NOTIFICATION_SEND_REQUEST ||
+        <FlatList
+          keyExtractor={(item, index) => index.toString()}
+          data={props.notificationProps.notifications}
+          renderItem={({ item }) => (
+            <View>
+              <Swipeable
+                renderRightActions={() => deleteButtonRender(item)}
+                ref={oNotificationRows[item.id]}
+              >
+                <Pressable onPress={() => openNotification(item)}>
+                  <View
+                    style={[
+                      styles.viewNotificaton,
+                      {
+                        backgroundColor:
+                          1 == item.view ? WhiteColor : "#EDEDED",
+                      },
+                    ]}
+                  >
+                    {null !== item.image ? (
+                      <Image
+                        style={styles.notificationImage}
+                        source={{ uri: item.image }}
+                      />
+                    ) : (
+                      <Image
+                        style={styles.notificationImage}
+                        source={require("../../assets/imgProfileReadOnly.png")}
+                      />
+                    )}
+                    <View style={styles.userNameMain}>
+                      <Text
+                        style={styles.textUserReference}
+                        numberOfLines={1}
+                      >
+                        {item.user.name}(@{item.user.username})
+                      </Text>
+                      <View style={styles.iconMainView}>
+                        {item.type == NOTIFICATION_SEND_REQUEST ||
                           item.type == NOTIFICATION_REQUEST_GROUP ||
                           item.type == NOTIFICATION_TYPE_NEW_FOLLOWER ? (
-                            <Icon
-                              name="md-person-add"
-                              size={16}
-                              color={SignUpColor}
-                            />
-                          ) : null}
-                          {item.type == NOTIFICATION_CAPITAN_MESSAGE_GROUP ||
+                          <Icon
+                            name="md-person-add"
+                            size={16}
+                            color={SignUpColor}
+                          />
+                        ) : null}
+                        {item.type == NOTIFICATION_CAPITAN_MESSAGE_GROUP ||
                           item.type == NOTIFICATION_INVITATION_GROUP ||
                           item.type == NOTIFICATION_TYPE_NEW_CAPTAIN ? (
-                            <Icon
-                              name="md-notifications"
-                              size={16}
-                              color={SignUpColor}
-                            />
-                          ) : null}
-                          {item.type == NOTIFICATION_TYPE_LIKE_JOURNEY ||
+                          <Icon
+                            name="md-notifications"
+                            size={16}
+                            color={SignUpColor}
+                          />
+                        ) : null}
+                        {item.type == NOTIFICATION_TYPE_LIKE_JOURNEY ||
                           item.type == NOTIFICATION_TYPE_TAG_JOURNEY ? (
-                            <Icon
-                              name="md-images"
-                              size={16}
-                              color={SignUpColor}
-                            />
-                          ) : null}
-                          {item.type == NOTIFICATION_TYPE_GROUP_CHAT ? (
-                            <Icon
-                              name="chatbubbles"
-                              size={16}
-                              color={SignUpColor}
-                            />
-                          ) : null}
-                          <Text
-                            style={[GlobalStyles.textMuted, { marginLeft: 5 }]}
-                          >
-                            {item.description}
-                          </Text>
-                        </View>
-                        <Text style={GlobalStyles.textMuted}>
-                          {moment(
-                            item.created_at,
-                            "YYYY-MM-DD H:m:s"
-                          ).fromNow()}
+                          <Icon
+                            name="md-images"
+                            size={16}
+                            color={SignUpColor}
+                          />
+                        ) : null}
+                        {item.type == NOTIFICATION_TYPE_GROUP_CHAT ? (
+                          <Icon
+                            name="chatbubbles"
+                            size={16}
+                            color={SignUpColor}
+                          />
+                        ) : null}
+                        <Text
+                          style={[GlobalStyles.textMuted, { marginLeft: 5 }]}
+                        >
+                          {item.description}
                         </Text>
                       </View>
+                      <Text style={GlobalStyles.textMuted}>
+                        {moment(
+                          item.created_at,
+                          "YYYY-MM-DD H:m:s"
+                        ).fromNow()}
+                      </Text>
                     </View>
-                  </Pressable>
-                </Swipeable>
-              </View>
-            )}
-          />
-        </ScrollView>
-        {this.state.showQuestionDeleteAll && (
-          <View style={ToastQuestionGenericStyles.contentToastConfirm}>
-            <View style={ToastQuestionGenericStyles.viewToast}>
-              <Text style={ToastQuestionGenericStyles.textToast}>
-                Are you sure you want to delete all notifications?
-              </Text>
-              <View style={styles.flexRow}>
-                <View style={styles.width50}>
-                  <Pressable
-                    style={ToastQuestionGenericStyles.buttonCancel}
-                    onPress={() =>
-                      this.setState({ showQuestionDeleteAll: false })
-                    }
-                  >
-                    <Text style={ToastQuestionGenericStyles.buttonText}>
-                      Cancel
-                    </Text>
-                  </Pressable>
-                </View>
-                <View style={styles.width50}>
-                  <Pressable
-                    style={ToastQuestionGenericStyles.buttonConfirm}
-                    onPress={() => this.deleteAllNotifications()}
-                  >
-                    <Text style={ToastQuestionGenericStyles.buttonText}>
-                      Confirm
-                    </Text>
-                  </Pressable>
-                </View>
-              </View>
+                  </View>
+                </Pressable>
+              </Swipeable>
             </View>
-          </View>
-        )}
-        <Toast toastText={this.state.toastText} />
-        <InvitationGroup
-          visible={this.state.showGroupInvitation}
-          group={this.state.group}
-          close={() => {
-            this.setState({ showGroupInvitation: false, group: null });
-          }}
-          rejectRequest={() => {
-            this.rejectRequest();
-          }}
-          acceptRequest={() => {
-            this.acceptRequest();
-          }}
-          sUserKey={this.props.session.account.key}
-          isRequestPending={this.state.isRequestPending}
-          expandImage={(sUrlToImage) => this.expandImage(sUrlToImage)}
+          )}
         />
-        {this.state.showNotificationGroup && (
-          <View style={ToastQuestionGenericStyles.contentToastConfirm}>
-            <View style={ToastQuestionGenericStyles.viewToast}>
-              <Text style={ToastQuestionGenericStyles.titleToast}>
-                {this.state.groupName}
-              </Text>
-              <Text style={ToastQuestionGenericStyles.subTitleToast}>
-                {this.state.capitanName}:
-              </Text>
-              <Text style={ToastQuestionGenericStyles.textToast}>
-                {this.state.notificationText}
-              </Text>
-              <View style={styles.flexRow}>
-                <View style={styles.cancleButtonView}>
-                  <Pressable
-                    style={GlobalStyles.buttonCancel}
-                    onPress={this.onCancleHandler}
-                  >
-                    <Text style={ToastQuestionGenericStyles.buttonText}>
-                      Cancel
-                    </Text>
-                  </Pressable>
-                </View>
-                <View style={styles.groupButtonView}>
-                  <Pressable
-                    style={GlobalStyles.buttonConfirm}
-                    onPress={this.onViewGroupHandler}
-                  >
-                    <Text style={ToastQuestionGenericStyles.buttonText}>
-                      View Group
-                    </Text>
-                  </Pressable>
-                </View>
+      </ScrollView>
+      {showQuestionDeleteAll && (
+        <View style={ToastQuestionGenericStyles.contentToastConfirm}>
+          <View style={ToastQuestionGenericStyles.viewToast}>
+            <Text style={ToastQuestionGenericStyles.textToast}>
+              Are you sure you want to delete all notifications?
+            </Text>
+            <View style={styles.flexRow}>
+              <View style={styles.width50}>
+                <Pressable
+                  style={ToastQuestionGenericStyles.buttonCancel}
+                  onPress={() => setShowQuestionDeleteAll(false)}
+                >
+                  <Text style={ToastQuestionGenericStyles.buttonText}>
+                    Cancel
+                  </Text>
+                </Pressable>
+              </View>
+              <View style={styles.width50}>
+                <Pressable
+                  style={ToastQuestionGenericStyles.buttonConfirm}
+                  onPress={() => deleteAllNotifications()}
+                >
+                  <Text style={ToastQuestionGenericStyles.buttonText}>
+                    Confirm
+                  </Text>
+                </Pressable>
               </View>
             </View>
           </View>
-        )}
-        <LoadingSpinner visible={this.state.loading} />
-        <Toast toastText={this.state.toastText} />
-      </ImageBackground>
-    );
-  };
+        </View>
+      )}
+      <Toast toastText={toastText} />
+      <InvitationGroup
+        visible={showGroupInvitation}
+        group={group}
+        close={() => {
+          setShowGroupInvitation(false);
+          setGroup(null);
+        }}
+        rejectRequest={rejectRequest}
+        acceptRequest={acceptRequest}
+        sUserKey={session.account.key}
+        isRequestPending={isRequestPending}
+        expandImage={(sUrlToImage) => expandImage(sUrlToImage)}
+      />
+      {showNotificationGroup && (
+        <View style={ToastQuestionGenericStyles.contentToastConfirm}>
+          <View style={ToastQuestionGenericStyles.viewToast}>
+            <Text style={ToastQuestionGenericStyles.titleToast}>
+              {groupName}
+            </Text>
+            <Text style={ToastQuestionGenericStyles.subTitleToast}>
+              {capitanName}:
+            </Text>
+            <Text style={ToastQuestionGenericStyles.textToast}>
+              {notificationText}
+            </Text>
+            <View style={styles.flexRow}>
+              <View style={styles.cancleButtonView}>
+                <Pressable
+                  style={GlobalStyles.buttonCancel}
+                  onPress={onCancleHandler}
+                >
+                  <Text style={ToastQuestionGenericStyles.buttonText}>
+                    Cancel
+                  </Text>
+                </Pressable>
+              </View>
+              <View style={styles.groupButtonView}>
+                <Pressable
+                  style={GlobalStyles.buttonConfirm}
+                  onPress={onViewGroupHandler}
+                >
+                  <Text style={ToastQuestionGenericStyles.buttonText}>
+                    View Group
+                  </Text>
+                </Pressable>
+              </View>
+            </View>
+          </View>
+        </View>
+      )}
+      <LoadingSpinner visible={loading} />
+      <Toast toastText={toastText} />
+    </ImageBackground>
+  );
 }
 
 const styles = StyleSheet.create({

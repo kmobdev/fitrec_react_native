@@ -85,33 +85,24 @@ const Messages = (props) => {
     dispatch(actionGetMessages());
     if (getIsGroupChat() && !asignMessageFunction) {
       props.navigation.setParams({
-        goBack: goBack,
         people: showPeopleHandler,
-        showPeople: showPeople,
-      });
-      props.navigation.setParams({
-        goBack: goBack,
         showPeople: showPeople,
       });
       setAsignMessageFunction(true);
     }
   }, [])
 
-  // useEffect(()=>{},[])
-
-  const goBack = () => {
+  const goBackHandler = () => {
     dispatch(actionGetMessages());
     props.navigation.goBack();
   };
 
   const showPeopleHandler = () => {
     props.navigation.setParams({
-      goBack: goBack,
-      people: showPeopleHandler,
+      goBack: goBackHandler,
       showPeople: !showPeople,
     });
     setShowPeople(!showPeople);
-
   };
 
   const getIsGroupChat = () => {
