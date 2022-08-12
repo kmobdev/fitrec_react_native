@@ -7,7 +7,7 @@ import {
   View,
   RefreshControl,
   FlatList,
-  Image
+  Image,
 } from "react-native";
 import FastImage from "react-native-fast-image";
 import { useDispatch, useSelector } from "react-redux";
@@ -28,7 +28,6 @@ import {
 import { Input } from "../../components";
 
 const Blocks = (props) => {
-
   const oBlocks = useSelector((state) => state.reducerBlock);
 
   const dispatch = useDispatch();
@@ -39,15 +38,13 @@ const Blocks = (props) => {
   const [questionId, setQuestionId] = useState(null);
   const [search, setSearch] = useState("");
 
-
   useEffect(() => {
     dispatch(actionGetBlocks());
     props.navigation.setParams({ navigateBack: navigateBack });
     return () => {
       navigateBack();
-    }
-  }, [])
-
+    };
+  }, []);
 
   const navigateBack = () => {
     dispatch(actionCleanBlock());
@@ -151,9 +148,7 @@ const Blocks = (props) => {
         <ToastQuestionGeneric
           visible={showQuestion}
           titleBig="Unblock User"
-          title={
-            "Are you sure you want to unblock " + questionName + "?"
-          }
+          title={"Are you sure you want to unblock " + questionName + "?"}
           options={
             <View style={ToastQuestionStyles.viewButtons}>
               <Pressable
@@ -203,13 +198,14 @@ const Blocks = (props) => {
             tintColor={GreenFitrecColor}
             title="Pull to refresh..."
           />
-        }>
+        }
+      >
         {renderBlocks()}
       </ScrollView>
       {renderQuestions()}
     </View>
   );
-}
+};
 
 export default Blocks;
 

@@ -19,7 +19,6 @@ import GestureRecognizer, {
 } from "react-native-swipe-gestures";
 
 const CarouselTutorial = (props) => {
-
   const [displayImage, setDisplayImage] = useState(1);
 
   const setDisplayImageOne = () => {
@@ -102,16 +101,11 @@ const CarouselTutorial = (props) => {
               />
             )}
             <View style={styles.viewControls}>
-              <Pressable
-                style={styles.buttonControls}
-                onPress={props.close}
-              >
+              <Pressable style={styles.buttonControls} onPress={props.close}>
                 <Text style={{ color: SignUpColor }}>SKIP</Text>
               </Pressable>
               <View style={styles.viewButtonControls}>
-                <Pressable
-                  onPress={() => setDisplayImage(1)}
-                >
+                <Pressable onPress={() => setDisplayImage(1)}>
                   <Icon
                     name={
                       displayImage === 1
@@ -123,9 +117,7 @@ const CarouselTutorial = (props) => {
                     color={GreenFitrecColor}
                   />
                 </Pressable>
-                <Pressable
-                  onPress={() => setDisplayImage(2)}
-                >
+                <Pressable onPress={() => setDisplayImage(2)}>
                   <Icon
                     name={
                       displayImage === 2
@@ -153,9 +145,7 @@ const CarouselTutorial = (props) => {
                     color={GreenFitrecColor}
                   />
                 </Pressable>
-                <Pressable
-                  onPress={() => setDisplayImage(4)}
-                >
+                <Pressable onPress={() => setDisplayImage(4)}>
                   <Icon
                     name={
                       displayImage === 4
@@ -167,10 +157,7 @@ const CarouselTutorial = (props) => {
                   />
                 </Pressable>
               </View>
-              <Pressable
-                style={styles.buttonControls}
-                onPress={nextPage}
-              >
+              <Pressable style={styles.buttonControls} onPress={nextPage}>
                 <Text style={{ color: SignUpColor }}>NEXT</Text>
               </Pressable>
             </View>
@@ -182,13 +169,13 @@ const CarouselTutorial = (props) => {
     setDisplayImageOne;
     return null;
   }
-}
+};
 
 export default CarouselTutorial;
 
 const styles = StyleSheet.create({
   gestureRecognizerContainer: {
-    flex: 1
+    flex: 1,
   },
   viewFullAbsolute: {
     position: "absolute",

@@ -1,4 +1,5 @@
-import React, { Component, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { useAnalytics } from "@segment/analytics-react-native";
 import {
   View,
   Text,
@@ -63,6 +64,7 @@ import {
 import { actionGetMyFriends } from "../../redux/actions/ProfileActions";
 
 const Home = (props) => {
+  const { identify } = useAnalytics();
 
   // Listeners for notifications onignal
   // Comment at the customer's request, the comment will be kept for the doubts of a rollback - Leandro Curbelo 03/11/2020
@@ -96,6 +98,8 @@ const Home = (props) => {
   const [gyms, setGyms] = useState([]);
   const [showGyms, setShowGyms] = useState(false);
   const [index, setIndex] = useState(0);
+
+  const { account } = props.session;
 
   // METHOD OPEN NOTIFICATION
   // onOpened = (oData) => {
@@ -147,6 +151,9 @@ const Home = (props) => {
   //     }
   //   }
   // };
+  useEffect(() => {
+    identify(account.id, { ...account });
+  }, []);
 
   useEffect(() => {
     props.navigation.setParams({
@@ -179,7 +186,7 @@ const Home = (props) => {
       }
     }
     if (activity.activities.length > 0) {
-      setActivitiesFilter(activity.activities)
+      setActivitiesFilter(activity.activities);
     }
     if (activity.gyms.length > 0 && gyms.length === 0) {
       setGyms(activity.gyms);
@@ -196,7 +203,6 @@ const Home = (props) => {
     setRefresh(!refresh);
   }, [homeProps, chatProps, activity]);
 
-
   const navigateGroup = (sGroupKey) => {
     props.getGroup(sGroupKey, props.session.account.key);
     props.navigation.navigate("DetailsGroup");
@@ -204,24 +210,19 @@ const Home = (props) => {
 
   const checkOneSignalCode = () => {
     if (null !== props.session.account) {
-      dispatch(actionCheckOneSignalCode({
-        accountId: props.session.account.key,
-      }));
-
+      dispatch(
+        actionCheckOneSignalCode({
+          accountId: props.session.account.key,
+        })
+      );
     }
   };
 
   const getUserHome = () => {
-    let aActivities =
-      filters.activity.length > 0
-        ? filters.activity
-        : null,
-      sGarder =
-        filters.gender !== "" ? filters.gender : null,
-      aGyms =
-        filters.gyms.length > 0 ? filters.gyms : null,
-      sRange =
-        filters.range !== "" ? filters.range : null;
+    let aActivities = filters.activity.length > 0 ? filters.activity : null,
+      sGarder = filters.gender !== "" ? filters.gender : null,
+      aGyms = filters.gyms.length > 0 ? filters.gyms : null,
+      sRange = filters.range !== "" ? filters.range : null;
     dispatch(actionGetUserHome(aActivities, sGarder, aGyms, sRange));
   };
 
@@ -238,7 +239,7 @@ const Home = (props) => {
 
   const showToast = (text, callback = null) => {
     setToastText(text);
-    setLoading(false)
+    setLoading(false);
     setTimeout(() => {
       setToastText("");
       if (null !== callback) {
@@ -248,7 +249,7 @@ const Home = (props) => {
   };
 
   const onRefresh = () => {
-    setRefreshing(true)
+    setRefreshing(true);
     getUserHome();
   };
 
@@ -259,7 +260,7 @@ const Home = (props) => {
     if (undefined !== lActivityImg) {
       return lActivityImg.img;
     }
-  }
+  };
 
   const getIcon = (sActivityName) => {
     var lActivityIcon = lActivitiesIcon.find(
@@ -268,7 +269,7 @@ const Home = (props) => {
     if (undefined !== lActivityIcon) {
       return lActivityIcon.icon;
     }
-  }
+  };
 
   const openActivity = (item) => {
     setSelectActivity(item);
@@ -308,7 +309,7 @@ const Home = (props) => {
       range: data.range,
       gender: data.gender,
       gyms: data.gyms,
-    })
+    });
     setShowFilters(false);
     getUserHome();
   };
@@ -322,8 +323,7 @@ const Home = (props) => {
       ...filters,
       activity: aActivitiesIds,
     });
-    setShowSelectActivities(false),
-      setFiltersHandler(filters);
+    setShowSelectActivities(false), setFiltersHandler(filters);
   };
 
   const applyGymFilter = () => {
@@ -482,8 +482,7 @@ const Home = (props) => {
       )}
     </View>
   );
-
-}
+};
 
 const styles = StyleSheet.create({
   activityContent: {

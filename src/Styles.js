@@ -145,7 +145,7 @@ export const GlobalStyles = StyleSheet.create({
 export const GlobalModal = StyleSheet.create({
   viewContent: {
     position: "absolute",
-    top: 0,
+    top: 40,
     left: 0,
     right: 0,
     bottom: 0,
@@ -245,7 +245,6 @@ export const GlobalTabs = StyleSheet.create({
     padding: 7,
     justifyContent: "center",
     alignItems: "center",
-    borderWidth: 1,
     borderColor: PlaceholderColor,
     borderBottomLeftRadius: 10,
     backgroundColor: WhiteColor,
@@ -426,7 +425,6 @@ export const ToastQuestionGenericStyles = StyleSheet.create({
     borderRadius: 5,
     alignItems: "center",
     padding: 8,
-    margin: 5,
     zIndex: 3,
   },
   viewToastStory: {

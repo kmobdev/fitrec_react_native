@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useAnalytics } from "@segment/analytics-react-native";
 import {
   Text,
   ImageBackground,
@@ -27,20 +28,22 @@ import {
   actionUserLoginApple,
   actionCleanMessage,
 } from "../../redux/actions/UserActions";
-import { APP_VERSION } from "../../Constants";
+import { APP_VERSION, DEBUG } from "../../Constants";
 import { Button, Input } from "../../components";
 import { ImageSet } from "../../constants/Images";
+import { SEGMENT_EVENTS } from "../../integrations/events";
 
 const Login = (props) => {
+  const { track } = useAnalytics();
 
   const screenProps = useSelector((state) => state.reducerSession);
   const dispatch = useDispatch();
 
   const secondTextInput = useRef();
 
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [toastText, setToastText] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [toastText, setToastText] = useState("");
   const [showTutorial, setShowTutorial] = useState(false);
   const [showVideoTutorial, setShowVideoTutorial] = useState(false);
 
@@ -59,25 +62,28 @@ const Login = (props) => {
       showToast(screenProps.messageError);
       dispatch(actionCleanMessage());
     }
-  }, [screenProps])
+  }, [screenProps]);
 
   const login = () => {
-    var sError = validate({
+    let sError = validate({
       username: username,
       password: password,
     });
-    if (null === sError) {
-      dispatch(actionUserLogin(username, password))
+    if (null == sError) {
+      track(SEGMENT_EVENTS.LOGIN_USERNAME);
+      dispatch(actionUserLogin(username, password));
     } else {
       showToast(sError);
     }
   };
 
   const loginFB = () => {
-    dispatch(actionUserLoginFB())
+    track(SEGMENT_EVENTS.LOGIN_FACEBOOK);
+    dispatch(actionUserLoginFB());
   };
 
   const loginApple = () => {
+    track(SEGMENT_EVENTS.LOGIN_APPLE);
     dispatch(actionUserLoginApple());
   };
 
@@ -99,39 +105,41 @@ const Login = (props) => {
   };
 
   const showTutorialHandler = () => {
+    track(SEGMENT_EVENTS.TAKE_A_TOUR);
     setShowTutorial(true);
-  }
+  };
 
   const showVideoTutorialHandler = () => {
+    track(SEGMENT_EVENTS.VIDEO_TUTORIAL);
     setShowVideoTutorial(true);
-  }
+  };
 
   const navigateHandler = (route) => {
-    props.navigation.navigate(route)
-  }
+    props.navigation.navigate(route);
+  };
 
   return (
     <ScrollView contentContainerStyle={GlobalStyles.container}>
       <ImageBackground
         source={ImageSet.loginBackground}
-        style={GlobalStyles.fullImage}>
+        style={GlobalStyles.fullImage}
+      >
         <View style={styles.mainContainer}>
           <View style={styles.imageView}>
-            <Image
-              source={ImageSet.logoWithName}
-              style={{ marginTop: 40 }}
-            />
+            <Image source={ImageSet.logoWithName} style={{ marginTop: 40 }} />
           </View>
           <View style={styles.Content}>
             <View style={styles.SectionStyle}>
               <Input
-                iconSource={username === '' && ImageSet.user}
+                iconSource={username === "" && ImageSet.user}
                 autoCapitalize={"none"}
                 autoCompleteType={"username"}
                 textContentType={"username"}
                 value={username}
                 onChangeText={(text) => setUsername(text)}
-                onSubmitEditing={() => { secondTextInput.current.focus(); }}
+                onSubmitEditing={() => {
+                  secondTextInput.current.focus();
+                }}
                 blurOnSubmit={false}
                 inputStyle={styles.textInput}
               />
@@ -141,7 +149,7 @@ const Login = (props) => {
               <Input
                 ref={secondTextInput}
                 onSubmitEditing={login}
-                iconSource={password === '' && ImageSet.password}
+                iconSource={password === "" && ImageSet.password}
                 secureTextEntry={true}
                 autoCapitalize={"none"}
                 returnKeyType={"done"}
@@ -152,10 +160,7 @@ const Login = (props) => {
                 inputStyle={styles.textInput}
               />
             </View>
-            <Button
-              onPress={login}
-              title={'LOGIN NOW'}
-            />
+            <Button onPress={login} title={"LOGIN NOW"} />
             <ButtonFacebook
               onPress={loginFB}
               login={true}
@@ -171,6 +176,7 @@ const Login = (props) => {
             <Pressable
               style={styles.touchableTextFree}
               onPress={() => {
+                track(SEGMENT_EVENTS.FORGOT_PASSWORD);
                 navigateHandler("ForgotPassword");
               }}
             >
@@ -193,14 +199,20 @@ const Login = (props) => {
                 <Text style={styles.textButton}>TAKE A TOUR</Text>
               </Pressable>
               <Pressable
-                onPress={() => navigateHandler("Register")}
+                onPress={() => {
+                  track(SEGMENT_EVENTS.SIGN_UP);
+                  navigateHandler("Register");
+                }}
                 style={styles.roundButtonSwitchRight}
               >
                 <Text style={styles.textButton}>SIGN UP</Text>
               </Pressable>
             </View>
             <View style={{ alignItems: "center" }}>
-              <Text style={{ color: "white" }}>{APP_VERSION}</Text>
+              <Text style={{ color: "white" }}>
+                {DEBUG ? "LOCAL DEV | " : ""}
+                {APP_VERSION}
+              </Text>
             </View>
           </View>
           <Toast toastText={toastText} />
@@ -217,7 +229,7 @@ const Login = (props) => {
       />
     </ScrollView>
   );
-}
+};
 
 export default Login;
 
@@ -300,7 +312,6 @@ const styles = StyleSheet.create({
   roundButtonSwitchLeft: {
     borderRadius: 50,
     justifyContent: "center",
-    backgroundColor: WhiteColor,
     alignItems: "center",
     height: 40,
     width: "47%",
@@ -309,10 +320,8 @@ const styles = StyleSheet.create({
     backgroundColor: GreenFitrecColor,
   },
   roundButtonSwitchRight: {
-    width: "95%",
     borderRadius: 50,
     justifyContent: "center",
-    backgroundColor: WhiteColor,
     alignItems: "center",
     height: 40,
     width: "47%",

@@ -5,7 +5,6 @@ import { SignUpColor, WhiteColor } from "../../Styles";
 import ReactNativePickerModule from "react-native-picker-module";
 
 const HomeFilters = (props) => {
-
   const pickerGender = useRef();
   const pickerRange = useRef();
 
@@ -16,7 +15,6 @@ const HomeFilters = (props) => {
   const [showDescriptions, setShowDescriptions] = useState(false);
   const [showGym, setShowGym] = useState(false);
   const [filters, setFilters] = useState(null);
-
 
   useEffect(() => {
     if (props.visible) {
@@ -55,7 +53,7 @@ const HomeFilters = (props) => {
         setShowActivities(false);
       }, 110);
     }
-  }, [props])
+  }, [props]);
 
   const applyFilterRange = (value) => {
     switch (value) {
@@ -125,10 +123,7 @@ const HomeFilters = (props) => {
     <View style={styles.viewContent}>
       {showActivities && (
         <View style={[styles.viewBubble, styles.viewBubbleSmall]}>
-          <Pressable
-            style={styles.touchable}
-            onPress={props.showActivities}
-          >
+          <Pressable style={styles.touchable} onPress={props.showActivities}>
             {showDescriptions && (
               <View style={styles.viewBubbleSmallDescription}>
                 <View style={styles.bubbleSmallDescription}>
@@ -165,10 +160,7 @@ const HomeFilters = (props) => {
       )}
       {showGym && (
         <View style={[styles.viewBubble, styles.viewBubbleSmall]}>
-          <Pressable
-            style={styles.touchable}
-            onPress={() => props.showGyms()}
-          >
+          <Pressable style={styles.touchable} onPress={() => props.showGyms()}>
             {showDescriptions && (
               <View style={styles.viewBubbleSmallDescription}>
                 <View style={styles.bubbleSmallDescription}>
@@ -233,7 +225,7 @@ const HomeFilters = (props) => {
       </View>
     </View>
   );
-}
+};
 
 export default HomeFilters;
 

@@ -5,7 +5,6 @@ import YouTube from "react-native-youtube";
 import { BlackColor, WhiteColor, SignUpColor } from "../../Styles";
 
 const YouTubeVideo = (props) => {
-
   const [isReady, setIsReady] = useState(false);
   const [status, setStatus] = useState();
   const [quality, setQuality] = useState();
@@ -14,9 +13,7 @@ const YouTubeVideo = (props) => {
   return (
     props.visible && (
       <View style={styles.viewFullAbsolute}>
-        <View
-          style={[styles.head, props.noMargin && { paddingTop: 10 }]}
-        >
+        <View style={[styles.head, props.noMargin && { paddingTop: 10 }]}>
           <Text style={styles.headTitle}>What is FITREC?</Text>
           <View style={[styles.headClose, props.noMargin && { top: 5 }]}>
             <Pressable onPress={props.close}>
@@ -33,11 +30,7 @@ const YouTubeVideo = (props) => {
             />
           ) : (
             <YouTube
-              videoId={
-                props.url.split("/")[
-                props.url.split("/").length - 1
-                ]
-              }
+              videoId={props.url.split("/")[props.url.split("/").length - 1]}
               style={{ alignSelf: "stretch", height: 250, width: "100%" }}
               apiKey="AIzaSyDX3zlzsns9a8YyhcqFtz0fICAnX4RYn28"
               fullscreen={true}
@@ -51,7 +44,7 @@ const YouTubeVideo = (props) => {
       </View>
     )
   );
-}
+};
 
 export default YouTubeVideo;
 
@@ -84,7 +77,7 @@ const styles = StyleSheet.create({
   },
   webViewContainer: {
     alignSelf: "stretch",
-    width: "100%"
+    width: "100%",
   },
   headCloseText: {
     color: SignUpColor,

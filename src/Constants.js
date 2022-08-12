@@ -1,11 +1,16 @@
 /**
  * Application version number, it will appear on the login and settings screens
  */
-export const APP_VERSION = "v1.2.9.26";
 // Constant that determines the application environment
-const DEBUG = false;
+export const APP_VERSION = "v1.2.9.26";
 // Constant that being debug in True, determines that test environment is used, if True is used by localhost
+export const DEBUG = false;
 const LOCAL_ENVIRONMENT = false;
+
+// third party integration keys 
+export const SEGMENT_WRITE_KEY = "0rhZPc61Cf2A3B09SFqdhrDydbUr0DBT";
+export const SENTRY_DNS = "https://982cc31971cd4d48ad5ec746c965eda6@o1335969.ingest.sentry.io/6604329";
+
 // URLS OF SERVICES
 const sURLServiceProd = "https://appfitrec.com/1.2.9.24/app/";
 const sURLServiceDemo = LOCAL_ENVIRONMENT
@@ -77,7 +82,6 @@ export const OPTIONS_IMAGE_CROP_PROFILE = {
   freeStyleCropEnabled: true,
   compressImageQuality: 0.5,
   writeTempFile: false,
-  freeStyleCropEnabled: true,
 };
 /**
  * Configuration for the cut of the images that are sent by chat, in this way all the images are sent with the same configuration
