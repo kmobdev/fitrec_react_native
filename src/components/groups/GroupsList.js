@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, useState } from "react";
 import {
   StyleSheet,
   View,
@@ -15,287 +15,266 @@ import {
   PlaceholderColor,
   SignUpColor,
 } from "../../Styles";
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import { Toast } from "../shared/Toast";
 import CheckEmpty from "../../assets/check/empty.png";
 import Icon from "react-native-vector-icons/Ionicons";
 import { GROUP_PRIVATE, GROUP_PUBLIC } from "../../constants/Groups";
 
-class GroupsList extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      toastText: "",
-    };
-  }
+const GroupsList = (props) => {
 
-  componentWillReceiveProps = async (nextProps) => {};
+  const session = useSelector((state) => state.reducerSession);
 
-  showToast = async (sText) => {
-    this.setState({
-      toastText: sText,
-    });
-    setTimeout(() => {
-      this.setState({
-        toastText: "",
-      });
-    }, 2000);
-  };
+  const [refresh, setRefresh] = useState(false);
+  const [groups, setGroups] = useState(null);
 
-  selectGroup = async (oGroup) => {
+  const selectGroup = (oGroup) => {
     oGroup.selected =
       oGroup.selected === undefined || oGroup.selected === false ? true : false;
-    await this.setState({
-      refresh: !this.state.refresh,
-    });
+    setRefresh(!refresh)
   };
 
-  close = async () => {
+  const close = () => {
     var aGroups = [];
-    this.props.groups.forEach((oGroup) => {
+    props.groups.forEach((oGroup) => {
       oGroup.selected = false;
       aGroups.push(oGroup);
     });
-    await this.setState({
-      groups: aGroups,
-    });
-    this.props.close();
+    setGroups(aGroups)
+    props.close();
   };
 
-  sendInvitations = () => {
-    var aGroups = this.props.groups.filter(
+  const sendInvitations = () => {
+    var aGroups = props.groups.filter(
       (element) => element.selected === true
     );
     var oMember = {
-      key: this.props.pal.key,
-      id: this.props.pal.id,
+      key: props.pal.key,
+      id: props.pal.id,
     };
     var oSender = {
-      key: this.props.session.account.key,
-      name: this.props.session.account.name,
-      id: this.props.session.account.id,
+      key: session.account.key,
+      name: session.account.name,
+      id: session.account.id,
     };
-    this.props.sendInvitations({
+    props.sendInvitations({
       groups: aGroups,
       sender: oSender,
       member: oMember,
     });
   };
 
-  render() {
-    return (
-      this.props.visible && (
-        <View style={GlobalModal.viewContent}>
-          <View
-            style={
-              (GlobalModal.viewHead,
-              {
-                justifyContent: "center",
-                alignContent: "center",
-                borderBottomColor: PlaceholderColor,
-                borderBottomWidth: 0.5,
-              })
-            }
-          >
-            <Text style={GlobalModal.headTitle}>Your Groups</Text>
-            {this.props.groups !== undefined &&
-              this.props.groups.filter((element) => element.isCapitan === true)
-                .length === 0 && (
-                <Pressable
-                  style={GlobalModal.buttonClose}
-                  onPress={() => {
-                    this.close();
-                  }}
-                >
-                  <Text style={GlobalModal.titleClose}>Close</Text>
-                </Pressable>
-              )}
-          </View>
-          {this.props.groups !== undefined &&
-          this.props.groups.filter(
+  return (
+    props.visible && (
+      <View style={GlobalModal.viewContent}>
+        <View
+          style={
+            (GlobalModal.viewHead,
+            {
+              justifyContent: "center",
+              alignContent: "center",
+              borderBottomColor: PlaceholderColor,
+              borderBottomWidth: 0.5,
+            })
+          }
+        >
+          <Text style={GlobalModal.headTitle}>Your Groups</Text>
+          {props.groups !== undefined &&
+            props.groups.filter((element) => element.isCapitan === true)
+              .length === 0 && (
+              <Pressable
+                style={GlobalModal.buttonClose}
+                onPress={() => {
+                  close();
+                }}
+              >
+                <Text style={GlobalModal.titleClose}>Close</Text>
+              </Pressable>
+            )}
+        </View>
+        {props.groups !== undefined &&
+          props.groups.filter(
             (element) =>
               (element.type === GROUP_PRIVATE && element.isCapitan === true) ||
               element.type === GROUP_PUBLIC
           ).length > 0 ? (
-            <ScrollView style={styles.listView}>
-              <View style={{ flexDirection: "row", marginTop: 15 }}>
-                <Pressable
-                  onPress={() => {
-                    this.close();
-                  }}
-                  style={{ flex: 6, marginRight: 5 }}
-                >
-                  <View style={GlobalStyles.buttonCancel}>
-                    <Text style={GlobalStyles.textButton}>Cancel</Text>
-                  </View>
-                </Pressable>
-                <Pressable
-                  onPress={() => {
-                    this.sendInvitations();
-                  }}
-                  style={{ flex: 6, marginLeft: 5 }}
-                >
-                  <View style={GlobalStyles.buttonConfirm}>
-                    <Text style={GlobalStyles.textButton}>
-                      Confirm
-                      {undefined !==
-                        this.props.groups.filter(
-                          (element) => element.selected === true
-                        ).length &&
+          <ScrollView style={styles.listView}>
+            <View style={{ flexDirection: "row", marginTop: 15 }}>
+              <Pressable
+                onPress={() => {
+                  close();
+                }}
+                style={{ flex: 6, marginRight: 5 }}
+              >
+                <View style={GlobalStyles.buttonCancel}>
+                  <Text style={GlobalStyles.textButton}>Cancel</Text>
+                </View>
+              </Pressable>
+              <Pressable
+                onPress={() => {
+                  sendInvitations();
+                }}
+                style={{ flex: 6, marginLeft: 5 }}
+              >
+                <View style={GlobalStyles.buttonConfirm}>
+                  <Text style={GlobalStyles.textButton}>
+                    Confirm
+                    {undefined !==
+                      props.groups.filter(
+                        (element) => element.selected === true
+                      ).length &&
                       null !==
-                        this.props.groups.filter(
-                          (element) => element.selected === true
-                        ).length &&
-                      this.props.groups.filter(
+                      props.groups.filter(
+                        (element) => element.selected === true
+                      ).length &&
+                      props.groups.filter(
                         (element) => element.selected === true
                       ).length > 0
-                        ? " (" +
-                          this.props.groups
-                            .filter((element) => element.selected === true)
-                            .length.toString() +
-                          ")"
-                        : ""}
-                    </Text>
-                  </View>
-                </Pressable>
-              </View>
-              <FlatList
-                data={this.props.groups}
-                keyExtractor={(item, index) => index.toString()}
-                extraData={this.state.refresh}
-                renderItem={({ item }) => {
-                  return (
-                    <View style={styles.viewNotificaton}>
-                      {(item.type === GROUP_PUBLIC ||
-                        (item.type === GROUP_PRIVATE && item.isCapitan)) &&
-                      !this.props.groupsPal.filter(
+                      ? " (" +
+                      props.groups
+                        .filter((element) => element.selected === true)
+                        .length.toString() +
+                      ")"
+                      : ""}
+                  </Text>
+                </View>
+              </Pressable>
+            </View>
+            <FlatList
+              data={props.groups}
+              keyExtractor={(item, index) => index.toString()}
+              extraData={refresh}
+              renderItem={({ item }) => {
+                return (
+                  <View style={styles.viewNotificaton}>
+                    {(item.type === GROUP_PUBLIC ||
+                      (item.type === GROUP_PRIVATE && item.isCapitan)) &&
+                      !props.groupsPal.filter(
                         (oElement) => oElement.group === item.key
                       ).length > 0 &&
-                      !this.props.invitations.filter(
+                      !props.invitations.filter(
                         (oElement) => oElement.id === item.key
                       ).length > 0 ? (
-                        <Pressable
-                          onPress={() => this.selectGroup(item)}
-                          style={{ flexDirection: "row", width: "100%" }}
+                      <Pressable
+                        onPress={() => selectGroup(item)}
+                        style={{ flexDirection: "row", width: "100%" }}
+                      >
+                        {null === item.image ? (
+                          <Image
+                            style={GlobalStyles.photoProfileCardList}
+                            source={require("../../assets/imgGroup.png")}
+                          />
+                        ) : (
+                          <Image
+                            style={GlobalStyles.photoProfileCardList}
+                            source={{ uri: item.image }}
+                          />
+                        )}
+                        <View
+                          style={{
+                            justifyContent: "center",
+                            marginLeft: 10,
+                            marginRight: 175,
+                          }}
                         >
-                          {null === item.image ? (
-                            <Image
-                              style={GlobalStyles.photoProfileCardList}
-                              source={require("../../assets/imgGroup.png")}
+                          <Text style={styles.textUserReference}>
+                            {item.name.length > 25
+                              ? item.name.substring(0, 22) + "..."
+                              : item.name}
+                          </Text>
+                          <Text>
+                            {item.participants.length}{" "}
+                            {item.participants.length > 1
+                              ? "Members"
+                              : "Member"}
+                          </Text>
+                        </View>
+                        <View style={styles.viewIconRight}>
+                          {item.selected ? (
+                            <Icon
+                              name="md-checkmark-circle"
+                              size={24}
+                              color={SignUpColor}
                             />
                           ) : (
-                            <Image
-                              style={GlobalStyles.photoProfileCardList}
-                              source={{ uri: item.image }}
-                            />
+                            <Image source={CheckEmpty} />
                           )}
-                          <View
+                        </View>
+                      </Pressable>
+                    ) : (
+                      <View
+                        onPress={() => selectGroup(item)}
+                        style={{ flexDirection: "row", width: "100%" }}
+                      >
+                        {null === item.image ? (
+                          <Image
+                            style={GlobalStyles.photoProfileCardList}
+                            source={require("../../assets/imgGroup.png")}
+                          />
+                        ) : (
+                          <Image
+                            style={GlobalStyles.photoProfileCardList}
+                            source={{ uri: item.image }}
+                          />
+                        )}
+                        <View
+                          style={{
+                            justifyContent: "center",
+                            marginLeft: 10,
+                            marginRight: 175,
+                          }}
+                        >
+                          <Text style={styles.textUserReference}>
+                            {item.name.length > 23
+                              ? item.name.substring(0, 20) + "..."
+                              : item.name}
+                          </Text>
+                          <Text>
+                            {item.participants.length}{" "}
+                            {item.participants.length > 1
+                              ? "Members"
+                              : "Member"}
+                          </Text>
+                        </View>
+                        <View style={styles.viewIconRight}>
+                          <Text
                             style={{
-                              justifyContent: "center",
-                              marginLeft: 10,
-                              marginRight: 175,
+                              color: GreenFitrecColor,
+                              fontWeight: "bold",
                             }}
                           >
-                            <Text style={styles.textUserReference}>
-                              {item.name.length > 25
-                                ? item.name.substring(0, 22) + "..."
-                                : item.name}
-                            </Text>
-                            <Text>
-                              {item.participants.length}{" "}
-                              {item.participants.length > 1
-                                ? "Members"
-                                : "Member"}
-                            </Text>
-                          </View>
-                          <View style={styles.viewIconRight}>
-                            {item.selected ? (
+                            {props.groupsPal.filter(
+                              (oElement) => oElement.group === item.key
+                            ).length > 0 ? (
+                              "Member"
+                            ) : item.type === GROUP_PUBLIC ||
+                              (item.type === GROUP_PRIVATE &&
+                                item.isCapitan) ? (
+                              "Invited"
+                            ) : (
                               <Icon
-                                name="md-checkmark-circle"
+                                name="close-circle-outline"
                                 size={24}
                                 color={SignUpColor}
                               />
-                            ) : (
-                              <Image source={CheckEmpty} />
                             )}
-                          </View>
-                        </Pressable>
-                      ) : (
-                        <View
-                          onPress={() => this.selectGroup(item)}
-                          style={{ flexDirection: "row", width: "100%" }}
-                        >
-                          {null === item.image ? (
-                            <Image
-                              style={GlobalStyles.photoProfileCardList}
-                              source={require("../../assets/imgGroup.png")}
-                            />
-                          ) : (
-                            <Image
-                              style={GlobalStyles.photoProfileCardList}
-                              source={{ uri: item.image }}
-                            />
-                          )}
-                          <View
-                            style={{
-                              justifyContent: "center",
-                              marginLeft: 10,
-                              marginRight: 175,
-                            }}
-                          >
-                            <Text style={styles.textUserReference}>
-                              {item.name.length > 23
-                                ? item.name.substring(0, 20) + "..."
-                                : item.name}
-                            </Text>
-                            <Text>
-                              {item.participants.length}{" "}
-                              {item.participants.length > 1
-                                ? "Members"
-                                : "Member"}
-                            </Text>
-                          </View>
-                          <View style={styles.viewIconRight}>
-                            <Text
-                              style={{
-                                color: GreenFitrecColor,
-                                fontWeight: "bold",
-                              }}
-                            >
-                              {this.props.groupsPal.filter(
-                                (oElement) => oElement.group === item.key
-                              ).length > 0 ? (
-                                "Member"
-                              ) : item.type === GROUP_PUBLIC ||
-                                (item.type === GROUP_PRIVATE &&
-                                  item.isCapitan) ? (
-                                "Invited"
-                              ) : (
-                                <Icon
-                                  name="close-circle-outline"
-                                  size={24}
-                                  color={SignUpColor}
-                                />
-                              )}
-                            </Text>
-                          </View>
+                          </Text>
                         </View>
-                      )}
-                    </View>
-                  );
-                }}
-              />
-            </ScrollView>
-          ) : (
-            <Text style={GlobalStyles.messageEmpty}>
-              You currently have no groups in which you are captain
-            </Text>
-          )}
-          <Toast toastText={this.state.toastText} />
-        </View>
-      )
-    );
-  }
+                      </View>
+                    )}
+                  </View>
+                );
+              }}
+            />
+          </ScrollView>
+        ) : (
+          <Text style={GlobalStyles.messageEmpty}>
+            You currently have no groups in which you are captain
+          </Text>
+        )}
+      </View>
+    )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -322,9 +301,4 @@ const styles = StyleSheet.create({
   },
 });
 
-const mapStateToProps = (state) => ({
-  session: state.reducerSession,
-  groupsProps: state.reducerGroup,
-});
-
-export default connect(mapStateToProps, null)(GroupsList);
+export default GroupsList;

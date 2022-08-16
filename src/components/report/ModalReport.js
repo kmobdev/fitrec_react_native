@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useRef, useState } from "react";
 import {
   GlobalStyles,
   PlaceholderColor,
@@ -8,129 +8,120 @@ import {
 import { View, Pressable, Text, StyleSheet, TextInput } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 import ReactNativePickerModule from "react-native-picker-module";
-import { connect } from "react-redux";
 import { actionMessage } from "../../redux/actions/SharedActions";
 import { actionSendReport } from "../../redux/actions/ReportActions";
 
-class ModalReport extends Component {
-  constructor(props) {
-    super(props);
-    this.picker = React.createRef();
-    this.state = {
-      type: 0,
-      reasons: [
-        "Aggressive",
-        "Annoying",
-        "Inappropriate",
-        "Offensive",
-        "Other",
-      ],
-      reason: "Aggressive",
-      description: "",
-    };
-  }
+const ModalReport = (props) => {
 
-  componentDidMount = () => {};
+  const picker = useRef();
 
-  close = () => {
-    this.setState({ description: "", reason: "Aggressive" });
-    this.props.close();
+  const [reasons, setReasons] = useState([
+    "Aggressive",
+    "Annoying",
+    "Inappropriate",
+    "Offensive",
+    "Other",
+  ]);
+  const [reason, setReason] = useState("Aggressive");
+  const [description, setDescription] = useState("");
+
+  const close = () => {
+    setDescription("");
+    setReason("Aggressive");
+    props.close();
   };
 
-  send = () => {
-    if (this.state.reason !== "Other" || this.state.description.trim() !== "") {
-      this.props.send(
-        this.props.id,
-        this.props.type,
-        this.state.reason,
-        this.state.description.trim()
+  const send = () => {
+    if (reason !== "Other" || description.trim() !== "") {
+      dispatch(actionSendReport(
+        props.id,
+        props.type,
+        reason,
+        description.trim()
+      )
       );
-      this.close();
+      close();
     } else {
-      this.setState({ description: this.state.description.trim() });
-      this.props.message(
-        "You must provide a description if the reason is Other"
-      );
+      setDescription(description.trim());
+      dispatch(actionMessage("You must provide a description if the reason is Other"));
     }
   };
 
-  render() {
-    return (
-      this.props.visible && (
-        <View style={ToastQuestionGenericStyles.contentToast}>
-          <View style={ToastQuestionGenericStyles.viewToast}>
-            <Text style={{ color: "white", fontWeight: "bold", fontSize: 16 }}>
-              Report {1 === this.props.type ? "User" : "Journey"}
-            </Text>
-            <View
-              style={[
-                styles.viewSection,
-                styles.checkInput,
-                styles.aligItemsRight,
-              ]}
-            >
-              <Text style={styles.textLabel}>Reason</Text>
-              <View style={styles.comboSelect}>
-                <Pressable
-                  onPress={() => {
-                    this.picker.current.show();
-                  }}
-                  style={{ flexDirection: "row" }}
-                >
-                  <Text style={GlobalStyles.textWhite}>
-                    {null !== this.state.reason
-                      ? this.state.reason
-                      : "Select here"}
-                  </Text>
-                  <Icon
-                    name="chevron-down"
-                    size={22}
-                    style={styles.iconSelect}
-                  />
-                </Pressable>
-              </View>
-              <ReactNativePickerModule
-                pickerRef={this.picker}
-                title={"Reason for the Report"}
-                items={this.state.reasons}
-                onValueChange={(value) => this.setState({ reason: value })}
-              />
+  return (
+    props.visible && (
+      <View style={ToastQuestionGenericStyles.contentToast}>
+        <View style={ToastQuestionGenericStyles.viewToast}>
+          <Text style={{ color: "white", fontWeight: "bold", fontSize: 16 }}>
+            Report {1 === props.type ? "User" : "Journey"}
+          </Text>
+          <View
+            style={[
+              styles.viewSection,
+              styles.checkInput,
+              styles.aligItemsRight,
+            ]}
+          >
+            <Text style={styles.textLabel}>Reason</Text>
+            <View style={styles.comboSelect}>
+              <Pressable
+                onPress={() => {
+                  picker.current.show();
+                }}
+                style={{ flexDirection: "row" }}
+              >
+                <Text style={GlobalStyles.textWhite}>
+                  {null !== reason
+                    ? reason
+                    : "Select here"}
+                </Text>
+                <Icon
+                  name="chevron-down"
+                  size={22}
+                  style={styles.iconSelect}
+                />
+              </Pressable>
             </View>
-            <TextInput
-              numberOfLines={4}
-              multiline={true}
-              style={ToastQuestionGenericStyles.inputLarge}
-              value={this.state.description}
-              onChangeText={(text) => this.setState({ description: text })}
-              placeholder="Description (Other requires description)"
+            <ReactNativePickerModule
+              pickerRef={picker}
+              title={"Reason for the Report"}
+              items={reasons}
+              onValueChange={(value) => setReason(value)}
             />
-            <View style={{ flexDirection: "row" }}>
-              <View style={styles.widhtMedium}>
-                <Pressable
-                  style={ToastQuestionGenericStyles.buttonCancel}
-                  onPress={() => this.close()}
-                >
-                  <Text style={ToastQuestionGenericStyles.buttonText}>
-                    Cancel
-                  </Text>
-                </Pressable>
-              </View>
-              <View style={styles.widhtMedium}>
-                <Pressable
-                  style={ToastQuestionGenericStyles.buttonConfirm}
-                  onPress={() => this.send()}
-                >
-                  <Text style={ToastQuestionGenericStyles.buttonText}>
-                    Send
-                  </Text>
-                </Pressable>
-              </View>
+          </View>
+          <TextInput
+            numberOfLines={4}
+            multiline={true}
+            style={ToastQuestionGenericStyles.inputLarge}
+            value={description}
+            onChangeText={(text) => setDescription(text)}
+            placeholder="Description (Other requires description)"
+          />
+          <View style={{ flexDirection: "row" }}>
+            <View style={styles.widhtMedium}>
+              <Pressable
+                style={ToastQuestionGenericStyles.buttonCancel}
+                onPress={() => close()}
+              >
+                <Text style={ToastQuestionGenericStyles.buttonText}>
+                  Cancel
+                </Text>
+              </Pressable>
+            </View>
+            <View style={styles.widhtMedium}>
+              <Pressable
+                style={ToastQuestionGenericStyles.buttonConfirm}
+                onPress={() => send()}
+              >
+                <Text style={ToastQuestionGenericStyles.buttonText}>
+                  Send
+                </Text>
+              </Pressable>
             </View>
           </View>
         </View>
-      )
-    );
-  }
+      </View>
+    )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -176,15 +167,4 @@ const styles = StyleSheet.create({
   },
 });
 
-const mapStateToProps = (state) => ({});
-
-const mapDispatchToProps = (dispatch) => ({
-  message: (sMessage) => {
-    dispatch(actionMessage(sMessage));
-  },
-  send: (nId, nType, sReason, sDescription) => {
-    dispatch(actionSendReport(nId, nType, sReason, sDescription));
-  },
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(ModalReport);
+export default ModalReport;

@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useEffect, useState } from "react";
 import {
   GlobalModal,
   PlaceholderColor,
@@ -14,7 +14,7 @@ import {
   StyleSheet,
   TextInput,
 } from "react-native";
-import { connect } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   actionSendContactus,
   actionUpdateProfileResetState,
@@ -22,121 +22,113 @@ import {
 import { Toast } from "../shared/Toast";
 import { LoadingSpinner } from "../shared/LoadingSpinner";
 
-class ContactUsForm extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      loading: false,
-      message: "",
-      toastText: "",
-    };
-  }
+const ContactUsForm = (props) => {
 
-  componentWillReceiveProps = async (nextProps) => {
-    if (null !== nextProps.profile.statusSend && nextProps.profile.statusSend) {
-      this.showToast("Contact sent successfully", () => {
-        this.props.close();
-        this.props.resetStateUpdateProfile();
+  const session = useSelector((state) => state.reducerSession);
+  const profile = useSelector((state) => state.reducerProfile);
+
+  const dispatch = useDispatch();
+
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+  const [toastText, setToastText] = useState("");
+
+
+  useEffect(() => {
+    if (null !== profile.statusSend && profile.statusSend) {
+      showToast("Contact sent successfully", () => {
+        props.close();
+        dispatch(actionUpdateProfileResetState());
       });
     }
-    await this.setState({
-      loading: false,
-    });
-  };
+    setLoading(false);
+  }, [])
 
-  sendContact = async () => {
-    if ("" === this.state.message) {
-      this.showToast("Message required");
+  const sendContact = () => {
+    if ("" === message) {
+      showToast("Message required");
     } else {
-      await this.setState({
-        loading: true,
-      });
+      setLoading(true);
       let sMessage =
         "Username: " +
-        this.props.session.account.username +
+        session.account.username +
         "<br> Name: " +
-        this.props.session.account.name +
+        session.account.name +
         "<br> Message: " +
-        this.state.message;
-      this.props.sendContact(sMessage);
+        message;
+      dispatch(actionSendContactus(sMessage));
     }
   };
 
-  showToast = async (sText, callback = null) => {
-    this.setState({
-      toastText: sText,
-      loading: false,
-      message: "",
-    });
+  const showToast = (text, callback = null) => {
+    setToastText(text);
+    setLoading(false);
     setTimeout(() => {
-      this.setState({
-        toastText: "",
-      });
+      setToastText("");
       if (null !== callback) {
         callback();
       }
     }, 2000);
   };
 
-  render() {
-    return (
-      this.props.visible && (
-        <View style={GlobalModal.viewContent}>
-          <View style={GlobalModal.viewHead}>
-            <Text style={GlobalModal.headTitle}>Contact us</Text>
-            <Pressable
-              style={GlobalModal.buttonClose}
-              onPress={this.props.close}
-            >
-              <Text style={GlobalModal.titleClose}>Close</Text>
-            </Pressable>
-          </View>
-          <ScrollView>
-            <View style={styles.viewSection}>
-              <Text style={styles.textLabel}>From</Text>
-              <TextInput
-                style={[styles.textInput, { color: PlaceholderColor }]}
-                value={this.props.email}
-                editable={false}
-              />
-            </View>
-            <View style={styles.viewSection}>
-              <TextInput
-                style={[styles.textInput, styles.inputTextArea]}
-                multiline={true}
-                numberOfLines={4}
-                textAlign="left"
-                placeholder="Your message"
-                placeholderTextColor={PlaceholderColor}
-                onChangeText={(text) => this.setState({ message: text })}
-                value={this.state.message}
-              />
-            </View>
-            <View style={[styles.viewSection, styles.viewSectionButtons]}>
-              <View style={styles.viewButton}>
-                <Pressable
-                  onPress={this.props.close}
-                  style={[styles.button, { backgroundColor: GreenFitrecColor }]}
-                >
-                  <Text style={styles.textButton}>Cancel</Text>
-                </Pressable>
-              </View>
-              <View style={styles.viewButton}>
-                <Pressable
-                  onPress={() => this.sendContact()}
-                  style={[styles.button, { backgroundColor: SignUpColor }]}
-                >
-                  <Text style={styles.textButton}>Send</Text>
-                </Pressable>
-              </View>
-            </View>
-          </ScrollView>
-          <Toast toastText={this.state.toastText} />
-          <LoadingSpinner visible={this.state.loading} />
+
+  return (
+    props.visible && (
+      <View style={GlobalModal.viewContent}>
+        <View style={GlobalModal.viewHead}>
+          <Text style={GlobalModal.headTitle}>Contact us</Text>
+          <Pressable
+            style={GlobalModal.buttonClose}
+            onPress={props.close}
+          >
+            <Text style={GlobalModal.titleClose}>Close</Text>
+          </Pressable>
         </View>
-      )
-    );
-  }
+        <ScrollView>
+          <View style={styles.viewSection}>
+            <Text style={styles.textLabel}>From</Text>
+            <TextInput
+              style={[styles.textInput, { color: PlaceholderColor }]}
+              value={props.email}
+              editable={false}
+            />
+          </View>
+          <View style={styles.viewSection}>
+            <TextInput
+              style={[styles.textInput, styles.inputTextArea]}
+              multiline={true}
+              numberOfLines={4}
+              textAlign="left"
+              placeholder="Your message"
+              placeholderTextColor={PlaceholderColor}
+              onChangeText={(text) => setMessage(text)}
+              value={message}
+            />
+          </View>
+          <View style={[styles.viewSection, styles.viewSectionButtons]}>
+            <View style={styles.viewButton}>
+              <Pressable
+                onPress={props.close}
+                style={[styles.button, { backgroundColor: GreenFitrecColor }]}
+              >
+                <Text style={styles.textButton}>Cancel</Text>
+              </Pressable>
+            </View>
+            <View style={styles.viewButton}>
+              <Pressable
+                onPress={() => sendContact()}
+                style={[styles.button, { backgroundColor: SignUpColor }]}
+              >
+                <Text style={styles.textButton}>Send</Text>
+              </Pressable>
+            </View>
+          </View>
+        </ScrollView>
+        <Toast toastText={toastText} />
+        <LoadingSpinner visible={loading} />
+      </View>
+    )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -189,18 +181,4 @@ const styles = StyleSheet.create({
   },
 });
 
-const mapStateToProps = (state) => ({
-  session: state.reducerSession,
-  profile: state.reducerProfile,
-});
-
-const mapDispatchToProps = (dispatch) => ({
-  sendContact: (sMessage) => {
-    dispatch(actionSendContactus(sMessage));
-  },
-  resetStateUpdateProfile: () => {
-    dispatch(actionUpdateProfileResetState());
-  },
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(ContactUsForm);
+export default ContactUsForm;

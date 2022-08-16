@@ -1,91 +1,78 @@
-import React, { Component } from "react";
+import React, { Component, useEffect, useState } from "react";
 import { View, Text, Pressable, StyleSheet } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 import { SignUpColor, WhiteColor } from "../../Styles";
 
-export default class PalsOptions extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      showNewMessage: false,
-      showGroupMessage: false,
-    };
-  }
+const PalsOptions = (props) => {
 
-  componentWillReceiveProps = async (nextProps) => {
-    if (nextProps.visible) {
-      await setTimeout(async () => {
-        await this.setState({
-          showNewMessage: true,
-        });
+  const [showNewMessage, setShowNewMessage] = useState(false);
+  const [showGroupMessage, setShowGroupMessage] = useState(false);
+
+
+  useEffect(() => {
+    if (props.visible) {
+      setTimeout(() => {
+        setShowNewMessage(true);
       }, 50);
-      await setTimeout(async () => {
-        await this.setState({
-          showGroupMessage: true,
-        });
+      setTimeout(() => {
+        setShowGroupMessage(true);
       }, 115);
     } else {
-      await setTimeout(async () => {
-        await this.setState({
-          showGroupMessage: false,
-        });
+      setTimeout(() => {
+        setShowGroupMessage(false);
       }, 30);
-      await setTimeout(async () => {
-        await this.setState({
-          showNewMessage: false,
-        });
+      setTimeout(() => {
+        setShowNewMessage(false);
       }, 50);
     }
-  };
+  }, []);
 
-  render() {
-    return (
-      <View style={styles.viewContent}>
-        {this.state.showNewMessage && (
-          <View style={[styles.viewBubble, styles.viewBubbleSmall]}>
-            <Pressable
-              style={styles.touchable}
-              onPress={() => this.props.newMessage()}
-            >
-              {this.state.showNewMessage && (
-                <View style={styles.viewBubbleSmallDescription}>
-                  <View style={styles.bubbleSmallDescription}>
-                    <Text style={styles.text}>New Message</Text>
-                  </View>
-                </View>
-              )}
-              <Icon name="create" size={34} color={WhiteColor} />
-            </Pressable>
-          </View>
-        )}
-        {this.state.showGroupMessage && (
-          <View style={[styles.viewBubble, styles.viewBubbleSmall]}>
-            <Pressable
-              style={styles.touchable}
-              onPress={() => this.props.groupMessage()}
-            >
-              {this.state.showGroupMessage && (
-                <View style={styles.viewBubbleSmallDescription}>
-                  <View style={styles.bubbleSmallDescription}>
-                    <Text style={styles.text}>Message Group</Text>
-                  </View>
-                </View>
-              )}
-              <Icon name="people" size={34} color={WhiteColor} />
-            </Pressable>
-          </View>
-        )}
-        <View style={[styles.viewBubble, styles.viewBubbleBig]}>
+  return (
+    <View style={styles.viewContent}>
+      {showNewMessage && (
+        <View style={[styles.viewBubble, styles.viewBubbleSmall]}>
           <Pressable
-            style={[styles.touchable, { alignSelf: "center" }]}
-            onPress={() => this.props.openOptions()}
+            style={styles.touchable}
+            onPress={() => props.newMessage()}
           >
-            <Icon name="add" size={32} color={WhiteColor} />
+            {showNewMessage && (
+              <View style={styles.viewBubbleSmallDescription}>
+                <View style={styles.bubbleSmallDescription}>
+                  <Text style={styles.text}>New Message</Text>
+                </View>
+              </View>
+            )}
+            <Icon name="create" size={34} color={WhiteColor} />
           </Pressable>
         </View>
+      )}
+      {showGroupMessage && (
+        <View style={[styles.viewBubble, styles.viewBubbleSmall]}>
+          <Pressable
+            style={styles.touchable}
+            onPress={() => props.groupMessage()}
+          >
+            {showGroupMessage && (
+              <View style={styles.viewBubbleSmallDescription}>
+                <View style={styles.bubbleSmallDescription}>
+                  <Text style={styles.text}>Message Group</Text>
+                </View>
+              </View>
+            )}
+            <Icon name="people" size={34} color={WhiteColor} />
+          </Pressable>
+        </View>
+      )}
+      <View style={[styles.viewBubble, styles.viewBubbleBig]}>
+        <Pressable
+          style={[styles.touchable, { alignSelf: "center" }]}
+          onPress={() => props.openOptions()}
+        >
+          <Icon name="add" size={32} color={WhiteColor} />
+        </Pressable>
       </View>
-    );
-  }
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -133,3 +120,5 @@ const styles = StyleSheet.create({
     width: 140,
   },
 });
+
+export default PalsOptions; 

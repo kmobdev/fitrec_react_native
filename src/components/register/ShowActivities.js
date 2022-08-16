@@ -3,88 +3,83 @@ import { GlobalStyles, PlaceholderColor, SignUpColor } from "../../Styles";
 import { StyleSheet, View, Text, Pressable } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 
-export default class ShowActivities extends Component {
-  constructor(props) {
-    super(props);
-  }
+const ShowActivities = (props) => {
 
-  render() {
-    return (
-      <View>
-        {!this.props.readonly && (
+  return (
+    <View>
+      {!props.readonly && (
+        <View
+          style={[
+            GlobalStyles.viewSection,
+            styles.textInput,
+            { alignItems: "flex-end", borderBottomWidth: 0 },
+          ]}
+        >
+          <Text style={styles.textLabel}>Activities</Text>
           <View
             style={[
-              GlobalStyles.viewSection,
-              styles.textInput,
-              { alignItems: "flex-end", borderBottomWidth: 0 },
+              styles.comboSelect,
+              props.error && styles.paddingExtra,
             ]}
           >
-            <Text style={styles.textLabel}>Activities</Text>
-            <View
-              style={[
-                styles.comboSelect,
-                this.props.error && styles.paddingExtra,
-              ]}
+            <Pressable
+              style={{ flexDirection: "row", padding: 4 }}
+              onPress={props.press}
             >
-              <Pressable
-                style={{ flexDirection: "row", padding: 4 }}
-                onPress={this.props.press}
-              >
-                <Icon
-                  name="md-create"
-                  size={18}
-                  style={styles.iconSelect}
-                  color={SignUpColor}
-                />
-                <Text style={{ color: SignUpColor }}>Choose Activities</Text>
-              </Pressable>
-            </View>
-            {this.props.error && (
               <Icon
-                name="ios-warning"
-                size={16}
+                name="md-create"
+                size={18}
+                style={styles.iconSelect}
                 color={SignUpColor}
-                style={styles.iconError}
               />
-            )}
+              <Text style={{ color: SignUpColor }}>Choose Activities</Text>
+            </Pressable>
           </View>
-        )}
-        <View style={styles.viewActivitiesSelected}>
-          {this.props.activities
-            .filter((item) => item.selected)
-            .sort(function (a, b) {
-              if (a.name < b.name) return -1;
-              if (a.name > b.name) return 1;
-              return 0;
-            })
-            .map((element) => (
-              <View
-                style={{
-                  borderWidth: 0.5,
-                  borderColor: SignUpColor,
-                  padding: 5,
-                  borderRadius: 20,
-                  justifyContent: "center",
-                  marginRight: 5,
-                  marginBottom: 5,
-                }}
-                key={element.id}
-              >
-                <Text
-                  style={{
-                    color: SignUpColor,
-                    textAlign: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  {element.name}
-                </Text>
-              </View>
-            ))}
+          {props.error && (
+            <Icon
+              name="ios-warning"
+              size={16}
+              color={SignUpColor}
+              style={styles.iconError}
+            />
+          )}
         </View>
+      )}
+      <View style={styles.viewActivitiesSelected}>
+        {props.activities
+          .filter((item) => item.selected)
+          .sort(function (a, b) {
+            if (a.name < b.name) return -1;
+            if (a.name > b.name) return 1;
+            return 0;
+          })
+          .map((element) => (
+            <View
+              style={{
+                borderWidth: 0.5,
+                borderColor: SignUpColor,
+                padding: 5,
+                borderRadius: 20,
+                justifyContent: "center",
+                marginRight: 5,
+                marginBottom: 5,
+              }}
+              key={element.id}
+            >
+              <Text
+                style={{
+                  color: SignUpColor,
+                  textAlign: "center",
+                  justifyContent: "center",
+                }}
+              >
+                {element.name}
+              </Text>
+            </View>
+          ))}
       </View>
-    );
-  }
+    </View>
+  );
 }
 const styles = StyleSheet.create({
   textLabel: {
@@ -134,3 +129,5 @@ const styles = StyleSheet.create({
     bottom: 10,
   },
 });
+
+export default ShowActivities;

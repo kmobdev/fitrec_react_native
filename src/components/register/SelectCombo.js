@@ -1,59 +1,56 @@
-import React, { Component } from "react";
+import React, { Component, useRef } from "react";
 import { GlobalStyles, SignUpColor, PlaceholderColor } from "../../Styles";
 import { StyleSheet, View, Text, Pressable } from "react-native";
 import ReactNativePickerModule from "react-native-picker-module";
 import Icon from "react-native-vector-icons/Ionicons";
 
-export default class SelectCombo extends Component {
-  constructor(props) {
-    super(props);
-    this.picker = React.createRef();
-  }
+const SelectCombo = (props) => {
 
-  render() {
-    return (
+  const picker = useRef();
+
+
+  return (
+    <View
+      style={[
+        GlobalStyles.viewSection,
+        styles.textInput,
+        { alignItems: "flex-end" },
+      ]}
+    >
+      <Text style={styles.textLabel}>{props.title}</Text>
       <View
-        style={[
-          GlobalStyles.viewSection,
-          styles.textInput,
-          { alignItems: "flex-end" },
-        ]}
+        style={[styles.comboSelect, props.error && styles.paddingExtra]}
       >
-        <Text style={styles.textLabel}>{this.props.title}</Text>
-        <View
-          style={[styles.comboSelect, this.props.error && styles.paddingExtra]}
+        <Pressable
+          onPress={() => picker.current.show()}
+          style={{ flexDirection: "row" }}
         >
-          <Pressable
-            onPress={() => this.picker.current.show()}
-            style={{ flexDirection: "row" }}
-          >
-            <Text>
-              {null !== this.props.value
-                ? this.props.textSelect
-                : "Select here"}
-            </Text>
-            <Icon name="chevron-down" size={22} style={styles.iconSelect} />
-          </Pressable>
-        </View>
-        {this.props.error ? (
-          <Icon
-            name="ios-warning"
-            size={16}
-            color={SignUpColor}
-            style={styles.iconError}
-          ></Icon>
-        ) : null}
-        <ReactNativePickerModule
-          pickerRef={this.picker}
-          title={this.props.title}
-          items={this.props.items}
-          onValueChange={(data) => {
-            this.props.onValueChange(data);
-          }}
-        />
+          <Text>
+            {null !== props.value
+              ? props.textSelect
+              : "Select here"}
+          </Text>
+          <Icon name="chevron-down" size={22} style={styles.iconSelect} />
+        </Pressable>
       </View>
-    );
-  }
+      {props.error ? (
+        <Icon
+          name="ios-warning"
+          size={16}
+          color={SignUpColor}
+          style={styles.iconError}
+        ></Icon>
+      ) : null}
+      <ReactNativePickerModule
+        pickerRef={picker}
+        title={props.title}
+        items={props.items}
+        onValueChange={(data) => {
+          props.onValueChange(data);
+        }}
+      />
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -90,3 +87,5 @@ const styles = StyleSheet.create({
     marginTop: -2,
   },
 });
+
+export default SelectCombo;
