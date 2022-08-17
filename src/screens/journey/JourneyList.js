@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -26,7 +26,7 @@ import {
 } from "../../Styles";
 import Icon from "react-native-vector-icons/Ionicons";
 import { ToastQuestionGeneric } from "../../components/shared/ToastQuestionGeneric";
-import { connect } from "react-redux";
+import { connect, useDispatch, useSelector } from "react-redux";
 import {
   actionGetJourneyList,
   actionAddUnLike,
@@ -72,88 +72,85 @@ import { actionCleanNavigation } from "../../redux/actions/NavigationActions";
 
 let RNFS = require("react-native-fs");
 
-class JourneyList extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      refresh: false,
-      showToastQuestion: false,
-      refreshing: false,
-      loading: false,
-      showLikes: false,
-      statusGetLikesResponse: false,
-      journey: null,
-      showQuestionDeleteJourney: false,
-      showToastEdit: false,
-      newDescription: "",
-      changePhoto: false,
-      newImage: null,
-      showQuestionChangeImage: false,
-      showReport: false,
-      newStory: false,
-      muted: true,
-      viewMeStory: false,
-      index: 1,
-    };
-  }
+const JourneyList = (props) => {
 
-  componentDidMount = () => {
-    this.props.swiperHome === undefined &&
-      this.props.navigation.setParams({ index: 1 });
-    this.getJourneyList();
-    this.setState({ muted: true });
-  };
+  const oSwiperRef = useRef();
 
-  getJourneyList = () => {
-    this.props.getJourneyList();
-    this.props.getStories();
-  };
+  const session = useSelector((state) => state.reducerSession);
+  const journeyProps = useSelector((state) => state.reducerJourney);
 
-  onRefresh = () => {
-    this.setState({
-      refreshing: true,
-      muted: true,
-    });
-    this.getJourneyList();
-  };
+  const dispatch = useDispatch();
 
-  componentWillReceiveProps = (nextProps) => {
-    if (this.props.journeyProps.journeys.length > 0)
-      this.setState({
-        loadingListJourney: false,
-      });
-    if (nextProps.journeyProps.bNavigationJourney) {
-      this.props.cleanNavigation();
-      if (this.state.index !== 1) {
-        this.oSwiperRef.scrollTo(1, false);
-        this.setState({ index: 1 });
+  const [refresh, setRefresh] = useState(false);
+  const [showToastQuestion, setShowToastQuestion] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [showLikes, setShowLikes] = useState(false);
+  const [statusGetLikesResponse, setStatusGetLikesResponse] = useState(false);
+  const [journey, setJourney] = useState(null);
+  const [showQuestionDeleteJourney, setShowQuestionDeleteJourney] = useState(false);
+  const [showToastEdit, setShowToastEdit] = useState(false);
+  const [changePhoto, setChangePhoto] = useState(false);
+  const [newImage, setNewImage] = useState(null);
+  const [showQuestionChangeImage, setShowQuestionChangeImage] = useState(false);
+  const [showReport, setShowReport] = useState(false);
+  const [newStory, setNewStory] = useState(false);
+  const [muted, setMuted] = useState(true);
+  const [viewMyStory, setViewMyStory] = useState(false);
+  const [showTagsList, setShowTagsList] = useState(false);
+  const [index, setIndex] = useState(1);
+  const [newDescription, setNewDescription] = useState("");
+  const [changeDescription, setChangeDescription] = useState(false);
+
+  useEffect(() => {
+    props.swiperHome === undefined &&
+      props.navigation.setParams({ index: 1 });
+    getJourneyList();
+    setMuted(true);
+  }, []);
+
+  useEffect(() => {
+    if (journeyProps.bNavigationJourney) {
+      dispatch(actionCleanNavigation());
+      if (index !== 1) {
+        oSwiperRef.scrollTo(1, false);
+        setIndex(1);
       }
     }
-    this.setState({
-      loading: false,
-      refreshing: false,
-      refresh: !this.state.refresh,
-    });
+    setLoading(false);
+    setRefreshing(false);
+    setRefresh(!refresh);
+  }, [journeyProps]);
+
+  const getJourneyList = () => {
+    dispatch(actionGetJourneyList());
+    dispatch(actionGetStories());
   };
 
-  addUnLike = (oJourney, bAddLike) => {
+  const onRefresh = () => {
+    setRefreshing(true);
+    setMuted(true);
+    getJourneyList();
+  };
+
+  const addUnLike = (oJourney, bAddLike) => {
     let oDataNotification =
-      this.props.session.account.id !== oJourney.user.id
+      session.account.id !== oJourney.user.id
         ? {
-            sHeader: this.props.session.account.username,
-            sDescription: `${this.props.session.account.name} likes your post`,
-            sPushId: oJourney.user.id_push,
-          }
+          sHeader: session.account.username,
+          sDescription: `${session.account.name} likes your post`,
+          sPushId: oJourney.user.id_push,
+        }
         : null;
-    this.props.addLike(oJourney.id, bAddLike, oDataNotification);
+    dispatch(actionAddUnLike(oJourney.id, bAddLike, oDataNotification));
   };
 
-  redirectionViewProfile = (nIdFitrec) => {
-    this.props.getProfile(nIdFitrec);
-    this.props.navigation.navigate("ProfileViewDetails");
+  const redirectionViewProfile = (idFitrec) => {
+    dispatch(actionGetProfile(idFitrec, true));
+    props.navigation.navigate("ProfileViewDetails");
   };
 
-  dynamicStyle(data) {
+  const dynamicStyle = (data) => {
     let left = (screenWidth * data.x) / 100;
     let top = (screenHeight * data.y) / 100;
     return {
@@ -164,53 +161,44 @@ class JourneyList extends Component {
     };
   }
 
-  showLikes = (nJourneyId) => {
-    this.props.showLikes(nJourneyId);
-    this.setState({
-      showLikes: true,
-    });
+  const showLikesHandler = (nJourneyId) => {
+    dispatch(actionGetLikes(nJourneyId));
+    setShowLikes(true);
   };
 
-  deleteJourney = () => {
-    this.setState({
-      loading: true,
-      showQuestionDeleteJourney: false,
-    });
-    this.props.deleteJourney(
-      this.state.journey.id,
-      this.props.session.account.id
-    );
+  const deleteJourney = () => {
+    setLoading(true);
+    setShowQuestionDeleteJourney(false);
+    dispatch(actionDeleteJourney(journey.id, session.account.id));
   };
 
-  redirectionViewProfile = (nIdFitrec) => {
-    this.props.getProfile(nIdFitrec);
-    if (this.props.closeModal) {
+  const redirectionViewProfileHandler = (idFitrec) => {
+    dispatch(actionGetProfile(idFitrec, true));
+    if (props.closeModal) {
       setTimeout(() => {
-        this.props.close();
-        this.props.closeModal();
+        props.close();
+        props.closeModal();
       }, 1000);
     }
-    this.props.navigation.navigate("ProfileViewDetails");
+    props.navigation.navigate("ProfileViewDetails");
   };
 
-  changeDescription = () => {
-    this.props.editJourney(
-      this.state.journey.id,
-      this.props.session.account.id,
-      this.state.newDescription,
-      null
+  const changeDescriptionHandler = () => {
+    dispatch(
+      actionEditJourney(
+        journey.id,
+        session.account.id,
+        newDescription,
+        null
+      )
     );
-    this.setState({
-      changeDescription: false,
-      journey: null,
-    });
+    setChangeDescription(false);
+    setJourney(null);
   };
 
-  addImage = (sType) => {
-    this.setState({
-      showPhoto: false,
-      loading: true,
-    });
+  const addImage = (sType) => {
+    setShowPhoto(false);
+    setLoading(true);
     let oOptions = {
       cropping: true,
       width: 800,
@@ -219,7 +207,7 @@ class JourneyList extends Component {
       forceJpg: true,
       includeBase64: true,
     };
-    if (this.state.newStory) {
+    if (newStory) {
       oOptions.cropping = false;
       oOptions.duration = 5000;
     } else oOptions.mediaType = "image";
@@ -227,16 +215,16 @@ class JourneyList extends Component {
       case "camera":
         ImagePicker.openCamera(oOptions).then(
           (image) => {
-            if (this.state.newStory) {
-              this.setState({
-                newStory: false,
-                loading: false,
-              });
+            if (newStory) {
+              setShowPhoto(false);
+              setLoading(false);
               if (image.mime.indexOf("image") === -1) {
-                this.props.previewStory(
-                  POST_TYPE_VIDEO,
-                  image.path,
-                  image.filename
+                dispatch(
+                  actionPreviewStory(
+                    POST_TYPE_VIDEO,
+                    image.path,
+                    image.filename
+                  )
                 );
               } else {
                 ImagePicker.openCropper({
@@ -246,35 +234,32 @@ class JourneyList extends Component {
                   includeBase64: true,
                 })
                   .then((oImage) => {
-                    this.props.previewStory(
-                      POST_TYPE_IMAGE,
-                      `data:image/jpg;base64,` + oImage.data
+                    dispatch(
+                      actionPreviewStory(
+                        POST_TYPE_IMAGE,
+                        `data:image/jpg;base64,` + oImage.data
+                      )
                     );
                   })
                   .catch((oError) => {
-                    this.setState({
-                      loading: false,
-                      changePhoto: false,
-                      journey: null,
-                      newStory: false,
-                    });
+                    setLoading(false);
+                    setChangePhoto(false);
+                    setJourney(null);
+                    setNewStory(false);
                   });
               }
-            } else
-              this.setState({
-                newImage: image.data,
-                loading: false,
-                showQuestionChangeImage: true,
-                changePhoto: false,
-              });
+            } else {
+              setNewImage(image.data);
+              setLoading(false);
+              setShowQuestionChangeImage(true);
+              setChangePhoto(false);
+            }
           },
           (cancel) => {
-            this.setState({
-              loading: false,
-              changePhoto: false,
-              journey: null,
-              newStory: false,
-            });
+            setLoading(false);
+            setChangePhoto(false);
+            setJourney(null);
+            setNewStory(false);
           }
         );
         break;
@@ -299,44 +284,40 @@ class JourneyList extends Component {
                   sName.slice(0, nIndexName) + "_" + Date.now() + "_fitrec.mp4";
                 RNFFmpeg.execute(
                   "-i " +
-                    sPath +
-                    ' -ss 00:00 -to 00:30 -preset superfast -movflags +faststart -vf "scale=480:-2" -b:v 1800k ' +
-                    sTemporalPath +
-                    sName
+                  sPath +
+                  ' -ss 00:00 -to 00:30 -preset superfast -movflags +faststart -vf "scale=480:-2" -b:v 1800k ' +
+                  sTemporalPath +
+                  sName
                 )
                   .then((result) => {
-                    this.setState({
-                      newStory: false,
-                      loading: false,
-                    });
-                    this.props.previewStory(
-                      POST_TYPE_VIDEO,
-                      sTemporalPath + sName,
-                      sName
+                    setNewStory(false);
+                    setLoading(false);
+                    dispatch(
+                      actionPreviewStory(
+                        POST_TYPE_VIDEO,
+                        sTemporalPath + sName,
+                        sName
+                      )
                     );
                   })
                   .catch((oError) => {
-                    this.props.message(
-                      "There was a problem resizing the video"
-                    );
+                    dispatch(actionMessage("There was a problem resizing the video"));
                   });
               } else {
-                this.setState({
-                  loading: false,
-                  changePhoto: false,
-                  journey: null,
-                  newStory: false,
-                });
-                this.props.message("There was a problem selecting the video");
+                setLoading(false);
+                setChangePhoto(false);
+                setJourney(null);
+                setNewStory(false);
+                dispatch(actionMessage("There was a problem selecting the video"));
               }
             } else {
-              if (oResponse.error) this.showToast(MESSAGE_ERROR);
-              this.setState({
-                loading: false,
-                changePhoto: false,
-                journey: null,
-                newStory: false,
-              });
+              if (oResponse.error) {
+                showToast(MESSAGE_ERROR)
+              }
+              setLoading(false);
+              setChangePhoto(false);
+              setJourney(null);
+              setNewStory(false);
             }
           }
         );
@@ -344,7 +325,7 @@ class JourneyList extends Component {
       case "gallery":
         ImagePicker.openPicker(oOptions).then(
           (image) => {
-            if (this.state.newStory) {
+            if (newStory) {
               if (image.mime.indexOf("video") !== -1) {
                 let sName = "",
                   sPath = image.sourceURL ? image.sourceURL : image.path,
@@ -357,52 +338,46 @@ class JourneyList extends Component {
                   sName.slice(0, nIndexName) + "_" + Date.now() + "_fitrec.mp4";
                 RNFFmpeg.execute(
                   "-i " +
-                    sPath +
-                    ' -ss 00:00 -to 00:30 -preset superfast -movflags +faststart -vf "scale=480:-2" -b:v 1800k ' +
-                    sTemporalPath +
-                    sName
+                  sPath +
+                  ' -ss 00:00 -to 00:30 -preset superfast -movflags +faststart -vf "scale=480:-2" -b:v 1800k ' +
+                  sTemporalPath +
+                  sName
                 )
                   .then((result) => {
-                    this.setState({
-                      newStory: false,
-                      loading: false,
-                    });
+                    setNewStory(false);
+                    setLoading(false);
                     if (Platform.OS == "ios") {
-                      this.props.previewStory(
-                        POST_TYPE_VIDEO,
-                        sTemporalPath + sName,
-                        sName
-                      );
-                    } else {
-                      if (nIndex > 0) {
-                        this.props.previewStory(
+                      dispatch(
+                        actionPreviewStory(
                           POST_TYPE_VIDEO,
                           sTemporalPath + sName,
                           sName
+                        )
+                      );
+                    } else {
+                      if (nIndex > 0) {
+                        dispatch(
+                          actionPreviewStory(
+                            POST_TYPE_VIDEO,
+                            sTemporalPath + sName,
+                            sName
+                          )
                         );
                       } else {
-                        this.props.message(
-                          "There was a problem selecting the video"
-                        );
-                        this.setState({
-                          loading: false,
-                          changePhoto: false,
-                          journey: null,
-                          newStory: false,
-                        });
+                        dispatch(actionMessage("There was a problem selecting the video"));
+                        setLoading(false);
+                        setChangePhoto(false);
+                        setJourney(null);
+                        setNewStory(false);
                       }
                     }
                   })
                   .catch((oError) => {
-                    this.props.message(
-                      "There was a problem resizing the video"
-                    );
+                    dispatch(actionMessage("There was a problem resizing the video"));
                   });
               } else if (image.mime.indexOf("image") !== -1) {
-                this.setState({
-                  newStory: false,
-                  loading: false,
-                });
+                setNewStory(false);
+                setLoading(false);
                 ImagePicker.openCropper({
                   path: image.path,
                   width: 800,
@@ -410,141 +385,114 @@ class JourneyList extends Component {
                   includeBase64: true,
                 })
                   .then((oImage) => {
-                    this.props.previewStory(
-                      POST_TYPE_IMAGE,
-                      `data:image/jpg;base64,` + oImage.data
+                    dispatch(
+                      actionPreviewStory(
+                        POST_TYPE_IMAGE,
+                        `data:image/jpg;base64,` + oImage.data
+                      )
                     );
                   })
                   .catch((oError) => {
-                    this.setState({
-                      loading: false,
-                      changePhoto: false,
-                      journey: null,
-                      newStory: false,
-                    });
+                    setLoading(false);
+                    setChangePhoto(false);
+                    setJourney(null);
+                    setNewStory(false);
                   });
-              } else this.props.message("Unsupported file type");
+              } else dispatch(actionMessage("Unsupported file type"));
             } else
-              this.setState({
-                newImage: image.data,
-                loading: false,
-                showQuestionChangeImage: true,
-                changePhoto: false,
-              });
+              setNewImage(image.data);
+            setLoading(false);
+            setShowQuestionChangeImage(true);
+            setChangePhoto(false);
+
           },
           (cancel) => {
-            this.setState({
-              loading: false,
-              changePhoto: false,
-              journey: null,
-              newStory: false,
-            });
+            setLoading(false);
+            setChangePhoto(false);
+            setJourney(null);
+            setNewStory(false);
           }
         );
         break;
     }
   };
 
-  changePhoto = () => {
-    this.props.editJourney(
-      this.state.journey.id,
-      this.props.session.account.id,
-      this.state.journey.description,
-      this.state.newImage
+  const changePhotoHandler = () => {
+    dispatch(
+      actionEditJourney(
+        journey.id,
+        session.account.id,
+        journey.description,
+        newImage
+      )
     );
-    this.setState({
-      changeDescription: false,
-      journey: null,
-      showQuestionChangeImage: false,
-      newImage: null,
-      journey: null,
-    });
+    setChangeDescription(false);
+    setJourney(null);
+    setShowQuestionChangeImage(false);
+    setNewImage(null);
+    setJourney(null);
   };
 
-  swipe = (nIndex) => {
-    this.props.navigation.setParams({
+  const swipe = (nIndex) => {
+    props.navigation.setParams({
       index: nIndex,
     });
-    this.setState({ index: nIndex });
+    setIndex(nIndex);
   };
 
-  actionChangePhoto = () => {
-    if (this.state.journey.likes < 1)
-      this.setState({ changePhoto: true, showToastEdit: false });
-    else this.props.message("You cannot change a photo that has likes");
+  const actionChangePhoto = () => {
+    if (journey.likes < 1) {
+      setChangePhoto(true);
+      setShowToastEdit(false);
+    } else {
+      dispatch(actionMessage("You cannot change a photo that has likes"));
+    }
   };
 
-  handleScrollView = (event) => {
+  const handleScrollView = (event) => {
     let nScrollY = event.nativeEvent.contentOffset.y,
       nIndex = Math.round(nScrollY / (612 - 60));
-    if (nIndex > 0 && this.props.journeyProps.journeys[nIndex] !== undefined)
-      this.props.journeyProps.journeys[nIndex - 1].paused = true;
+    if (nIndex > 0 && journeyProps.journeys[nIndex] !== undefined)
+      journeyProps.journeys[nIndex - 1].paused = true;
     if (
-      nIndex + 1 < this.props.journeyProps.journeys.length - 1 &&
-      this.props.journeyProps.journeys[nIndex + 1] !== undefined
+      nIndex + 1 < journeyProps.journeys.length - 1 &&
+      journeyProps.journeys[nIndex + 1] !== undefined
     )
-      this.props.journeyProps.journeys[nIndex + 1].paused = true;
-    if (this.props.journeyProps.journeys[nIndex] !== undefined)
-      this.props.journeyProps.journeys[nIndex].paused = false;
-    this.setState({
-      refresh: !this.state.refresh,
-    });
+      journeyProps.journeys[nIndex + 1].paused = true;
+    if (journeyProps.journeys[nIndex] !== undefined)
+      journeyProps.journeys[nIndex].paused = false;
+    setRefresh(!refresh);
   };
 
-  render() {
-    return (
-      <View style={{ flex: 1 }}>
-        {this.props.swiperHome === undefined ? (
-          <Swiper
-            loop={false}
-            showsPagination={false}
-            onIndexChanged={(nIndex) => this.swipe(nIndex)}
-            scrollEnabled={true}
-            horizontal={true}
-            index={1}
-            ref={(oRef) => (this.oSwiperRef = oRef)}
-          >
-            <View style={styles.contentSwipe}>
-              <Home swiperHome={true} navigation={this.props.navigation} />
-            </View>
-            <View style={styles.contentSwipe}>{this.renderContent()}</View>
-          </Swiper>
-        ) : (
-          this.renderContent()
-        )}
-      </View>
-    );
-  }
-
-  renderItem = (oItem, nIndex, bPaused) => {
+  const renderItem = (oItem, nIndex, bPaused) => {
     return (
       <View style={CarouselStyle.itemContainer}>
         {oItem.type == POST_TYPE_VIDEO ? (
           <Pressable
             activeOpacity={1}
             onPress={() => {
-              this.setState({ muted: !this.state.muted });
+              setMuted(!muted);
             }}
           >
             <Video
               paused={
-                this.props.swiperHome === undefined
-                  ? this.state.index === 1
+                props.swiperHome === undefined
+                  ? index === 1
                     ? bPaused == undefined
                       ? true
                       : bPaused
                     : true
-                  : this.props.indexHome === 1 ||
-                    this.props.indexHome === undefined
-                  ? bPaused == undefined
-                    ? true
-                    : bPaused
-                  : true
+                  : props.indexHome === 1 ||
+                    props.indexHome === undefined
+                    ? bPaused == undefined
+                      ? true
+                      : bPaused
+                    : true
               }
               muted={
-                this.props.swiperHome !== undefined
-                  ? this.state.muted
-                  : this.state.muted || this.props.indexHome === 1
+                props.swiperHome !== undefined
+                  ? muted
+                  : muted || props.indexHome === 1
               }
               repeat={true}
               controls={false}
@@ -554,18 +502,11 @@ class JourneyList extends Component {
               source={{ uri: oItem.image }}
               style={GlobalStyles.fullImage}
               ref={(ref) => {
-                this.state.player = ref;
+                player = ref;
               }}
-              onLoadStart={() => {
-                this.setState({
-                  muted: !this.state.muted,
-                });
-                this.setState({
-                  muted: !this.state.muted,
-                });
-              }}
+              onLoadStart={() => setMuted(!muted)}
             />
-            {this.state.muted && !bPaused && (
+            {muted && !bPaused && (
               <View style={JourneyStyles.containerMutedIcon}>
                 <Icon
                   name="volume-mute"
@@ -581,18 +522,18 @@ class JourneyList extends Component {
             <Pressable
               onPress={() => {
                 oItem.showTag = !oItem.showTag;
-                this.setState({ refresh: !this.state.refresh });
+                setRefresh(!refresh);
               }}
               activeOpacity={1}
             >
-              {this.getImage(oItem)}
+              {getImage(oItem)}
             </Pressable>
             {oItem.showTag &&
               oItem.tags.map((oTag) => (
                 <Pressable
-                  onPress={() => this.redirectionViewProfile(oTag.id_user)}
+                  onPress={() => redirectionViewProfileHandler(oTag.id_user)}
                   key={oTag.id.toString()}
-                  style={this.dynamicStyle(oTag)}
+                  style={dynamicStyle(oTag)}
                 >
                   <View style={styles.tagTriangle}></View>
                   <View style={styles.tagUserView}>
@@ -602,13 +543,13 @@ class JourneyList extends Component {
               ))}
           </>
         ) : (
-          this.getImage(oItem)
+          getImage(oItem)
         )}
       </View>
     );
   };
 
-  getImage = (oItem) => {
+  const getImage = (oItem) => {
     return (
       <FastImage
         style={ToastQuestionStyles.image}
@@ -621,16 +562,16 @@ class JourneyList extends Component {
     );
   };
 
-  renderContent = () => {
+  const renderContent = () => {
     return (
       <View style={{ backgroundColor: WhiteColor, flex: 1 }}>
         <ScrollView
           scrollEventThrottle={1}
-          onScroll={this.handleScrollView}
+          onScroll={handleScrollView}
           refreshControl={
             <RefreshControl
-              refreshing={this.state.refreshing}
-              onRefresh={() => this.onRefresh()}
+              refreshing={refreshing}
+              onRefresh={() => onRefresh()}
               tintColor={GreenFitrecColor}
               title="Pull to refresh..."
             />
@@ -640,17 +581,17 @@ class JourneyList extends Component {
             style={{ borderBottomColor: "#A6A7A8", borderBottomWidth: 0.5 }}
           >
             <Stories
-              new={() => this.setState({ newStory: true })}
-              options={() => this.setState({ viewMyStory: true })}
+              new={() => setNewStory(true)}
+              options={() => setViewMyStory(true)}
             />
           </View>
-          {this.props.journeyProps.journeys.length > 0 ? (
+          {journeyProps.journeys.length > 0 ? (
             <FlatList
               keyExtractor={(item, index) => index.toString()}
-              data={this.props.journeyProps.journeys}
-              extraData={this.state.refresh}
+              data={journeyProps.journeys}
+              extraData={refresh}
               scrollEnabled={false}
-              refreshing={this.state.refresh}
+              refreshing={refresh}
               getItemLayout={(data, index) => {
                 if (index === -1) return { index, length: 0, offset: 0 };
                 data[index].scroll = 540 * index + 60;
@@ -668,21 +609,22 @@ class JourneyList extends Component {
                     username={item.user.username}
                     image={item.user.image}
                     redirectionViewProfile={() =>
-                      this.redirectionViewProfile(item.user.id)
+                      redirectionViewProfileHandler(item.user.id)
                     }
                     options={() => {
-                      this.setState({ showToastQuestion: true, journey: item });
+                      setShowToastQuestion(true);
+                      setJourney(item);
                     }}
                   />
                   <View style={{ aspectRatio: 1 }}>
                     <SafeAreaView>
                       <Carousel
                         ref={(oRef) => {
-                          this.crousel = oRef;
+                          crousel = oRef;
                         }}
                         data={item.images}
                         renderItem={(oItem) =>
-                          this.renderItem(oItem.item, oItem.index, item.paused)
+                          renderItem(oItem.item, oItem.index, item.paused)
                         }
                         sliderWidth={screenWidth}
                         itemWidth={screenWidth}
@@ -692,7 +634,7 @@ class JourneyList extends Component {
                         loop={false}
                         onSnapToItem={(index) => {
                           item.nIndex = index;
-                          this.setState({ refresh: !this.state.refresh });
+                          setRefresh(!refresh);
                         }}
                       />
                       {item.images.length > 1 && (
@@ -713,16 +655,14 @@ class JourneyList extends Component {
                       isLiked={item.isLiked}
                       likes={item.likes}
                       text={item.description}
-                      pressAddLike={() => this.addUnLike(item, true)}
+                      pressAddLike={() => addUnLike(item, true)}
                       existTags={item.images[item.nIndex].tags.length > 0}
-                      showTags={() =>
-                        this.setState({
-                          showTagsList: true,
-                          tags: item.images[item.nIndex].tags,
-                        })
-                      }
-                      pressUnLike={() => this.addUnLike(item, false)}
-                      showLikes={() => this.showLikes(item.id)}
+                      showTags={() => {
+                        setShowTagsList(true);
+                        setTags(item.images[item.nIndex].tags);
+                      }}
+                      pressUnLike={() => addUnLike(item, false)}
+                      showLikes={() => showLikesHandler(item.id)}
                     />
                   )}
                 </View>
@@ -749,18 +689,16 @@ class JourneyList extends Component {
         </ScrollView>
         <ToastQuestionGeneric
           maxWidth={180}
-          visible={this.state.showToastQuestion}
+          visible={showToastQuestion}
           options={
             <View style={{ padding: 10 }}>
-              {null !== this.state.journey &&
-                this.state.journey.user.id !==
-                  this.props.session.account.id && (
+              {null !== journey &&
+                journey.user.id !==
+                session.account.id && (
                   <Pressable
                     onPress={() => {
-                      this.setState({
-                        showReport: true,
-                        showToastQuestion: false,
-                      });
+                      setShowReport(true);
+                      setShowToastQuestion(false);
                     }}
                   >
                     <View style={[ToastQuestionGenericStyles.viewButtonOption]}>
@@ -773,16 +711,14 @@ class JourneyList extends Component {
                     </View>
                   </Pressable>
                 )}
-              {null !== this.state.journey &&
-                this.state.journey.user.id ===
-                  this.props.session.account.id && (
+              {null !== journey &&
+                journey.user.id ===
+                session.account.id && (
                   <Pressable
-                    onPress={() =>
-                      this.setState({
-                        showToastQuestion: false,
-                        showToastEdit: true,
-                      })
-                    }
+                    onPress={() => {
+                      setShowToastQuestion(false);
+                      setShowToastEdit(true);
+                    }}
                   >
                     <View style={[ToastQuestionGenericStyles.viewButtonOption]}>
                       <Icon
@@ -798,16 +734,14 @@ class JourneyList extends Component {
                     </View>
                   </Pressable>
                 )}
-              {null !== this.state.journey &&
-                this.state.journey.user.id ===
-                  this.props.session.account.id && (
+              {null !== journey &&
+                journey.user.id ===
+                session.account.id && (
                   <Pressable
-                    onPress={() =>
-                      this.setState({
-                        showToastQuestion: false,
-                        showQuestionDeleteJourney: true,
-                      })
-                    }
+                    onPress={() => {
+                      setShowToastQuestion(false);
+                      setShowQuestionDeleteJourney(true);
+                    }}
                   >
                     <View style={[ToastQuestionGenericStyles.viewButtonOption]}>
                       <Icon name="trash-outline" size={22} color={WhiteColor} />
@@ -820,9 +754,10 @@ class JourneyList extends Component {
                   </Pressable>
                 )}
               <Pressable
-                onPress={() =>
-                  this.setState({ showToastQuestion: false, journey: null })
-                }
+                onPress={() => {
+                  setShowToastQuestion(false);
+                  setJourney(null);
+                }}
               >
                 <View
                   style={[
@@ -840,17 +775,15 @@ class JourneyList extends Component {
           }
         />
         <ToastQuestionGeneric
-          visible={this.state.showToastEdit}
+          visible={showToastEdit}
           options={
             <View style={{ padding: 10 }}>
               <Pressable
-                onPress={() =>
-                  this.setState({
-                    changeDescription: true,
-                    showToastEdit: false,
-                    newDescription: this.state.journey.description,
-                  })
-                }
+                onPress={() => {
+                  setChangeDescription(true);
+                  setShowToastEdit(false);
+                  setNewDescription(journey.description);
+                }}
               >
                 <View style={[ToastQuestionGenericStyles.viewButtonOption]}>
                   <Icon name="create-outline" size={22} color={WhiteColor} />
@@ -861,7 +794,7 @@ class JourneyList extends Component {
               </Pressable>
               {/*
                         // TODO: Commented since now with multiple images you should not be able to change - Leandro Curbelo
-                            <Pressable onPress={() => this.actionChangePhoto()}>
+                            <Pressable onPress={() => actionChangePhoto()}>
                                 <View style={[ToastQuestionGenericStyles.viewButtonOption]}>
                                     <Icon name="images" size={22} color={WhiteColor} />
                                     <Text style={ToastQuestionGenericStyles.viewButtonOptionText}>
@@ -871,12 +804,10 @@ class JourneyList extends Component {
                             </Pressable> 
                         */}
               <Pressable
-                onPress={() =>
-                  this.setState({
-                    showToastQuestion: true,
-                    showToastEdit: false,
-                  })
-                }
+                onPress={() => {
+                  setShowToastQuestion(true);
+                  setShowToastEdit(false);
+                }}
               >
                 <View
                   style={[
@@ -893,26 +824,24 @@ class JourneyList extends Component {
             </View>
           }
         />
-        {this.state.changeDescription && (
+        {changeDescription && (
           <View style={ToastQuestionGenericStyles.contentToast}>
             <View style={ToastQuestionGenericStyles.viewToast}>
               <TextInput
                 numberOfLines={4}
                 multiline={true}
                 style={ToastQuestionGenericStyles.inputLarge}
-                value={this.state.newDescription}
-                onChangeText={(text) => this.setState({ newDescription: text })}
+                value={newDescription}
+                onChangeText={(text) => setNewDescription(text)}
               />
               <View style={{ flexDirection: "row" }}>
                 <View style={{ width: "50%" }}>
                   <Pressable
                     style={ToastQuestionGenericStyles.buttonCancel}
-                    onPress={() =>
-                      this.setState({
-                        showToastEdit: true,
-                        changeDescription: false,
-                      })
-                    }
+                    onPress={() => {
+                      setShowToastEdit(true);
+                      setChangeDescription(false);
+                    }}
                   >
                     <Text style={ToastQuestionGenericStyles.buttonText}>
                       Cancel
@@ -922,7 +851,7 @@ class JourneyList extends Component {
                 <View style={{ width: "50%" }}>
                   <Pressable
                     style={ToastQuestionGenericStyles.buttonConfirm}
-                    onPress={() => this.changeDescription()}
+                    onPress={() => changeDescriptionHandler()}
                   >
                     <Text style={ToastQuestionGenericStyles.buttonText}>
                       Confirm
@@ -933,25 +862,25 @@ class JourneyList extends Component {
             </View>
           </View>
         )}
-        {this.state.newStory ? (
+        {newStory ? (
           <ToastQuestion
-            visible={this.state.changePhoto || this.state.newStory}
-            close={() => this.setState({ changePhoto: false, newStory: false })}
-            functionCamera={() => this.addImage("camera")}
-            functionGallery={() => this.addImage("gallery")}
-            functionVideo={() => this.addImage("video")}
+            visible={changePhoto || newStory}
+            close={() => { setChangePhoto(false); setNewStory(false); }}
+            functionCamera={() => addImage("camera")}
+            functionGallery={() => addImage("gallery")}
+            functionVideo={() => addImage("video")}
           />
         ) : (
           <ToastQuestion
-            visible={this.state.changePhoto || this.state.newStory}
-            close={() => this.setState({ changePhoto: false, newStory: false })}
-            functionCamera={() => this.addImage("camera")}
-            functionGallery={() => this.addImage("gallery")}
+            visible={changePhoto || newStory}
+            close={() => { setChangePhoto(false); setNewStory(false); }}
+            functionCamera={() => addImage("camera")}
+            functionGallery={() => addImage("gallery")}
           />
         )}
-        {null !== this.state.journey && (
+        {null !== journey && (
           <ToastQuestionGeneric
-            visible={this.state.showQuestionChangeImage}
+            visible={showQuestionChangeImage}
             titleBig="Change Photo Journey"
             maxWidth={250}
             title="Are you sure you want to change journey photo?"
@@ -962,7 +891,7 @@ class JourneyList extends Component {
                     <FastImage
                       style={ToastQuestionStyles.image}
                       source={{
-                        uri: this.state.journey.image,
+                        uri: journey.image,
                         priority: FastImage.priority.high,
                       }}
                       resizeMode={FastImage.resizeMode.cover}
@@ -980,7 +909,7 @@ class JourneyList extends Component {
                       style={ToastQuestionStyles.image}
                       resizeMode="cover"
                       source={{
-                        uri: `data:image/jpg;base64,` + this.state.newImage,
+                        uri: `data:image/jpg;base64,` + newImage,
                       }}
                     />
                   </View>
@@ -991,13 +920,11 @@ class JourneyList extends Component {
                   <View style={{ width: "50%" }}>
                     <Pressable
                       style={ToastQuestionGenericStyles.buttonCancel}
-                      onPress={() =>
-                        this.setState({
-                          showQuestionChangeImage: false,
-                          newImage: null,
-                          journey: null,
-                        })
-                      }
+                      onPress={() => {
+                        setShowQuestionChangeImage(false);
+                        setNewImage(null);
+                        setJourney(null);
+                      }}
                     >
                       <Text style={ToastQuestionGenericStyles.buttonText}>
                         Cancel
@@ -1007,7 +934,7 @@ class JourneyList extends Component {
                   <View style={{ width: "50%" }}>
                     <Pressable
                       style={ToastQuestionGenericStyles.buttonConfirm}
-                      onPress={() => this.changePhoto()}
+                      onPress={() => changePhotoHandler()}
                     >
                       <Text style={ToastQuestionGenericStyles.buttonText}>
                         Confirm
@@ -1019,24 +946,25 @@ class JourneyList extends Component {
             }
           />
         )}
-        <LoadingSpinner visible={this.state.loading} />
+        <LoadingSpinner visible={loading} />
         <ShowLikes
-          visible={this.state.showLikes}
-          close={() => this.setState({ showLikes: false })}
-          navigation={this.props.navigation}
+          visible={showLikes}
+          close={() => setShowLikes(false)}
+          navigation={props.navigation}
           redirectionViewProfile={(nIdFitrec) =>
-            this.redirectionViewProfile(nIdFitrec)
+            redirectionViewProfileHandler(nIdFitrec)
           }
         />
-        {this.state.showTagsList && (
+        {showTagsList && (
           <View style={GlobalModal.viewContent}>
             <View style={GlobalModal.viewHead}>
               <Text style={GlobalModal.headTitle}>Tags in this Photo</Text>
               <Pressable
                 style={[GlobalModal.buttonClose, { flexDirection: "row" }]}
-                onPress={() =>
-                  this.setState({ showTagsList: false, tags: null })
-                }
+                onPress={() => {
+                  setShowTagsList(false);
+                  setTags(null);
+                }}
               >
                 <Icon name="close" color={SignUpColor} size={22} />
                 <Text style={[GlobalModal.titleClose, { marginLeft: 2 }]}>
@@ -1045,23 +973,21 @@ class JourneyList extends Component {
               </Pressable>
             </View>
             <ListPeople
-              people={this.state.tags}
-              refresh={this.state.refresh}
-              action={(item) => this.redirectionViewProfile(item.id_user)}
+              people={tags}
+              refresh={refresh}
+              action={(item) => redirectionViewProfileHandler(item.id_user)}
               grid={false}
             />
           </View>
         )}
         <ToastQuestionGeneric
-          visible={this.state.showQuestionDeleteJourney}
+          visible={showQuestionDeleteJourney}
           titleBig="Delete journey"
           title="Are you sure you want to delete journey?"
           options={
             <View style={ToastQuestionStyles.viewButtons}>
               <Pressable
-                onPress={() =>
-                  this.setState({ showQuestionDeleteJourney: false })
-                }
+                onPress={() => setShowQuestionDeleteJourney(false)}
                 style={[
                   ToastQuestionStyles.button,
                   { backgroundColor: GreenFitrecColor, marginRight: 10 },
@@ -1070,7 +996,7 @@ class JourneyList extends Component {
                 <Text style={ToastQuestionStyles.textButton}>Cancel</Text>
               </Pressable>
               <Pressable
-                onPress={() => this.deleteJourney()}
+                onPress={() => deleteJourney()}
                 style={[
                   ToastQuestionStyles.button,
                   { backgroundColor: SignUpColor },
@@ -1081,23 +1007,23 @@ class JourneyList extends Component {
             </View>
           }
         />
-        {this.state.showReport && this.state.journey !== null && (
+        {showReport && journey !== null && (
           <ModalReport
-            visible={this.state.showReport}
-            close={() => this.setState({ showReport: false })}
-            send={() => this.setState({ showReport: false })}
+            visible={showReport}
+            close={() => setShowReport(false)}
+            send={() => setShowReport(false)}
             type={REPORT_JOURNEY_TYPE}
-            id={this.state.journey.id}
+            id={journey.id}
           />
         )}
         <ToastQuestionGeneric
-          visible={this.state.viewMyStory}
+          visible={viewMyStory}
           options={
             <View style={{ padding: 10 }}>
               <Pressable
                 onPress={() => {
-                  this.props.viewMeStory();
-                  this.setState({ viewMyStory: false });
+                  dispatch(actionViewStoryAction());
+                  setViewMyStory(false);
                 }}
               >
                 <View style={[ToastQuestionGenericStyles.viewButtonOption]}>
@@ -1107,9 +1033,10 @@ class JourneyList extends Component {
                 </View>
               </Pressable>
               <Pressable
-                onPress={() =>
-                  this.setState({ viewMyStory: false, newStory: true })
-                }
+                onPress={() => {
+                  setNewStory(true);
+                  setViewMyStory(false);
+                }}
               >
                 <View style={[ToastQuestionGenericStyles.viewButtonOption]}>
                   <Text style={ToastQuestionGenericStyles.viewButtonOptionText}>
@@ -1117,7 +1044,7 @@ class JourneyList extends Component {
                   </Text>
                 </View>
               </Pressable>
-              <Pressable onPress={() => this.setState({ viewMyStory: false })}>
+              <Pressable onPress={() => setViewMyStory(false)}>
                 <View
                   style={[
                     ToastQuestionGenericStyles.viewButtonOption,
@@ -1135,6 +1062,29 @@ class JourneyList extends Component {
       </View>
     );
   };
+
+  return (
+    <View style={{ flex: 1 }}>
+      {props.swiperHome === undefined ? (
+        <Swiper
+          loop={false}
+          showsPagination={false}
+          onIndexChanged={(nIndex) => swipe(nIndex)}
+          scrollEnabled={true}
+          horizontal={true}
+          index={1}
+          ref={oSwiperRef}
+        >
+          <View style={styles.contentSwipe}>
+            <Home swiperHome={true} navigation={props.navigation} />
+          </View>
+          <View style={styles.contentSwipe}>{renderContent()}</View>
+        </Swiper>
+      ) : (
+        renderContent()
+      )}
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -1218,7 +1168,7 @@ const mapDispatchToProps = (dispatch) => ({
   previewStory: (nType, sImage, sVideoName = null) => {
     dispatch(actionPreviewStory(nType, sImage, sVideoName));
   },
-  viewMeStory: () => {
+  viewMyStory: () => {
     dispatch(actionViewStoryAction());
   },
   cleanNavigation: () => {

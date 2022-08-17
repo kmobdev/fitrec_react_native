@@ -151,11 +151,9 @@ const Home = (props) => {
   //     }
   //   }
   // };
-  useEffect(() => {
-    identify(account.id, { ...account });
-  }, []);
 
   useEffect(() => {
+    identify(account.id, { ...account });
     props.navigation.setParams({
       sharedButton: getUserHome,
       showTab: false,

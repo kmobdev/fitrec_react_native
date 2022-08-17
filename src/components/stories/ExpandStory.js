@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { ProgressBar } from "@react-native-community/progress-bar-android";
 import FastImage from "react-native-fast-image";
-import { connect } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Icon from "react-native-vector-icons/Ionicons";
 import { POST_TYPE_IMAGE, POST_TYPE_VIDEO } from "../../Constants";
 import {
@@ -36,158 +36,149 @@ import { ifIphoneX } from "react-native-iphone-x-helper";
 
 import moment from "moment/min/moment-with-locales";
 
-class ExpandStory extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      confirmationDeletestory: false,
-      nProgress: 0,
-      oInterval: null,
-      nActualStory: null,
-      loading: false,
-    };
-  }
+const ExpandStory = (props) => {
 
-  componentWillReceiveProps = async (nextProps) => {
-    if (!nextProps.oStory.stopStory) {
-      if (nextProps.oStory.nextStory || nextProps.oStory.previusStory) {
-        this.props.resetControlStory();
-        clearInterval(this.state.oInterval);
-        await this.setState({
-          oInterval: null,
-          nActualStory: null,
-          nProgress: 0,
-          loading: false,
-        });
+  const oSession = useSelector((state) => state.reducerSession);
+  const story = useSelector((state) => state.reducerStory);
+
+  const dispatch = useDispatch();
+
+  const [confirmationDeletestory, setConfirmationDeletestory] = useState(false);
+  const [nProgress, setNProgress] = useState(0);
+  const [oInterval, setOInterval] = useState(null);
+  const [nActualStory, setNActualStory] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+
+
+  useEffect(() => {
+    if (!story.stopStory) {
+      if (story.nextStory || story.previusStory) {
+        dispatch(actionResetControlStory());
+        clearInterval(oInterval);
+        setOInterval(null);
+        setNActualStory(null);
+        setNProgress(0);
+        setLoading(false);
       }
       if (
-        null === this.state.oInterval &&
-        this.state.nActualStory !== nextProps.oStory.id &&
-        nextProps.oStory.type == POST_TYPE_IMAGE
+        null === oInterval &&
+        nActualStory !== story.id &&
+        story.type == POST_TYPE_IMAGE
       ) {
-        this.setState({ nActualStory: nextProps.oStory.id });
+        setNProgress(story.id);
         let nProgress = 0;
-        let oInterval = setInterval(async () => {
-          if (this.props.oStory.expand) {
-            if (!this.props.oStory.stopStory) {
+        let oInterval = setInterval(() => {
+          if (story.expand) {
+            if (!story.stopStory) {
               if (
-                this.props.oStory.nextStory ||
-                this.props.oStory.previusStory
+                story.nextStory ||
+                story.previusStory
               ) {
-                clearInterval(this.state.oInterval);
-                await this.setState({
-                  oInterval: null,
-                  nActualStory: null,
-                  nProgress: 0,
-                });
+                clearInterval(oInterval);
+                setOInterval(null);
+                setNActualStory(null);
+                setNProgress(0);
               } else {
-                if (this.state.loading) {
+                if (loading) {
                   nProgress = nProgress + 10;
-                  this.setState({ nProgress: nProgress / 4000 });
+                  setNProgress(nProgress / 4000);
                   if (nProgress / 4000 > 1) {
-                    clearInterval(this.state.oInterval);
                     clearInterval(oInterval);
-                    this.setState({
-                      oInterval: null,
-                      nProgress: 0,
-                      nActualStory: null,
-                      loading: false,
-                    });
-                    if (this.props.oStory.expand) this.next();
+                    setOInterval(null);
+                    setNProgress(0);
+                    setNActualStory(null);
+                    setLoading(false);
+                    if (story.expand) {
+                      next();
+                    }
                   }
                 }
               }
             }
           } else {
-            clearInterval(this.state.oInterval);
             clearInterval(oInterval);
-            this.setState({
-              oInterval: null,
-              nProgress: 0,
-              nActualStory: null,
-              loading: false,
-            });
+            setOInterval(null);
+            setNActualStory(null);
+            setNProgress(0);
+            setLoading(false);
           }
         }, 10);
-        this.setState({ oInterval: oInterval });
+        setOInterval(oInterval);
       }
+    }
+  }, [story])
+
+  const close = () => {
+    if (null !== oInterval) clearInterval(oInterval);
+    setOInterval(null);
+    setNProgress(0);
+    setNActualStory(null);
+    setLoading(false);
+    dispatch(actionCloseImage());
+  };
+
+  const next = () => {
+    if (null !== oInterval) clearInterval(oInterval);
+    setOInterval(null);
+    setNProgress(0);
+    setNActualStory(null);
+    setLoading(false);
+    if (story.total - 1 !== story.index)
+      dispatch(actionNextStory());
+    else close();
+  };
+
+  const previous = () => {
+    if (null !== oInterval) clearInterval(oInterval);
+    setOInterval(null);
+    setNProgress(0);
+    setNActualStory(null);
+    setLoading(false);
+    dispatch(actionPreviousStory());
+  };
+
+  const deleteHandler = () => {
+    setConfirmationDeletestory(false);
+    dispatch(actionDeleteStory(story.id));
+  };
+
+  const cancelDelete = () => {
+    setConfirmationDeletestory(false);
+    dispatch(actionResetControlStory());
+  };
+
+  const play = () => {
+    if (story.stopStory) {
+      dispatch(actionResetControlStory());
     }
   };
 
-  close = () => {
-    if (null !== this.state.oInterval) clearInterval(this.state.oInterval);
-    this.setState({
-      oInterval: null,
-      nProgress: 0,
-      nActualStory: null,
-      loading: false,
-    });
-    this.props.close();
-  };
-
-  next = () => {
-    if (null !== this.state.oInterval) clearInterval(this.state.oInterval);
-    this.setState({
-      oInterval: null,
-      nProgress: 0,
-      nActualStory: null,
-      loading: false,
-    });
-    if (this.props.oStory.total - 1 !== this.props.oStory.index)
-      this.props.next();
-    else this.close();
-  };
-
-  previous = () => {
-    if (null !== this.state.oInterval) clearInterval(this.state.oInterval);
-    this.setState({
-      oInterval: null,
-      nProgress: 0,
-      nActualStory: null,
-      loading: false,
-    });
-    this.props.previous();
-  };
-
-  delete = () => {
-    this.setState({ confirmationDeletestory: false });
-    this.props.deleteStory(this.props.oStory.id);
-  };
-
-  cancelDelete = () => {
-    this.setState({ confirmationDeletestory: false });
-    this.props.resetControlStory();
-  };
-
-  play = () => {
-    if (this.props.oStory.stopStory) this.props.resetControlStory();
-  };
-
-  renderHeader = () => {
+  const renderHeader = () => {
     let oHeader = [],
       oSection = [];
-    for (let nIndex = 0; nIndex < this.props.oStory.total; nIndex++) {
-      if (nIndex < this.props.oStory.index) {
+    for (let nIndex = 0; nIndex < story.total; nIndex++) {
+      if (nIndex < story.index) {
         oSection.push(
           <View
             style={[styles.sectionHeader, styles.sectionHeaderView]}
             key={
               nIndex.toString() +
-              this.props.oStory.id.toString() +
-              this.props.oStory.date
+              story.id.toString() +
+              story.date
             }
           ></View>
         );
       } else {
-        if (nIndex === this.props.oStory.index) {
+        if (nIndex === story.index) {
           if (Platform.OS === "android")
             oSection.push(
               <ProgressBar
-                progress={this.state.nProgress}
+                progress={nProgress}
                 key={
                   nIndex.toString() +
-                  this.props.oStory.id.toString() +
-                  this.props.oStory.date
+                  story.id.toString() +
+                  story.date
                 }
                 color={WhiteColor}
                 styleAttr={"Horizontal"}
@@ -199,11 +190,11 @@ class ExpandStory extends Component {
           else
             oSection.push(
               <ProgressViewIOS
-                progress={this.state.nProgress}
+                progress={nProgress}
                 key={
                   nIndex.toString() +
-                  this.props.oStory.id.toString() +
-                  this.props.oStory.date
+                  story.id.toString() +
+                  story.date
                 }
                 progressTintColor={WhiteColor}
                 progressViewStyle={"bar"}
@@ -219,8 +210,8 @@ class ExpandStory extends Component {
               style={[styles.sectionHeader, styles.sectionHeaderNotView]}
               key={
                 nIndex.toString() +
-                this.props.oStory.id.toString() +
-                this.props.oStory.date
+                story.id.toString() +
+                story.date
               }
             ></View>
           );
@@ -231,206 +222,200 @@ class ExpandStory extends Component {
     return oHeader;
   };
 
-  render = () => {
-    return this.props.oStory.expand && this.props.oStory.image ? (
-      <>
-        {this.props.oStory.type == POST_TYPE_VIDEO ? (
-          <>
-            <View style={styles.container}>
-              <Video
-                paused={this.props.oStory.stopStory}
-                repeat={false}
-                controls={false}
-                disableFocus={false}
-                resizeMode={"contain"}
-                style={GlobalStyles.fullImage}
-                source={{ uri: this.props.oStory.image }}
-                onEnd={() => this.next()}
-                onLoad={() => {
-                  this.props.viewStory(this.props.oStory.id);
-                }}
-                onProgress={(oDataProgress) => {
-                  let nProgress =
-                    oDataProgress.currentTime / oDataProgress.playableDuration;
-                  if (nProgress <= 1) {
-                    this.setState({
-                      nProgress:
-                        oDataProgress.currentTime /
-                        oDataProgress.playableDuration,
-                    });
-                  }
-                }}
-                ref={(ref) => {
-                  this.player = ref;
-                }}
+  return story.expand && story.image ? (
+    <>
+      {story.type == POST_TYPE_VIDEO ? (
+        <>
+          <View style={styles.container}>
+            <Video
+              paused={story.stopStory}
+              repeat={false}
+              controls={false}
+              disableFocus={false}
+              resizeMode={"contain"}
+              style={GlobalStyles.fullImage}
+              source={{ uri: story.image }}
+              onEnd={() => next()}
+              onLoad={() => {
+                dispatch(actionViewStory(story.id));
+              }}
+              onProgress={(oDataProgress) => {
+                let nProgress =
+                  oDataProgress.currentTime / oDataProgress.playableDuration;
+                if (nProgress <= 1) {
+                  setNProgress(oDataProgress.currentTime / oDataProgress.playableDuration);
+                }
+              }}
+              ref={(ref) => {
+                player = ref;
+              }}
+            />
+            {renderHeader()}
+            <View style={styles.containerActionsVideo}>
+              <Pressable
+                onPress={() => previous()}
+                style={styles.touchableControls}
+                delayLongPress={1000}
+                onLongPress={() => dispatch(actionStopStory())}
+                onPressOut={() => play()}
               />
-              {this.renderHeader()}
-              <View style={styles.containerActionsVideo}>
+              <Pressable
+                onPress={() => next()}
+                style={[
+                  styles.touchableControls,
+                  story.owner && { marginBottom: 90 },
+                ]}
+                delayLongPress={1000}
+                onLongPress={() => dispatch(actionStopStory())}
+                onPressOut={() => play()}
+              />
+              <View style={styles.containerProfile}>
+                <FastImage
+                  style={styles.imageProfile}
+                  source={{
+                    uri: story.profile,
+                    priority: FastImage.priority.normal,
+                  }}
+                  resizeMode={FastImage.resizeMode.contain}
+                />
+                <View style={styles.containerData}>
+                  <Text style={styles.textName}>
+                    {story.name}
+                  </Text>
+                  <Text style={styles.textLevel}>
+                    {getFitnnesLevel(story.level) +
+                      " - " +
+                      moment(
+                        story.date,
+                        "YYYY-MM-DD H:m:s"
+                      ).fromNow()}
+                  </Text>
+                </View>
+              </View>
+              <Pressable onPress={() => close()} style={styles.icon}>
+                <Icon name="close" color={WhiteColor} size={32} />
+              </Pressable>
+            </View>
+          </View>
+          {story.owner && (
+            <Pressable
+              style={styles.iconRemove}
+              onPress={() => {
+                setConfirmationDeletestory(true);
+                dispatch(actionStopStory());
+              }}
+            >
+              <Icon name="trash-outline" color={SignUpColor} size={32} />
+            </Pressable>
+          )}
+        </>
+      ) : (
+        <>
+          <FastImage
+            style={styles.container}
+            source={{
+              uri: story.image,
+              priority: FastImage.priority.normal,
+            }}
+            onLoadEnd={() => {
+              setLoading(true);
+              dispatch(actionViewStory(story.id));
+            }}
+            resizeMode={FastImage.resizeMode.contain}
+          >
+            <>
+              <View style={styles.touchableContainer}>
                 <Pressable
-                  onPress={() => this.previous()}
+                  onPress={() => previous()}
                   style={styles.touchableControls}
                   delayLongPress={1000}
-                  onLongPress={() => this.props.stop()}
-                  onPressOut={() => this.play()}
+                  onLongPress={() => dispatch(actionStopStory())}
+                  onPressOut={() => play()}
                 />
                 <Pressable
-                  onPress={() => this.next()}
+                  onPress={() => next()}
                   style={[
                     styles.touchableControls,
-                    this.props.oStory.owner && { marginBottom: 90 },
+                    story.owner && {
+                      marginBottom: Platform.OS === "android" ? 140 : 50,
+                    },
                   ]}
                   delayLongPress={1000}
-                  onLongPress={() => this.props.stop()}
-                  onPressOut={() => this.play()}
+                  onLongPress={() => dispatch(actionStopStory())}
+                  onPressOut={() => play()}
                 />
-                <View style={styles.containerProfile}>
-                  <FastImage
-                    style={styles.imageProfile}
-                    source={{
-                      uri: this.props.oStory.profile,
-                      priority: FastImage.priority.normal,
-                    }}
-                    resizeMode={FastImage.resizeMode.contain}
-                  />
-                  <View style={styles.containerData}>
-                    <Text style={styles.textName}>
-                      {this.props.oStory.name}
-                    </Text>
-                    <Text style={styles.textLevel}>
-                      {getFitnnesLevel(this.props.oStory.level) +
-                        " - " +
-                        moment(
-                          this.props.oStory.date,
-                          "YYYY-MM-DD H:m:s"
-                        ).fromNow()}
-                    </Text>
-                  </View>
-                </View>
-                <Pressable onPress={() => this.close()} style={styles.icon}>
-                  <Icon name="close" color={WhiteColor} size={32} />
-                </Pressable>
               </View>
-            </View>
-            {this.props.oStory.owner && (
-              <Pressable
-                style={styles.iconRemove}
-                onPress={() => {
-                  this.setState({ confirmationDeletestory: true });
-                  this.props.stop();
-                }}
-              >
-                <Icon name="trash-outline" color={SignUpColor} size={32} />
+              {renderHeader()}
+              <View style={styles.containerProfile}>
+                <FastImage
+                  style={styles.imageProfile}
+                  source={{
+                    uri: story.profile,
+                    priority: FastImage.priority.normal,
+                  }}
+                  resizeMode={FastImage.resizeMode.contain}
+                />
+                <View style={styles.containerData}>
+                  <Text style={styles.textName}>
+                    {story.name}
+                  </Text>
+                  <Text style={styles.textLevel}>
+                    {getFitnnesLevel(story.level) +
+                      " - " +
+                      moment(
+                        story.date,
+                        "YYYY-MM-DD H:m:s"
+                      ).fromNow()}
+                  </Text>
+                </View>
+              </View>
+              <Pressable onPress={() => close()} style={styles.icon}>
+                <Icon name="close" color={WhiteColor} size={32} />
               </Pressable>
-            )}
-          </>
-        ) : (
-          <>
-            <FastImage
-              style={styles.container}
-              source={{
-                uri: this.props.oStory.image,
-                priority: FastImage.priority.normal,
+            </>
+          </FastImage>
+          {story.owner && (
+            <Pressable
+              style={styles.iconRemove}
+              onPress={() => {
+                setConfirmationDeletestory(true);
+                dispatch(actionStopStory());
               }}
-              onLoadEnd={() => {
-                this.setState({ loading: true });
-                this.props.viewStory(this.props.oStory.id);
-              }}
-              resizeMode={FastImage.resizeMode.contain}
             >
-              <>
-                <View style={styles.touchableContainer}>
-                  <Pressable
-                    onPress={() => this.previous()}
-                    style={styles.touchableControls}
-                    delayLongPress={1000}
-                    onLongPress={() => this.props.stop()}
-                    onPressOut={() => this.play()}
-                  />
-                  <Pressable
-                    onPress={() => this.next()}
-                    style={[
-                      styles.touchableControls,
-                      this.props.oStory.owner && {
-                        marginBottom: Platform.OS === "android" ? 140 : 50,
-                      },
-                    ]}
-                    delayLongPress={1000}
-                    onLongPress={() => this.props.stop()}
-                    onPressOut={() => this.play()}
-                  />
-                </View>
-                {this.renderHeader()}
-                <View style={styles.containerProfile}>
-                  <FastImage
-                    style={styles.imageProfile}
-                    source={{
-                      uri: this.props.oStory.profile,
-                      priority: FastImage.priority.normal,
-                    }}
-                    resizeMode={FastImage.resizeMode.contain}
-                  />
-                  <View style={styles.containerData}>
-                    <Text style={styles.textName}>
-                      {this.props.oStory.name}
-                    </Text>
-                    <Text style={styles.textLevel}>
-                      {getFitnnesLevel(this.props.oStory.level) +
-                        " - " +
-                        moment(
-                          this.props.oStory.date,
-                          "YYYY-MM-DD H:m:s"
-                        ).fromNow()}
-                    </Text>
-                  </View>
-                </View>
-                <Pressable onPress={() => this.close()} style={styles.icon}>
-                  <Icon name="close" color={WhiteColor} size={32} />
-                </Pressable>
-              </>
-            </FastImage>
-            {this.props.oStory.owner && (
-              <Pressable
-                style={styles.iconRemove}
-                onPress={() => {
-                  this.setState({ confirmationDeletestory: true });
-                  this.props.stop();
-                }}
-              >
-                <Icon name="trash-outline" color={SignUpColor} size={32} />
-              </Pressable>
-            )}
-          </>
-        )}
-        <ToastQuestionGeneric
-          visible={this.state.confirmationDeletestory}
-          titleBig="Delete Story"
-          title="Are you sure you want to delete the story?"
-          options={
-            <View style={ToastQuestionStyles.viewButtons}>
-              <Pressable
-                onPress={() => this.cancelDelete()}
-                style={[
-                  ToastQuestionStyles.button,
-                  { backgroundColor: GreenFitrecColor, marginRight: 10 },
-                ]}
-              >
-                <Text style={ToastQuestionStyles.textButton}>Cancel</Text>
-              </Pressable>
-              <Pressable
-                onPress={() => this.delete()}
-                style={[
-                  ToastQuestionStyles.button,
-                  { backgroundColor: SignUpColor },
-                ]}
-              >
-                <Text style={ToastQuestionStyles.textButton}>Ok</Text>
-              </Pressable>
-            </View>
-          }
-        />
-      </>
-    ) : null;
-  };
+              <Icon name="trash-outline" color={SignUpColor} size={32} />
+            </Pressable>
+          )}
+        </>
+      )}
+      <ToastQuestionGeneric
+        visible={confirmationDeletestory}
+        titleBig="Delete Story"
+        title="Are you sure you want to delete the story?"
+        options={
+          <View style={ToastQuestionStyles.viewButtons}>
+            <Pressable
+              onPress={() => cancelDelete()}
+              style={[
+                ToastQuestionStyles.button,
+                { backgroundColor: GreenFitrecColor, marginRight: 10 },
+              ]}
+            >
+              <Text style={ToastQuestionStyles.textButton}>Cancel</Text>
+            </Pressable>
+            <Pressable
+              onPress={() => deleteHandler()}
+              style={[
+                ToastQuestionStyles.button,
+                { backgroundColor: SignUpColor },
+              ]}
+            >
+              <Text style={ToastQuestionStyles.textButton}>Ok</Text>
+            </Pressable>
+          </View>
+        }
+      />
+    </>
+  ) : null;
 }
 
 const styles = StyleSheet.create({
@@ -533,33 +518,4 @@ const styles = StyleSheet.create({
   },
 });
 
-const mapStateToProps = (state) => ({
-  oSession: state.reducerSession,
-  oStory: state.reducerStory,
-});
-
-const mapDispatchToProps = (dispatch) => ({
-  close: () => {
-    dispatch(actionCloseImage());
-  },
-  next: () => {
-    dispatch(actionNextStory());
-  },
-  previous: () => {
-    dispatch(actionPreviousStory());
-  },
-  stop: () => {
-    dispatch(actionStopStory());
-  },
-  resetControlStory: () => {
-    dispatch(actionResetControlStory());
-  },
-  deleteStory: (nStoryId) => {
-    dispatch(actionDeleteStory(nStoryId));
-  },
-  viewStory: (nStoryId) => {
-    dispatch(actionViewStory(nStoryId));
-  },
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(ExpandStory);
+export default ExpandStory;

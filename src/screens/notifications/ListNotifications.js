@@ -100,7 +100,7 @@ const ListNotifications = (props) => {
       null
     );
     if (null !== nNotificationId) {
-      props.notificationProps.notifications.forEach((oElement) => {
+      notificationProps.notifications.forEach((oElement) => {
         if (oElement.id === nNotificationId) {
           openNotification(oElement);
         }
@@ -126,7 +126,7 @@ const ListNotifications = (props) => {
       setIsRequestPending(notificationProps.group.requestPending);
     }
     if (notificationProps.nNotificationId !== null) {
-      let oNotification = props.notificationProps.notifications.filter(
+      let oNotification = notificationProps.notifications.filter(
         (oNotification) =>
           oNotification.id === notificationProps.nNotificationId
       );
@@ -242,7 +242,7 @@ const ListNotifications = (props) => {
   };
 
   const deleteAllNotificationsQuestion = () => {
-    props.notificationProps.notifications.length > 0
+    notificationProps.notifications.length > 0
       ?
       setShowQuestionDeleteAll(true)
       : showToast("You have no notifications to delete");
@@ -306,7 +306,7 @@ const ListNotifications = (props) => {
       >
         <FlatList
           keyExtractor={(item, index) => index.toString()}
-          data={props.notificationProps.notifications}
+          data={notificationProps.notifications}
           renderItem={({ item }) => (
             <View>
               <Swipeable
