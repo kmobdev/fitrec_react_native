@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   GlobalMessages,
   GlobalModal,
@@ -8,7 +8,7 @@ import {
   SignUpColor,
   WhiteColor,
 } from "../../Styles";
-import { connect } from "react-redux";
+import { connect, useDispatch, useSelector } from "react-redux";
 import FastImage from "react-native-fast-image";
 import {
   StyleSheet,
@@ -52,154 +52,122 @@ const GiphyLogo = require("../../assets/giphyLogo.png");
 const OPTION_CAMERA = "camera";
 const OPTION_GALLERY = "gallery";
 
-const oInitialState = {
-  bRefresh: false,
-  bShowMoreOptions: false,
-  sText: "",
-  sImage: "",
-  oMarker: null,
-  oInitialLocation: {
+const Messages = (props) => {
+
+  const oScrollView = useRef();
+
+  const oMessageProps = useSelector((state) => state.reducerMessages);
+  const session = useSelector((state) => state.reducerSession);
+  const oGiphyProps = useSelector((state) => state.reducerGiphy);
+
+  const dispatch = useDispatch();
+
+  const [showKeyboard, setShowKeyboard] = useState(0);
+  const [keyboardPadding, setKeyboardPadding] = useState(0);
+  const [asignMessageFunction, setAsignMessageFunction] = useState(false);
+  const [showMoreOptions, setShowMoreOptions] = useState(false);
+  const [text, setText] = useState("");
+  const [image, setImage] = useState("");
+  const [marker, setMarker] = useState("");
+  const [search, setSearch] = useState("");
+  const [showGifsModal, setShowGifsModal] = useState(false);
+  const [showGifsStickers, setShowGifsStickers] = useState(false);
+  const [showOptionImage, setShowOptionImage] = useState(false);
+  const [showMap, setShowMap] = useState(false);
+  const [showPeople, setShowPeople] = useState(false);
+  const [optionName, setOptionName] = useState(false);
+  const [initialLocation, setInitialLocation] = useState({
     latitude: 40.5879479,
     longitude: -109.405,
-  },
-  bShowGifsModal: false,
-  bShowGifsStickers: false,
-  sSearch: "",
-  bShowOptionImage: false,
-  bShowMap: false,
-  bShowPeople: false,
-};
+  });
 
-class Messages extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      ...oInitialState,
-      bAsignMessageFunction: false,
-      nKeyboardPadding: 0,
-      bShowKeyboard: false,
-    };
-  }
-
-  componentDidUpdate = (oPrevProps) => {
-    if (this.getIsGroupChat() && !this.state.bAsignMessageFunction) {
-      this.props.navigation.setParams({
-        goBack: this.goBack,
-        people: this.showPeople,
-        bShowPeople: this.state.bShowPeople,
+  useEffect(() => {
+    dispatch(actionGetMessages());
+    if (getIsGroupChat() && !asignMessageFunction) {
+      props.navigation.setParams({
+        people: showPeopleHandler,
+        showPeople: showPeople,
       });
-      this.setState({ bAsignMessageFunction: true });
+      setAsignMessageFunction(true);
     }
+  }, [])
+
+  const goBackHandler = () => {
+    dispatch(actionGetMessages());
+    props.navigation.goBack();
   };
 
-  componentWillUnmount = () => {
-    this.oKeyboardListenerWillShow && this.oKeyboardListenerWillShow.remove();
-    this.oKeyboardListenerWillHide && this.oKeyboardListenerWillHide.remove();
-    this.props.cleanMessages();
-  };
-
-  componentDidMount = () => {
-    this.props.navigation.setParams({
-      goBack: this.goBack,
-      bShowPeople: this.state.bShowPeople,
+  const showPeopleHandler = () => {
+    props.navigation.setParams({
+      goBack: goBackHandler,
+      showPeople: !showPeople,
     });
-    this.oKeyboardListenerWillShow = Keyboard.addListener(
-      "keyboardWillShow",
-      this.openKeyboard
-    );
-    this.oKeyboardListenerWillHide = Keyboard.addListener(
-      "keyboardWillHide",
-      this.closeKeyboard
-    );
+    setShowPeople(!showPeople);
   };
 
-  openKeyboard = ({ endCoordinates: { height } }) => {
-    this.setState({ bShowKeyboard: true, nKeyboardPadding: height });
-  };
-
-  closeKeyboard = ({ endCoordinates: { height } }) => {
-    this.setState({ bShowKeyboard: false, nKeyboardPadding: 0 });
-  };
-
-  goBack = () => {
-    this.props.cleanMessages();
-    this.props.navigation.goBack();
-  };
-
-  showPeople = () => {
-    const { bShowPeople } = this.state;
-    this.props.navigation.setParams({
-      goBack: this.goBack,
-      people: this.showPeople,
-      bShowPeople: !bShowPeople,
-    });
-    this.setState({ bShowPeople: !bShowPeople });
-  };
-
-  getIsGroupChat = () => {
-    if (this.props.oMessageProps.oConversation === null) return false;
-    const { type: nType } = this.props.oMessageProps.oConversation;
+  const getIsGroupChat = () => {
+    if (oMessageProps.oConversation === null) return false;
+    const { type: nType } = oMessageProps.oConversation;
     return nType === 2;
   };
 
-  expandImage = (sUrlToImage) => {
-    this.props.expandImage(sUrlToImage);
+  const expandImage = (urlToImage) => {
+    dispatch(actionExpandImage(urlToImage));
   };
 
-  handleChangeSearch = (sText) => {
-    this.setState({ sSearch: sText });
+  const handleChangeSearch = (text) => {
+    setSearch(text);
   };
 
-  handleFocusSearch = () => {
-    if (null !== this.oScrollView && undefined !== this.oScrollView)
-      this.oScrollView.scrollToEnd({ animated: true });
+  const handleFocusSearch = () => {
+    if (null !== oScrollView && undefined !== oScrollView)
+      oScrollView.current.scrollToEnd({ animated: true });
   };
 
-  handleCleanSearch = (nType = null) => {
-    if (nType === SEND_MESSAGE_TYPES.GIF) this.props.getGiphy("");
-    this.setState({ sSearch: "" });
+  const handleCleanSearch = (nType = null) => {
+    if (nType === SEND_MESSAGE_TYPES.GIF) {
+      dispatch(actionGetGiphy(""));
+      setSearch("")
+    }
   };
 
-  viewProfile = (sUserKey) => {
-    const { users: aUsers } = this.props.oMessageProps.oConversation;
+  const viewProfile = (sUserKey) => {
+    const { users: aUsers } = oMessageProps.oConversation;
     let aUser = aUsers.filter((oUser) => oUser.key === sUserKey);
     if (aUser.length > 0) {
       let nId = aUser[0].id ? aUser[0].id : null;
       if (nId === null) return;
-      this.props.getProfile(nId);
-      this.props.navigation.navigate("ProfileViewDetailsHome");
+      dispatch(actionGetProfile(nId, true));
+      props.navigation.navigate("ProfileViewDetailsHome");
     }
     return null;
   };
 
-  resetState = () => {
-    this.setState({
-      ...oInitialState,
-      nKeyboardPadding: this.state.nKeyboardPadding,
-    });
+  const resetState = () => {
+    setKeyboardPadding(keyboardPadding)
+    setText("")
   };
 
-  sendMessage = (sType = SEND_MESSAGE_TYPES.TEXT, oGif = null) => {
-    const { oConversation } = this.props.oMessageProps;
-    const { sText, sImage, oMarker, bShowGifsStickers } = this.state;
-    const { key: sUserKey, name: sUserName } = this.props.session.account;
+  const sendMessage = (sType = SEND_MESSAGE_TYPES.TEXT, oGif = null) => {
+    const { oConversation } = oMessageProps;
+    const { key: sUserKey, name: sUserName } = session.account;
     let sMessage = "",
       oData = null;
     switch (sType) {
       case SEND_MESSAGE_TYPES.TEXT:
       default:
-        sMessage = sText.trim();
+        sMessage = text.trim();
         if (sMessage === "") return;
         break;
       case SEND_MESSAGE_TYPES.IMAGE:
-        sMessage = sImage;
+        sMessage = image;
         break;
       case SEND_MESSAGE_TYPES.LOCATION:
-        if (oMarker === null)
-          return this.props.message("The marker cannot be empty");
+        if (marker === null)
+          return dispatch(actionMessage("The marker cannot be empty"));
         oData = {
-          lat: oMarker.latitude,
-          lon: oMarker.longitude,
+          lat: marker.latitude,
+          lon: marker.longitude,
         };
         break;
       case SEND_MESSAGE_TYPES.GIF:
@@ -208,153 +176,126 @@ class Messages extends Component {
           height: oGif.height,
           width: oGif.width,
           giphyId: oGif.id,
-          isSticker: bShowGifsStickers,
+          isSticker: showGifsStickers,
         };
         break;
     }
     const { key: sConversationKey, users: aUsers } =
-        this.props.oMessageProps.oConversation,
+      oMessageProps.oConversation,
       oSender = {
         key: sUserKey,
         name: sUserName,
       };
     if (oConversation.type === 1) {
       const sFriendKey = aUsers[0].key;
-      this.props.sendMessage(
-        oSender,
-        sMessage,
-        sType,
-        sFriendKey,
-        sConversationKey,
-        oData
+      dispatch(
+        actionSendMessage(
+          oSender,
+          sMessage,
+          sType,
+          sFriendKey,
+          sConversationKey,
+          oData
+        )
       );
     } else {
-      this.props.sendMessageGroup(
-        oSender,
-        sMessage,
-        sType,
-        sConversationKey,
-        oData
+      dispatch(
+        actionSendMessageChatGroup(
+          oSender,
+          sMessage,
+          sType,
+          sConversationKey,
+          oData
+        )
       );
     }
-    this.resetState();
+    resetState();
   };
 
-  addImage = (sType = OPTION_GALLERY) => {
+  const addImage = (sType = OPTION_GALLERY) => {
     switch (sType) {
       case OPTION_CAMERA:
         ImagePicker.openCamera(OPTIONS_IMAGE_CROP_CONVERSATION)
           .then((oResponse) => {
-            var sImageB64 = oResponse.data;
-            this.setState({
-              sImage: sImageB64,
-            });
-            this.sendMessage(SEND_MESSAGE_TYPES.IMAGE);
+            var imageB64 = oResponse.data;
+            setImage(imageB64)
+            sendMessage(SEND_MESSAGE_TYPES.IMAGE);
           })
           .catch(() => {
             if (oError.message == "Permission denied")
-              return this.props.message(
-                "Permission denied, please check FitRec permissions"
-              );
-            this.props.message(MESSAGE_ERROR);
+              return
+            dispatch(actionMessage("Permission denied, please check FitRec permissions"));
+            dispatch(actionMessage(MESSAGE_ERROR));
           });
         break;
       case OPTION_GALLERY:
       default:
         ImagePicker.openPicker(OPTIONS_IMAGE_CROP_CONVERSATION)
           .then((oResponse) => {
-            var sImageB64 = oResponse.data;
-            this.setState({
-              sImage: sImageB64,
-            });
-            this.sendMessage(SEND_MESSAGE_TYPES.IMAGE);
+            var imageB64 = oResponse.data;
+            setImage(imageB64)
+            sendMessage(SEND_MESSAGE_TYPES.IMAGE);
           })
           .catch(() => {
             if (oError.message == "Permission denied")
-              return this.props.message(
-                "Permission denied, please check FitRec permissions"
-              );
-            this.props.message(MESSAGE_ERROR);
+              return
+            dispatch(actionMessage("Permission denied, please check FitRec permissions"));
+            dispatch(actionMessage(MESSAGE_ERROR));
           });
         break;
     }
   };
 
-  showMap = () => {
+  const showMapHandler = () => {
     Geolocation.getCurrentPosition(
       (position) => {
         if (position && undefined !== position.coords) {
           Keyboard.dismiss();
-          this.setState({
-            oInitialLocation: {
-              longitude: position.coords.longitude,
-              latitude: position.coords.latitude,
-              latitudeDelta: 0.0922,
-              longitudeDelta: 0.1,
-            },
-            oMarker: {
-              longitude: position.coords.longitude,
-              latitude: position.coords.latitude,
-            },
-            bShowMap: true,
+          setInitialLocation({
+            longitude: position.coords.longitude,
+            latitude: position.coords.latitude,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.1,
           });
+          setMarker({
+            longitude: position.coords.longitude,
+            latitude: position.coords.latitude,
+          });
+          setShowMap(true);
         }
       },
       (error) => {
         Keyboard.dismiss();
-        this.handlePressOptions("bShowMap");
+        handlePressOptions("showMap");
       },
       OPTIONS_GEOLOCATION_GET_POSITION
     );
   };
 
-  handlePressOptions = (sOptionName) => {
+  const handlePressOptions = (optionName) => {
     Keyboard.dismiss();
-    if (sOptionName === "bShowGifsModal") this.props.getGiphy("");
-    this.setState({
-      [sOptionName]: true,
-    });
+    if (optionName === "showGifsModal") {
+      dispatch(actionGetGiphy(""));
+      setOptionName(true)
+    }
   };
 
-  getImageUser = (sUserKey) => {
-    const { users: aUsers } = this.props.oMessageProps.oConversation;
+  const getImageUser = (sUserKey) => {
+    const { users: aUsers } = oMessageProps.oConversation;
     let aUser = aUsers.filter((oUser) => oUser.key === sUserKey);
     if (aUser.length > 0) return aUser[0].image ? aUser[0].image : null;
     return null;
   };
 
-  getNameUser = (sUserKey) => {
-    const { users: aUsers } = this.props.oMessageProps.oConversation;
+  const getNameUser = (sUserKey) => {
+    const { users: aUsers } = oMessageProps.oConversation;
     let aUser = aUsers.filter((oUser) => oUser.key === sUserKey);
     if (aUser.length > 0) return aUser[0].username ? aUser[0].username : null;
     return null;
   };
 
-  render = () => {
-    const { oConversation } = this.props.oMessageProps;
-    const { bShowPeople } = this.state;
-    return (
-      <>
-        {oConversation ? (
-          <>
-            {bShowPeople ? (
-              this.renderPeople()
-            ) : (
-              <>
-                {this.renderMessages()}
-                {this.renderQuestions()}
-              </>
-            )}
-          </>
-        ) : (
-          <View></View>
-        )}
-      </>
-    );
-  };
-
-  renderPeople = () => {
-    const { oConversation } = this.props.oMessageProps.oConversation;
+  const renderPeople = () => {
+    const { oConversation } = oMessageProps.oConversation;
     if (oConversation === null) return null;
     const { users: aUsers } = oConversation;
     return (
@@ -373,7 +314,7 @@ class Messages extends Component {
                       borderBottomColor: PlaceholderColor,
                     },
                   ]}
-                  onPress={() => this.viewProfile(oUser.key)}
+                  onPress={() => viewProfile(oUser.key)}
                 >
                   {null === oUser.image ? (
                     <Image
@@ -404,28 +345,28 @@ class Messages extends Component {
     );
   };
 
-  renderMessages = () => {
-    const { aMessages } = this.props.oMessageProps;
-    const { key: sConversationKey } = this.props.oMessageProps.oConversation;
-    const { key: sUserKey } = this.props.session.account;
+  const renderMessages = () => {
+    const { aMessages } = oMessageProps;
+    const { key: sConversationKey } = oMessageProps.oConversation;
+    const { key: sUserKey } = session.account;
     return (
       <View style={oStyles.container}>
         <ScrollView
           style={oStyles.pd10}
-          ref={(oRef) => (this.oScrollView = oRef)}
+          ref={oScrollView}
           onContentSizeChange={() => {
-            if (null !== this.oScrollView && undefined !== this.oScrollView)
-              this.oScrollView.scrollToEnd({ animated: true });
+            if (null !== oScrollView && undefined !== oScrollView)
+              oScrollView.current.scrollToEnd({ animated: true });
           }}
         >
           {aMessages ? (
             aMessages.map((oMessage) => (
               <View key={`${oMessage.date}${oMessage.sender}`}>
                 {sConversationKey === oMessage.sender
-                  ? this.renderGroupMessage(oMessage)
+                  ? renderGroupMessage(oMessage)
                   : sUserKey === oMessage.sender
-                  ? this.renderMyMessage(oMessage)
-                  : this.renderMessageOtherSender(oMessage)}
+                    ? renderMyMessage(oMessage)
+                    : renderMessageOtherSender(oMessage)}
               </View>
             ))
           ) : (
@@ -443,12 +384,12 @@ class Messages extends Component {
             </View>
           )}
         </ScrollView>
-        {this.renderInput()}
+        {renderInput()}
       </View>
     );
   };
 
-  renderGroupMessage = (oMessage) => {
+  const renderGroupMessage = (oMessage) => {
     return (
       <View style={[oStyles.mgB10, { justifyContent: "center" }]}>
         <View style={[oStyles.pdB10]}>
@@ -461,25 +402,25 @@ class Messages extends Component {
               alignSelf: "center",
             }}
           >
-            {this.renderMessage(oMessage, "#EFEFEF")}
+            {renderMessage(oMessage, "#EFEFEF")}
           </View>
         </View>
       </View>
     );
   };
 
-  renderMessageOtherSender = (oMessage) => {
+  const renderMessageOtherSender = (oMessage) => {
     return (
       <View style={[oStyles.row, oStyles.mgB10, oStyles.leftAlign]}>
         <Pressable
           activeOpacity={1}
-          onPress={() => this.viewProfile(oMessage.sender)}
+          onPress={() => viewProfile(oMessage.sender)}
         >
-          {this.getImageUser(oMessage.sender) ? (
+          {getImageUser(oMessage.sender) ? (
             <FastImage
               style={oStyles.userImage}
               source={{
-                uri: this.getImageUser(oMessage.sender),
+                uri: getImageUser(oMessage.sender),
                 priority: FastImage.priority.high,
               }}
               resizeMode={FastImage.resizeMode.cover}
@@ -504,10 +445,10 @@ class Messages extends Component {
                 borderColor: "white",
               },
               oMessage.isSticker !== undefined &&
-                !oMessage.isSticker && { backgroundColor: "none" },
+              !oMessage.isSticker && { backgroundColor: "none" },
             ]}
           >
-            {this.renderMessage(oMessage)}
+            {renderMessage(oMessage)}
           </View>
           <View style={[oStyles.row, oStyles.pdT5, { width: "100%" }]}>
             <View
@@ -524,7 +465,7 @@ class Messages extends Component {
                 style={{ marginRight: 5 }}
               />
               <Text style={{ color: GreenFitrecColor }}>
-                {this.getNameUser(oMessage.sender)}
+                {getNameUser(oMessage.sender)}
               </Text>
             </View>
             <View
@@ -550,8 +491,8 @@ class Messages extends Component {
     );
   };
 
-  renderMyMessage = (oMessage) => {
-    const { key: sUserKey, image: sUserImage } = this.props.session.account;
+  const renderMyMessage = (oMessage) => {
+    const { key: sUserKey, image: sUserImage } = session.account;
     return (
       <View style={[oStyles.row, oStyles.mgB10, oStyles.rigthAlign]}>
         <View
@@ -570,10 +511,10 @@ class Messages extends Component {
                 borderColor: "white",
               },
               oMessage.isSticker !== undefined &&
-                !oMessage.isSticker && { backgroundColor: "none" },
+              !oMessage.isSticker && { backgroundColor: "none" },
             ]}
           >
-            {this.renderMessage(oMessage, "#6f6f6f")}
+            {renderMessage(oMessage, "#6f6f6f")}
           </View>
           <View style={[oStyles.row, oStyles.pdT5]}>
             <Icon
@@ -603,11 +544,11 @@ class Messages extends Component {
     );
   };
 
-  renderMessage = (oMessage, sColorText = WhiteColor) => {
+  const renderMessage = (oMessage, sColorText = WhiteColor) => {
     return (
       <>
         {SEND_MESSAGE_TYPES.IMAGE === oMessage.type && (
-          <Pressable onPress={() => this.expandImage(oMessage.message)}>
+          <Pressable onPress={() => expandImage(oMessage.message)}>
             <FastImage
               style={[oStyles.height200, oStyles.borderRadius10]}
               source={{
@@ -619,7 +560,7 @@ class Messages extends Component {
           </Pressable>
         )}
         {SEND_MESSAGE_TYPES.GIF === oMessage.type && (
-          <Pressable onPress={() => this.expandImage(oMessage.message)}>
+          <Pressable onPress={() => expandImage(oMessage.message)}>
             <View style={{ alignItems: "center" }}>
               <FastImage
                 style={[GlobalStyles.gifImage, oStyles.borderRadius10]}
@@ -641,7 +582,7 @@ class Messages extends Component {
         )}
         {SEND_MESSAGE_TYPES.LOCATION === oMessage.type && (
           <MapView
-            provider={this.props.provider}
+            provider={props.provider}
             style={[
               { width: "100%" },
               oStyles.height200,
@@ -668,47 +609,43 @@ class Messages extends Component {
     );
   };
 
-  renderInput = () => {
-    const { nKeyboardPadding, bShowKeyboard, sText, bShowMoreOptions } =
-      this.state;
+  const renderInput = () => {
     return (
       <View
-        style={[oStyles.viewWriteMessage, { paddingBottom: nKeyboardPadding }]}
+        style={[oStyles.viewWriteMessage, { paddingBottom: keyboardPadding }]}
       >
-        {!bShowKeyboard ||
-        (bShowKeyboard && sText === "") ||
-        bShowMoreOptions ? (
+        {!showKeyboard ||
+          (showKeyboard && text === "") ||
+          showMoreOptions ? (
           <View
             style={[
               oStyles.row,
               oStyles.alignCenter,
-              { width: bShowMoreOptions ? "28%" : "20%" },
+              { width: showMoreOptions ? "28%" : "20%" },
             ]}
           >
             <Pressable
-              onPress={() => this.handlePressOptions("bShowOptionImage")}
+              onPress={() => handlePressOptions("showOptionImage")}
               style={oStyles.pdT2}
             >
               <Icon name="camera" size={32} />
             </Pressable>
             <Pressable
-              onPress={() => {
-                this.showMap();
-              }}
+              onPress={showMapHandler}
               style={oStyles.viewWriteMessageIconMap}
             >
               <Icon name="location-sharp" size={24} />
             </Pressable>
             <Pressable
-              onPress={() => this.handlePressOptions("bShowGifsModal")}
+              onPress={() => handlePressOptions("showGifsModal")}
               style={oStyles.viewWriteMessageIconMap}
             >
               <Image source={GifIcon} style={{ width: 30, height: 30 }} />
             </Pressable>
-            {bShowMoreOptions && (
+            {showMoreOptions && (
               <Pressable
                 activeOpacity={1}
-                onPress={() => this.setState({ bShowMoreOptions: false })}
+                onPress={() => setShowMoreOptions(false)}
                 style={oStyles.viewWriteMessageIconDismissMore}
               >
                 <Icon name="chevron-back-circle-outline" size={32} />
@@ -719,7 +656,7 @@ class Messages extends Component {
           <View style={[oStyles.row, oStyles.alignCenter, { width: "8%" }]}>
             <Pressable
               activeOpacity={1}
-              onPress={() => this.setState({ bShowMoreOptions: true })}
+              onPress={() => setShowMoreOptions(true)}
               style={oStyles.pdT2}
             >
               <Icon name="chevron-forward-circle-outline" size={32} />
@@ -729,33 +666,31 @@ class Messages extends Component {
         <View
           style={{
             marginLeft: "2%",
-            width: bShowKeyboard
-              ? sText === ""
+            width: showKeyboard
+              ? text === ""
                 ? "65%"
-                : !bShowMoreOptions
-                ? "77%"
-                : "57%"
+                : !showMoreOptions
+                  ? "77%"
+                  : "57%"
               : "65%",
           }}
         >
           <TextInput
             placeholder="Type your message"
             placeholderTextColor={PlaceholderColor}
-            onFocus={this.handleFocusSearch}
+            onFocus={handleFocusSearch}
             style={oStyles.viewWriteMessageTextInput}
             multiline={true}
-            value={sText}
-            onChangeText={(text) =>
-              this.setState({
-                sText: text,
-                bShowMoreOptions:
-                  bShowMoreOptions && text === "" ? false : bShowMoreOptions,
-              })
+            value={text}
+            onChangeText={(text) => {
+              setText(text);
+              setShowMoreOptions(showMoreOptions && text === "" ? false : showMoreOptions);
+            }
             }
           />
         </View>
         <View style={oStyles.w15}>
-          <Pressable onPress={() => this.sendMessage()}>
+          <Pressable onPress={() => sendMessage()}>
             <Text style={oStyles.font18}>Send</Text>
           </Pressable>
         </View>
@@ -763,48 +698,36 @@ class Messages extends Component {
     );
   };
 
-  renderQuestions = () => {
-    const {
-      bShowGifsModal,
-      bShowGifsStickers,
-      sSearch,
-      bShowOptionImage,
-      bShowMap,
-      oMarker,
-      bShowPeople,
-      bRefresh,
-    } = this.state;
+  const renderQuestions = () => {
     return (
       <>
         {/* // Modal that shows the gifs to send */}
         <ModalGifs
-          bShow={bShowGifsModal}
-          bShowStickers={bShowGifsStickers}
-          sSearch={sSearch}
-          fSearch={() => this.props.getGiphy(sSearch)}
-          fUpdateSearch={(text) => this.handleChangeSearch(text)}
-          fClean={() => this.handleCleanSearch(SEND_MESSAGE_TYPES.GIF)}
+          bShow={showGifsModal}
+          bShowStickers={showGifsStickers}
+          search={search}
+          fSearch={() => dispatch(actionGetGiphy(search))}
+          fUpdateSearch={(text) => handleChangeSearch(text)}
+          fClean={() => handleCleanSearch(SEND_MESSAGE_TYPES.GIF)}
           fClose={() => {
-            this.resetState();
+            resetState();
           }}
           fActionSelect={(oGif) =>
-            this.sendMessage(SEND_MESSAGE_TYPES.GIF, oGif)
+            sendMessage(SEND_MESSAGE_TYPES.GIF, oGif)
           }
-          fChangeType={() => {
-            this.setState({ bShowGifsStickers: !bShowGifsStickers });
-          }}
-          aGifs={this.props.oGiphyProps.gifs}
-          aStickers={this.props.oGiphyProps.stickers}
+          fChangeType={() => setShowGifsStickers(!showGifsStickers)}
+          aGifs={oGiphyProps.gifs}
+          aStickers={oGiphyProps.stickers}
         />
         {/* // Modal where the user takes the decision of what image to send */}
         <ToastQuestion
-          visible={bShowOptionImage}
-          functionCamera={() => this.addImage(OPTION_CAMERA)}
-          functionGallery={() => this.addImage()}
-          close={() => this.setState({ bShowOptionImage: false })}
+          visible={showOptionImage}
+          functionCamera={() => addImage(OPTION_CAMERA)}
+          functionGallery={() => addImage()}
+          close={() => setShowOptionImage(false)}
         />
         {/* // Modal where the user takes the decision of what image to send */}
-        {bShowMap && (
+        {showMap && (
           <View
             style={[
               GlobalModal.viewContent,
@@ -813,22 +736,22 @@ class Messages extends Component {
           >
             <ScrollView>
               <MapView
-                provider={this.props.provider}
+                provider={props.provider}
                 style={{ height: 300, width: "100%", marginTop: 20 }}
-                onPress={(e) =>
-                  this.setState({ oMarker: e.nativeEvent.coordinate })
-                }
-                initialRegion={this.state.locationInital}
+                onPress={(e) => setMarker(e.nativeEvent.coordinate)}
+                initialRegion={locationInital}
               >
-                {null !== oMarker && (
-                  <Marker key={1} coordinate={oMarker} pinColor="#FF0000" />
+                {null !== marker && (
+                  <Marker key={1} coordinate={marker} pinColor="#FF0000" />
                 )}
               </MapView>
               <View style={[oStyles.viewSection, oStyles.viewSectionButtons]}>
                 <View style={[oStyles.w50, oStyles.alignCenter]}>
                   <Pressable
-                    onPress={() =>
-                      this.setState({ bShowMap: false, oMarker: null })
+                    onPress={() => {
+                      setShowMap(false);
+                      setMarker(null);
+                    }
                     }
                     style={[
                       oStyles.button,
@@ -843,7 +766,7 @@ class Messages extends Component {
                 <View style={[oStyles.w50, oStyles.alignCenter]}>
                   <Pressable
                     onPress={() =>
-                      this.sendMessage(SEND_MESSAGE_TYPES.LOCATION)
+                      sendMessage(SEND_MESSAGE_TYPES.LOCATION)
                     }
                     style={[oStyles.button, { backgroundColor: SignUpColor }]}
                   >
@@ -859,6 +782,29 @@ class Messages extends Component {
       </>
     );
   };
+
+
+  const { oConversation } = oMessageProps;
+
+  return (
+    <>
+      {oConversation ? (
+        <>
+          {showPeople ? (
+            renderPeople()
+          ) : (
+            <>
+              {renderMessages()}
+              {renderQuestions()}
+            </>
+          )}
+        </>
+      ) : (
+        <View></View>
+      )}
+    </>
+  );
+
 }
 
 const oStyles = StyleSheet.create({
@@ -1046,8 +992,8 @@ const mapDispatchToProps = (dispatch) => ({
   cleanMessages: () => {
     dispatch(actionGetMessages());
   },
-  expandImage: (sImage) => {
-    dispatch(actionExpandImage(sImage));
+  expandImage: (image) => {
+    dispatch(actionExpandImage(image));
   },
   getProfile: (data) => {
     dispatch(actionGetProfile(data, true));

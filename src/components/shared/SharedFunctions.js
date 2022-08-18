@@ -100,7 +100,7 @@ export const validateFieldsProfile = (lValues, bValidateAll) => {
 };
 
 export const validateCharacters = (value) => {
-  return value.replace(/&#39;/g, "'");
+  return value ? value.replace(/&#39;/g, "'") : "";
 };
 /**
  * Global function that castes user fitness level values.

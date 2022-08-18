@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -28,7 +28,7 @@ import { Pressable } from "react-native";
 // This is used because it has a selector and cut in square
 import ImagePicker from "react-native-image-crop-picker";
 import ImagePickerVideo from "react-native-image-picker";
-import { connect } from "react-redux";
+import { connect, useDispatch, useSelector } from "react-redux";
 import {
   actionCreateJourney,
   actionGetJourneyList,
@@ -58,88 +58,66 @@ import moment from "moment/min/moment-with-locales";
 
 let RNFS = require("react-native-fs");
 
-class JourneyCreate extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      showPhoto: true,
-      text: "",
-      loading: false,
-      top: 0,
-      left: 0,
-      refresh: false,
-      showFriends: false,
-      search: "",
-      player: null,
-      files: [],
-      index: 0,
-      muted: false,
-      keyboardOffset: 0,
-      showJourneyList: true,
-    };
+const JourneyCreate = (props) => {
 
-    this.getKeyboardOffsetStyle = this.getKeyboardOffsetStyle.bind(this);
+  const session = useSelector((state) => state.reducerSession);
+  const journeyProps = useSelector((state) => state.reducerJourney);
+  const myPals = useSelector((state) => state.reducerMyPals);
 
-    Keyboard.addListener("keyboardDidShow", ({ endCoordinates: { height } }) =>
-      this.keyboardShow(height)
-    );
-    Keyboard.addListener("keyboardWillShow", ({ endCoordinates: { height } }) =>
-      this.keyboardShow(height)
-    );
-    Keyboard.addListener("keyboardWillHide", () =>
-      this.setState({ keyboardOffset: 0 })
-    );
-    Keyboard.addListener("keyboardDidHide", () =>
-      this.setState({ keyboardOffset: 0 })
-    );
-  }
+  const dispatch = useDispatch();
 
-  keyboardShow = (nHeight) => {
-    const { showFriends } = this.state;
-    this.setState({ keyboardOffset: nHeight });
+  const [showPhoto, setShowPhoto] = useState(true);
+  const [text, setText] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [top, setTop] = useState(0);
+  const [left, setLeft] = useState(0);
+  const [refresh, setRefresh] = useState(false);
+  const [showFriends, setShowFriends] = useState(false);
+  const [search, setSearch] = useState("");
+  const [player, setPlayer] = useState(null);
+  const [files, setFiles] = useState([]);
+  const [index, setIndex] = useState(0);
+  const [muted, setMuted] = useState(false);
+  const [showJourneyList, setShowJourneyList] = useState(true);
+
+  useEffect(() => {
+    props.navigation.setParams({ navigateBack: navigateBack });
+    actionGetMyFriends(session.account.key);
+    if (journeyProps.journeys.length == 0)
+      dispatch(actionGetJourneyList());
+  }, []);
+
+  useEffect(() => {
+    props.navigation.setParams({ navigateBack: navigateBack });
+    actionGetMyFriends(session.account.key);
+    if (journeyProps.journeys.length == 0)
+      dispatch(actionGetJourneyList());
     if (
-      null !== this.oScrollRef &&
-      undefined !== this.oScrollRef &&
-      !showFriends
-    )
-      this.oScrollRef.scrollToEnd({ animated: true });
+      journeyProps !== journeyProps &&
+      null !== journeyProps.statusCreated &&
+      journeyProps.statusCreated
+    ) {
+      navigateBack();
+    }
+    setLoading(false);
+  }, [journeyProps]);
+
+  const navigateBack = () => {
+    setShowPhoto(true);
+    setFiles([]);
+    setText("");
+    setLoading(false);
+    setPlayer(null);
+    setIndex(0);
+    setShowJourneyList(true);
+    if (null !== oInputRef && undefined !== oInputRef)
+      oInputRef.blur();
+    props.navigation.navigate("JourneyList");
   };
 
-  getKeyboardOffsetStyle() {
-    const { keyboardOffset } = this.state;
-    return Platform.select({
-      ios: () => ({ paddingBottom: keyboardOffset }),
-      android: () => ({}),
-    })();
-  }
-
-  componentDidMount = () => {
-    this.props.navigation.setParams({ navigateBack: this.navigateBack });
-    this.props.getFriends(this.props.session.account.key);
-    if (this.props.journeyProps.journeys.length == 0)
-      this.props.getJourneyList();
-  };
-
-  navigateBack = () => {
-    this.setState({
-      showPhoto: true,
-      files: [],
-      text: "",
-      loading: false,
-      player: null,
-      index: 0,
-      showJourneyList: true,
-    });
-    if (null !== this.oInputRef && undefined !== this.oInputRef)
-      this.oInputRef.blur();
-    this.props.navigation.navigate("JourneyList");
-  };
-
-  addImage = (sType) => {
-    this.setState({
-      showPhoto: false,
-      loading: true,
-    });
+  const addImage = (sType) => {
+    setShowPhoto(false);
+    setLoading(true);
     let oOptions = {
       width: 800,
       height: 800,
@@ -159,37 +137,31 @@ class JourneyCreate extends Component {
             })
               .then((oImage) => {
                 let oFileItem = {
-                    type: "",
-                    uri: oImage.path,
-                    name: "",
-                    realPath: oFile.path,
-                    order: 1,
-                    mediaType: "image/jpeg",
-                    tags: [],
-                  },
+                  type: "",
+                  uri: oImage.path,
+                  name: "",
+                  realPath: oFile.path,
+                  order: 1,
+                  mediaType: "image/jpeg",
+                  tags: [],
+                },
                   aFiles = [];
                 oFileItem.type = POST_TYPE_IMAGE;
                 oFileItem.name = "fitrec_photo.jpeg";
                 aFiles.push(oFileItem);
-                this.setState({
-                  files: aFiles,
-                  showPhoto: false,
-                  loading: false,
-                  showJourneyList: false,
-                });
+                setFiles(aFiles);
+                setShowJourneyList(false);
+                setShowPhoto(false);
+                setLoading(false);
               })
               .catch((oError) => {
-                this.setState({
-                  showPhoto: true,
-                  loading: false,
-                });
+                setShowPhoto(true);
+                setLoading(false);
               });
           })
           .catch((cancel) => {
-            this.setState({
-              showPhoto: true,
-              loading: false,
-            });
+            setShowPhoto(true);
+            setLoading(false);
           });
         break;
       case "video":
@@ -214,10 +186,10 @@ class JourneyCreate extends Component {
                   sName.slice(0, nIndexName) + "_" + Date.now() + "_fitrec.mp4";
                 RNFFmpeg.execute(
                   "-i " +
-                    sPath +
-                    ' -ss 00:00 -to 01:00 -preset superfast -movflags +faststart -vf "scale=480:-2" -b:v 1800k ' +
-                    sTemporalPath +
-                    sName
+                  sPath +
+                  ' -ss 00:00 -to 01:00 -preset superfast -movflags +faststart -vf "scale=480:-2" -b:v 1800k ' +
+                  sTemporalPath +
+                  sName
                 )
                   .then((result) => {
                     let oFileItem = {
@@ -230,35 +202,29 @@ class JourneyCreate extends Component {
                       tags: [],
                     };
                     aFiles.push(oFileItem);
-                    this.setState({
-                      files: aFiles,
-                      showPhoto: false,
-                      loading: false,
-                      showJourneyList: false,
-                    });
+                    setFiles(aFiles);
+                    setShowPhoto(false);
+                    setLoading(false);
+                    setShowJourneyList(false);
                   })
                   .catch((oError) => {
-                    this.setState({
-                      showPhoto: true,
-                      loading: false,
-                    });
-                    this.props.message(
+                    setShowPhoto(true);
+                    setLoading(false);
+                    dispatch(actionMessage(
                       "There was a problem selecting the video"
-                    );
+                    ));
                   });
               } else {
-                this.setState({
-                  showPhoto: true,
-                  loading: false,
-                });
-                this.props.message("There was a problem selecting the video");
+                setShowPhoto(true);
+                setLoading(false);
+                dispatch(actionMessage("There was a problem selecting the video"));
               }
             } else {
-              if (oResponse.error) this.props.message(Constants.MESSAGE_ERROR);
-              this.setState({
-                showPhoto: true,
-                loading: false,
-              });
+              if (oResponse.error) {
+                dispatch(actionMessage(Constants.MESSAGE_ERROR));
+              }
+              setShowPhoto(true);
+              setLoading(false);
             }
           }
         );
@@ -302,10 +268,10 @@ class JourneyCreate extends Component {
                   "_fitrec.mp4";
                 RNFFmpeg.execute(
                   "-i " +
-                    sPath +
-                    ' -ss 00:00 -to 01:00 -preset superfast -movflags +faststart -vf "scale=480:-2" -b:v 1800k ' +
-                    sTemporalPath +
-                    sName
+                  sPath +
+                  ' -ss 00:00 -to 01:00 -preset superfast -movflags +faststart -vf "scale=480:-2" -b:v 1800k ' +
+                  sTemporalPath +
+                  sName
                 )
                   .then((result) => {
                     oFileItem.type = POST_TYPE_VIDEO;
@@ -320,18 +286,14 @@ class JourneyCreate extends Component {
                         if (oFileA.order > oFileB.order) return 1;
                         return -1;
                       });
-                      this.setState({
-                        files: aFiles,
-                        showPhoto: false,
-                        loading: false,
-                        showJourneyList: false,
-                      });
+                      setFiles(aFiles);
+                      setShowPhoto(false);
+                      setLoading(false);
+                      setShowJourneyList(false);
                     }
                   })
                   .catch((oError) => {
-                    this.props.message(
-                      "There was a problem resizing the video"
-                    );
+                    dispatch(actionMessage("There was a problem resizing the video"));
                   });
               } else {
                 let sName, nIndex;
@@ -350,32 +312,28 @@ class JourneyCreate extends Component {
                   if (oFileA.order > oFileB.order) return 1;
                   return -1;
                 });
-                this.setState({
-                  files: aFiles,
-                  showPhoto: false,
-                  loading: false,
-                  showJourneyList: false,
-                });
+                setFiles(aFiles);
+                setShowPhoto(false);
+                setLoading(false);
+                setShowJourneyList(false);
               }
             });
           })
           .catch((cancel) => {
-            this.setState({
-              showPhoto: true,
-              loading: false,
-            });
+            setShowPhoto(true);
+            setLoading(false);
           });
         break;
     }
   };
 
-  createJourney = () => {
+  const createJourney = () => {
     let nLongitude = null,
       nLatitude = null,
-      nUserId = this.props.session.account.id,
-      sUserName = this.props.session.account.username,
-      sDescription = this.state.text,
-      aFiles = this.state.files;
+      nUserId = session.account.id,
+      sUserName = session.account.username,
+      sDescription = text,
+      aFiles = files;
     try {
       Geolocation.getCurrentPosition(
         (position) => {
@@ -383,88 +341,75 @@ class JourneyCreate extends Component {
             nLongitude = position.coords.longitude;
             nLatitude = position.coords.latitude;
           }
-          this.props.createJourney(
-            nUserId,
-            sUserName,
-            sDescription,
-            nLatitude,
-            nLongitude,
-            aFiles
+          dispatch(
+            actionCreateJourney(
+              nUserId,
+              sUserName,
+              sDescription,
+              nLatitude,
+              nLongitude,
+              aFiles
+            )
           );
         },
         () => {
-          this.props.createJourney(
-            nUserId,
-            sUserName,
-            sDescription,
-            nLatitude,
-            nLongitude,
-            aFiles
+          dispatch(
+            actionCreateJourney(
+              nUserId,
+              sUserName,
+              sDescription,
+              nLatitude,
+              nLongitude,
+              aFiles
+            )
           );
         },
         OPTIONS_GEOLOCATION_GET_POSITION
       );
     } catch (oError) {
-      this.props.createJourney(
-        nUserId,
-        sUserName,
-        sDescription,
-        nLatitude,
-        nLongitude,
-        aFiles
+      dispatch(
+        actionCreateJourney(
+          nUserId,
+          sUserName,
+          sDescription,
+          nLatitude,
+          nLongitude,
+          aFiles
+        )
       );
     }
   };
 
-  componentWillReceiveProps = (nextProps) => {
-    if (
-      nextProps.journeyProps !== this.props.journeyProps &&
-      null !== nextProps.journeyProps.statusCreated &&
-      nextProps.journeyProps.statusCreated
-    ) {
-      this.navigateBack();
-    }
-    this.setState({
-      loading: false,
-    });
-  };
-
-  handlePress = (evt) => {
-    this.setState({
-      top: (evt.nativeEvent.locationY * 100) / screenHeight,
-      left: (evt.nativeEvent.locationX * 100) / screenWidth,
-    });
+  const handlePress = (evt) => {
+    setTop((evt.nativeEvent.locationY * 100) / screenHeight);
+    setLeft((evt.nativeEvent.locationX * 100) / screenWidth);
     setTimeout(() => {
-      this.setState({
-        showFriends: true,
-      });
+      setShowFriends(true);
     }, 200);
   };
 
-  setTagUser = (lItem) => {
+  const setTagUser = (lItem) => {
     if (
-      this.state.files[this.state.index].tags.filter(
+      files[index].tags.filter(
         (element) => element.key === lItem.key
       ).length > 0
     ) {
-      this.removeUser(lItem);
+      removeUser(lItem);
     }
     let oTag = {
-      x: this.state.left,
-      y: this.state.top,
+      x: left,
+      y: top,
       name: lItem.name,
       key: lItem.key,
       id_user: lItem.id,
     };
-    let aFiles = this.state.files;
-    aFiles[this.state.index].tags.push(oTag);
-    this.setState({
-      showFriends: false,
-      files: aFiles,
-    });
+    let aFiles = files;
+    aFiles[index].tags.push(oTag);
+    setShowFriends(false);
+    setFiles(aFiles);
   };
 
-  dynamicStyle(data) {
+  const dynamicStyle = (data) => {
     let left = (screenWidth * data.x) / 100;
     let top = (screenHeight * data.y) / 100;
     return {
@@ -475,22 +420,22 @@ class JourneyCreate extends Component {
     };
   }
 
-  removeUser = (user) => {
-    let aTags = this.state.files[this.state.index].tags;
+  const removeUser = (user) => {
+    let aTags = files[index].tags;
     for (let i = 0; i < aTags.length; i++) {
       if (aTags[i].key === user.key) {
         aTags.splice(i, 1);
       }
     }
-    let aFiles = this.state.files;
-    let oFileItem = aFiles[this.state.index];
+    let aFiles = files;
+    let oFileItem = aFiles[index];
     oFileItem.tags = aTags;
-    aFiles[this.state.index] = oFileItem;
-    this.setState({ files: aFiles });
+    aFiles[index] = oFileItem;
+    setFiles(aFiles);
   };
 
-  resize = (oImage) => {
-    this.setState({ loading: true });
+  const resize = (oImage) => {
+    setLoading(true);
     ImagePicker.openCropper({
       path: oImage.realPath,
       width: 800,
@@ -501,33 +446,29 @@ class JourneyCreate extends Component {
           aFiles = [];
         oFileItem.type = POST_TYPE_IMAGE;
         oFileItem.uri = oFile.path;
-        aFiles = this.state.files;
-        aFiles[this.state.index] = oFileItem;
-        this.setState({
-          aFiles: aFiles,
-          loading: false,
-        });
+        aFiles = files;
+        aFiles[index] = oFileItem;
+        setFiles(aFiles);
+        setLoading(false);
       })
       .catch((oError) => {
-        this.setState({
-          loading: false,
-        });
+        setLoading(false);
       });
   };
 
-  renderItem = (oItem) => {
+  const renderItem = (oItem) => {
     return (
       <View style={CarouselStyle.itemContainer}>
         {oItem.type == POST_TYPE_VIDEO ? (
           <Pressable
             activeOpacity={1}
             onPress={() => {
-              this.setState({ muted: !this.state.muted });
+              setMuted(!muted);
             }}
           >
             <Video
-              paused={this.state.index != oItem.order - 1}
-              muted={this.state.muted}
+              paused={index != oItem.order - 1}
+              muted={muted}
               repeat={true}
               controls={false}
               disableFocus={false}
@@ -536,10 +477,10 @@ class JourneyCreate extends Component {
               source={{ uri: oItem.uri, cache: true }}
               style={GlobalStyles.fullImage}
               ref={(ref) => {
-                this.state.player = ref;
+                player = ref;
               }}
             />
-            {this.state.muted && (
+            {muted && (
               <View style={JourneyStyles.containerMutedIcon}>
                 <Icon
                   name="volume-mute"
@@ -554,20 +495,20 @@ class JourneyCreate extends Component {
           <View style={GlobalStyles.fullImage}>
             <Pressable
               onPress={() => {
-                this.resize(oItem);
+                resize(oItem);
               }}
               style={styles.containerResizeIcon}
               activeOpacity={1}
             >
               <Icon name="expand-outline" size={24} color={WhiteColor} />
             </Pressable>
-            {this.getImage(oItem)}
+            {getImage(oItem)}
             {oItem.tags.map((list) => (
-              <View key={list.id} style={this.dynamicStyle(list)}>
+              <View key={list.id} style={dynamicStyle(list)}>
                 <View style={styles.tagTriangle}></View>
                 <Pressable
                   onPress={() => {
-                    this.removeUser(list);
+                    removeUser(list);
                   }}
                   style={styles.tagUserView}
                 >
@@ -587,9 +528,9 @@ class JourneyCreate extends Component {
     );
   };
 
-  getImage = (oImage) => {
+  const getImage = (oImage) => {
     return (
-      <TouchableWithoutFeedback onPress={(evt) => this.handlePress(evt)}>
+      <TouchableWithoutFeedback onPress={(evt) => handlePress(evt)}>
         <FastImage
           style={GlobalStyles.fullImage}
           source={{
@@ -602,203 +543,13 @@ class JourneyCreate extends Component {
     );
   };
 
-  render = () => {
-    return (
-      <View style={{ flex: 1, backgroundColor: WhiteColor }}>
-        {this.state.showJourneyList ? (
-          <>
-            <ToastQuestion
-              visible={this.state.showPhoto}
-              functionVideo={() => this.addImage("video")}
-              functionCamera={() => this.addImage("camera")}
-              functionGallery={() => this.addImage("gallery")}
-            />
-            <View
-              style={{
-                position: "absolute",
-                top: 0,
-                bottom: 0,
-                left: 0,
-                right: 0,
-              }}
-            >
-              {this.renderBackground()}
-            </View>
-          </>
-        ) : (
-          <ScrollView ref={(oRef) => (this.oScrollRef = oRef)}>
-            <View style={{ flex: 1, marginBottom: 30 }}>
-              {this.state.showFriends && (
-                <View style={[GlobalModal.viewContent, { zIndex: 999 }]}>
-                  <View style={GlobalModal.viewHead}>
-                    <Text style={GlobalModal.headTitle}>Add User Tag</Text>
-                    <Pressable
-                      style={GlobalModal.buttonClose}
-                      onPress={() => this.setState({ showFriends: false })}
-                    >
-                      <Text style={GlobalModal.titleClose}>Close</Text>
-                    </Pressable>
-                  </View>
-                  <SearchUsername
-                    ph="Search for people or username"
-                    value={this.state.search}
-                    change={(text) => this.setState({ search: text })}
-                    clean={() => this.setState({ search: "" })}
-                  />
-                  {this.props.myPals.myFriends.length > 0 && (
-                    <FlatList
-                      data={this.props.myPals.myFriends.filter(
-                        (element) =>
-                          element.name.includes(this.state.search) ||
-                          element.username.includes(this.state.search)
-                      )}
-                      keyExtractor={(item, index) => index.toString()}
-                      extraData={this.state.refresh}
-                      renderItem={({ item }) => (
-                        <View
-                          style={{
-                            borderBottomWidth: 1,
-                            borderBottomColor: PlaceholderColor,
-                          }}
-                        >
-                          <Pressable
-                            onPress={() => this.setTagUser(item)}
-                            style={{
-                              flexDirection: "row",
-                              width: "100%",
-                              padding: 10,
-                            }}
-                          >
-                            {null === item.image || undefined === item.image ? (
-                              <Image
-                                style={{ height: 80, width: 80 }}
-                                source={require("../../assets/imgProfileReadOnly.png")}
-                              />
-                            ) : (
-                              <FastImage
-                                style={{
-                                  height: 60,
-                                  width: 60,
-                                  borderRadius: 100,
-                                }}
-                                source={{
-                                  uri: item.image,
-                                  priority: FastImage.priority.high,
-                                }}
-                                resizeMode={FastImage.resizeMode.cover}
-                              />
-                            )}
-                            <View
-                              style={{
-                                justifyContent: "center",
-                                marginLeft: 10,
-                              }}
-                            >
-                              <Text style={styles.textUserReference}>
-                                {item.name}
-                              </Text>
-                              <Text style={{ fontSize: 14 }}>
-                                {item.fitnesLevel}
-                              </Text>
-                            </View>
-                          </Pressable>
-                        </View>
-                      )}
-                    />
-                  )}
-                </View>
-              )}
-              <View style={this.getKeyboardOffsetStyle()}>
-                <View style={styles.viewImage}>
-                  {this.state.files.length > 0 ? (
-                    <>
-                      <Carousel
-                        ref={(oRef) => {
-                          this.crousel = oRef;
-                        }}
-                        data={this.state.files}
-                        renderItem={(oItem) => this.renderItem(oItem.item)}
-                        sliderWidth={screenWidth}
-                        itemWidth={screenWidth}
-                        lockScrollWhileSnapping={true}
-                        autoplay={false}
-                        style={CarouselStyle.carouselContainer}
-                        loop={false}
-                        onSnapToItem={(index) => {
-                          this.setState({
-                            index: index,
-                            refresh: !this.state.refresh,
-                          });
-                        }}
-                      />
-                      {this.state.files[this.state.index].type ==
-                        POST_TYPE_IMAGE && (
-                        <View style={styles.footerPhoto}>
-                          <Text style={styles.footerContent}>
-                            TAP PHOTO to tag people
-                          </Text>
-                        </View>
-                      )}
-                      {this.state.files.length > 1 && (
-                        <Pagination
-                          dotsLength={this.state.files.length}
-                          activeDotIndex={this.state.index}
-                          containerStyle={[
-                            CarouselStyle.paginationContainer,
-                            { bottom: -45 },
-                          ]}
-                          dotStyle={CarouselStyle.paginationActive}
-                          inactiveDotStyle={CarouselStyle.paginationInactive}
-                          inactiveDotOpacity={0.4}
-                          inactiveDotScale={1}
-                        />
-                      )}
-                    </>
-                  ) : (
-                    <Image
-                      resizeMode="center"
-                      style={{ width: 250, height: 250, opacity: 0.1 }}
-                      source={require("../../assets/photoIcon.png")}
-                    />
-                  )}
-                </View>
-                <View style={styles.viewSection}>
-                  <TextInput
-                    style={[styles.textInput, styles.inputTextArea]}
-                    multiline={true}
-                    numberOfLines={4}
-                    textAlign="left"
-                    placeholder="Your message"
-                    ref={(oRef) => (this.oInputRef = oRef)}
-                    placeholderTextColor={PlaceholderColor}
-                    onChangeText={(text) => this.setState({ text: text })}
-                    value={this.state.text}
-                  />
-                </View>
-                <View style={styles.viewButtons}>
-                  <Pressable
-                    onPress={() => this.createJourney()}
-                    style={styles.button}
-                  >
-                    <Text style={styles.text}>Create</Text>
-                  </Pressable>
-                </View>
-              </View>
-            </View>
-          </ScrollView>
-        )}
-        <LoadingSpinner visible={this.state.loading} />
-      </View>
-    );
-  };
-
-  renderBackground = () => {
+  const renderBackground = () => {
     return (
       <>
-        {this.props.journeyProps.journeys.length > 0 ? (
+        {journeyProps.journeys.length > 0 ? (
           <FlatList
             keyExtractor={(item, index) => index.toString()}
-            data={this.props.journeyProps.journeys}
+            data={journeyProps.journeys}
             renderItem={({ item }) => (
               <>
                 {item.images[0].type != POST_TYPE_VIDEO && (
@@ -812,13 +563,11 @@ class JourneyCreate extends Component {
                       username={item.user.username}
                       image={item.user.image}
                       redirectionViewProfile={() =>
-                        this.redirectionViewProfile(item.user.id)
+                        redirectionViewProfile(item.user.id)
                       }
                       options={() => {
-                        this.setState({
-                          showToastQuestion: true,
-                          journey: item,
-                        });
+                        setShowToastQuestion(true);
+                        setJourney(item);
                       }}
                     />
                     <View style={{ aspectRatio: 1 }}>
@@ -835,10 +584,10 @@ class JourneyCreate extends Component {
                       isLiked={item.isLiked}
                       likes={item.likes}
                       text={item.description}
-                      pressAddLike={() => this.addUnLike(item.id, true)}
+                      pressAddLike={() => addUnLike(item.id, true)}
                       existTags={false}
-                      pressUnLike={() => this.addUnLike(item.id, false)}
-                      showLikes={() => this.showLikes(item.id)}
+                      pressUnLike={() => addUnLike(item.id, false)}
+                      showLikes={() => showLikes(item.id)}
                     />
                   </View>
                 )}
@@ -866,6 +615,192 @@ class JourneyCreate extends Component {
       </>
     );
   };
+
+  return (
+    <View style={{ flex: 1, backgroundColor: WhiteColor }}>
+      {showJourneyList ? (
+        <>
+          <ToastQuestion
+            visible={showPhoto}
+            functionVideo={() => addImage("video")}
+            functionCamera={() => addImage("camera")}
+            functionGallery={() => addImage("gallery")}
+          />
+          <View
+            style={{
+              position: "absolute",
+              top: 0,
+              bottom: 0,
+              left: 0,
+              right: 0,
+            }}
+          >
+            {renderBackground()}
+          </View>
+        </>
+      ) : (
+        <ScrollView ref={(oRef) => (oScrollRef = oRef)}>
+          <View style={{ flex: 1, marginBottom: 30 }}>
+            {showFriends && (
+              <View style={[GlobalModal.viewContent, { zIndex: 999 }]}>
+                <View style={GlobalModal.viewHead}>
+                  <Text style={GlobalModal.headTitle}>Add User Tag</Text>
+                  <Pressable
+                    style={GlobalModal.buttonClose}
+                    onPress={() => setShowFriends(false)}
+                  >
+                    <Text style={GlobalModal.titleClose}>Close</Text>
+                  </Pressable>
+                </View>
+                <SearchUsername
+                  ph="Search for people or username"
+                  value={search}
+                  change={(text) => setSearch(text)}
+                  clean={() => setSearch("")}
+                />
+                {myPals.myFriends.length > 0 && (
+                  <FlatList
+                    data={myPals.myFriends.filter(
+                      (element) =>
+                        element.name.includes(search) ||
+                        element.username.includes(search)
+                    )}
+                    keyExtractor={(item, index) => index.toString()}
+                    extraData={refresh}
+                    renderItem={({ item }) => (
+                      <View
+                        style={{
+                          borderBottomWidth: 1,
+                          borderBottomColor: PlaceholderColor,
+                        }}
+                      >
+                        <Pressable
+                          onPress={() => setTagUser(item)}
+                          style={{
+                            flexDirection: "row",
+                            width: "100%",
+                            padding: 10,
+                          }}
+                        >
+                          {null === item.image || undefined === item.image ? (
+                            <Image
+                              style={{ height: 80, width: 80 }}
+                              source={require("../../assets/imgProfileReadOnly.png")}
+                            />
+                          ) : (
+                            <FastImage
+                              style={{
+                                height: 60,
+                                width: 60,
+                                borderRadius: 100,
+                              }}
+                              source={{
+                                uri: item.image,
+                                priority: FastImage.priority.high,
+                              }}
+                              resizeMode={FastImage.resizeMode.cover}
+                            />
+                          )}
+                          <View
+                            style={{
+                              justifyContent: "center",
+                              marginLeft: 10,
+                            }}
+                          >
+                            <Text style={styles.textUserReference}>
+                              {item.name}
+                            </Text>
+                            <Text style={{ fontSize: 14 }}>
+                              {item.fitnesLevel}
+                            </Text>
+                          </View>
+                        </Pressable>
+                      </View>
+                    )}
+                  />
+                )}
+              </View>
+            )}
+            <View style={getKeyboardOffsetStyle()}>
+              <View style={styles.viewImage}>
+                {files.length > 0 ? (
+                  <>
+                    <Carousel
+                      ref={(oRef) => {
+                        crousel = oRef;
+                      }}
+                      data={files}
+                      renderItem={(oItem) => renderItem(oItem.item)}
+                      sliderWidth={screenWidth}
+                      itemWidth={screenWidth}
+                      lockScrollWhileSnapping={true}
+                      autoplay={false}
+                      style={CarouselStyle.carouselContainer}
+                      loop={false}
+                      onSnapToItem={(index) => {
+                        setIndex(index);
+                        setRefresh(!refresh);
+                      }}
+                    />
+                    {files[index].type ==
+                      POST_TYPE_IMAGE && (
+                        <View style={styles.footerPhoto}>
+                          <Text style={styles.footerContent}>
+                            TAP PHOTO to tag people
+                          </Text>
+                        </View>
+                      )}
+                    {files.length > 1 && (
+                      <Pagination
+                        dotsLength={files.length}
+                        activeDotIndex={index}
+                        containerStyle={[
+                          CarouselStyle.paginationContainer,
+                          { bottom: -45 },
+                        ]}
+                        dotStyle={CarouselStyle.paginationActive}
+                        inactiveDotStyle={CarouselStyle.paginationInactive}
+                        inactiveDotOpacity={0.4}
+                        inactiveDotScale={1}
+                      />
+                    )}
+                  </>
+                ) : (
+                  <Image
+                    resizeMode="center"
+                    style={{ width: 250, height: 250, opacity: 0.1 }}
+                    source={require("../../assets/photoIcon.png")}
+                  />
+                )}
+              </View>
+              <View style={styles.viewSection}>
+                <TextInput
+                  style={[styles.textInput, styles.inputTextArea]}
+                  multiline={true}
+                  numberOfLines={4}
+                  textAlign="left"
+                  placeholder="Your message"
+                  ref={(oRef) => (oInputRef = oRef)}
+                  placeholderTextColor={PlaceholderColor}
+                  onChangeText={(text) => setText(text)}
+                  value={text}
+                />
+              </View>
+              <View style={styles.viewButtons}>
+                <Pressable
+                  onPress={() => createJourney()}
+                  style={styles.button}
+                >
+                  <Text style={styles.text}>Create</Text>
+                </Pressable>
+              </View>
+            </View>
+          </View>
+        </ScrollView>
+      )}
+      <LoadingSpinner visible={loading} />
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -1000,41 +935,4 @@ const styles = StyleSheet.create({
   },
 });
 
-const mapStateToProps = (state) => ({
-  session: state.reducerSession,
-  journeyProps: state.reducerJourney,
-  myPals: state.reducerMyPals,
-});
-
-const mapDispatchToProps = (dispatch) => ({
-  createJourney: (
-    nUserId,
-    sUsername,
-    sDescription,
-    nLatitude,
-    nLongitude,
-    oVideo
-  ) => {
-    dispatch(
-      actionCreateJourney(
-        nUserId,
-        sUsername,
-        sDescription,
-        nLatitude,
-        nLongitude,
-        oVideo
-      )
-    );
-  },
-  getFriends: (sUserKey) => {
-    actionGetMyFriends(sUserKey);
-  },
-  message: (sMessage) => {
-    dispatch(actionMessage(sMessage));
-  },
-  getJourneyList: () => {
-    dispatch(actionGetJourneyList());
-  },
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(JourneyCreate);
+export default JourneyCreate;

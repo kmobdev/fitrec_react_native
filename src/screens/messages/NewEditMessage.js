@@ -1,55 +1,50 @@
-import React, { Component } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, FlatList, Pressable } from "react-native";
 import { SearchUsername } from "../../components/chat/SearchUsername";
 import { Image } from "react-native";
 import { StyleSheet } from "react-native";
 import { PlaceholderColor, WhiteColor } from "../../Styles";
 import Conversation, { chatStyles } from "../../components/chat/Conversation";
-import { connect } from "react-redux";
-import {
-  actionGetUserFriends,
-  actionSetConversation,
-  actionGetMessages,
-} from "../../redux/actions/ChatActions";
+import { useDispatch, useSelector } from "react-redux";
+import { actionGetUserFriends, actionSetConversation } from "../../redux/actions/ChatActions";
 import { Toast } from "../../components/shared/Toast";
 import FastImage from "react-native-fast-image";
 
-class NewEditMessage extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      showConversation: false,
-      conversationSelect: null,
-      toastText: "",
-      search: "",
-    };
-  }
+const NewEditMessage = (props) => {
 
-  componentDidMount = () => {
-    this.props.getUserFriends({
-      accountId: this.props.session.account.key,
-    });
-  };
+  const friendsProps = useSelector((state) => state.reducerListFriends);
+  const session = useSelector((state) => state.reducerSession);
 
-  componentWillReceiveProps = (nextProps) => {
+  const dispatch = useDispatch();
+
+  const [showConversation, setShowConversation] = useState(false);
+  const [conversationSelect, setConversationSelect] = useState(null);
+  const [toastText, setToastText] = useState("");
+  const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    dispatch(actionGetUserFriends({
+      accountId: session.account.key,
+    }));
+  }, [])
+
+  useEffect(() => {
     if (
-      nextProps.friendsProps.friends.length > 0 &&
-      null !== this.state.conversationSelect
+      friendsProps.friends.length > 0 &&
+      null !== conversationSelect
     ) {
-      for (var i = 0; i < nextProps.friendsProps.friends.length; i++) {
+      for (var i = 0; i < friendsProps.friends.length; i++) {
         if (
-          nextProps.friendsProps.friends[i].userFriendKey ===
-          this.state.conversationSelect.userFriendKey
+          friendsProps.friends[i].userFriendKey ===
+          conversationSelect.userFriendKey
         ) {
-          this.setState({
-            conversationSelect: nextProps.friendsProps.friends[i],
-          });
+          setConversationSelect(friendsProps.friends[i]);
         }
       }
     }
-  };
+  }, [friendsProps])
 
-  showConversation = (oFriend) => {
+  const showConversationHandler = (oFriend) => {
     let oConversation = {
       key: oFriend.conversation,
       type: 1,
@@ -63,95 +58,90 @@ class NewEditMessage extends Component {
         },
       ],
     };
-    this.props.setConversationData(oConversation);
-    this.props.getMessages(
-      oFriend.conversation,
-      this.props.session.account.key
-    );
-    this.props.navigation.navigate("Messages");
+    dispatch(actionSetConversation(oConversation));
+    dispatch(actionSetConversation(oFriend.conversation, session.account.key));
+    props.navigation.navigate("Messages");
   };
 
-  searchPeople = (sSearch) => {
-    return this.props.friendsProps.friends.filter(function (item) {
+  const searchPeople = (search) => {
+    return friendsProps.friends.filter(function (item) {
       return (
-        item.name.toUpperCase().includes(sSearch.toUpperCase()) ||
-        item.username.toUpperCase().includes(sSearch.toUpperCase())
+        item.name.toUpperCase().includes(search.toUpperCase()) ||
+        item.username.toUpperCase().includes(search.toUpperCase())
       );
     });
   };
 
-  render = () => {
-    const { friends: aFriends } = this.props.friendsProps;
-    return (
-      <View style={{ flex: 1, backgroundColor: WhiteColor }}>
-        {aFriends && aFriends.length > 0 ? (
-          <>
-            <SearchUsername
-              value={this.state.search}
-              change={(text) => this.setState({ search: text })}
-              clean={() => this.setState({ search: "" })}
-            />
-            <View>
-              <FlatList
-                data={this.searchPeople(this.state.search)}
-                extraData={this.state.refresh}
-                keyExtractor={(item, index) => index.toString()}
-                renderItem={({ item, index }) => (
-                  <Pressable onPress={() => this.showConversation(item)}>
-                    <View style={styles.viewItem}>
-                      {item.image ? (
-                        <FastImage
-                          style={[
-                            chatStyles.viewMessageItemImageProfile,
-                            { borderRadius: 100 },
-                          ]}
-                          source={{
-                            uri: item.image,
-                            priority: FastImage.priority.high,
-                          }}
-                          resizeMode={FastImage.resizeMode.cover}
-                        />
-                      ) : (
-                        <Image
-                          style={styles.viewMessageItemImageProfile}
-                          source={require("../../assets/imgProfileReadOnly.png")}
-                        />
-                      )}
-                      <View style={styles.viewMessageData}>
-                        <Text style={styles.itemName}>{item.name}</Text>
-                        <Text style={styles.itemUsername}>
-                          @{item.username}
-                        </Text>
-                      </View>
+  const { friends: aFriends } = friendsProps;
+  return (
+    <View style={{ flex: 1, backgroundColor: WhiteColor }}>
+      {aFriends && aFriends.length > 0 ? (
+        <>
+          <SearchUsername
+            value={search}
+            change={(text) => setSearch(text)}
+            clean={() => setSearch("")}
+          />
+          <View>
+            <FlatList
+              data={searchPeople(search)}
+              extraData={refresh}
+              keyExtractor={(item, index) => index.toString()}
+              renderItem={({ item, index }) => (
+                <Pressable onPress={() => showConversationHandler(item)}>
+                  <View style={styles.viewItem}>
+                    {item.image ? (
+                      <FastImage
+                        style={[
+                          chatStyles.viewMessageItemImageProfile,
+                          { borderRadius: 100 },
+                        ]}
+                        source={{
+                          uri: item.image,
+                          priority: FastImage.priority.high,
+                        }}
+                        resizeMode={FastImage.resizeMode.cover}
+                      />
+                    ) : (
+                      <Image
+                        style={styles.viewMessageItemImageProfile}
+                        source={require("../../assets/imgProfileReadOnly.png")}
+                      />
+                    )}
+                    <View style={styles.viewMessageData}>
+                      <Text style={styles.itemName}>{item.name}</Text>
+                      <Text style={styles.itemUsername}>
+                        @{item.username}
+                      </Text>
                     </View>
-                  </Pressable>
-                )}
-              />
-            </View>
-          </>
-        ) : (
-          <View style={{ alignItems: "center" }}>
-            <Text
-              style={[
-                styles.textCenter,
-                styles.textGray,
-                styles.mgT20,
-                styles.fontBold,
-              ]}
-            >
-              You currently have no pals, add users to your pals list
-            </Text>
+                  </View>
+                </Pressable>
+              )}
+            />
           </View>
-        )}
-        <Conversation
-          visible={this.state.showConversation}
-          conversation={this.state.conversationSelect}
-          close={() => this.setState({ showConversation: false })}
-        />
-        <Toast toastText={this.state.toastText} />
-      </View>
-    );
-  };
+        </>
+      ) : (
+        <View style={{ alignItems: "center" }}>
+          <Text
+            style={[
+              styles.textCenter,
+              styles.textGray,
+              styles.mgT20,
+              styles.fontBold,
+            ]}
+          >
+            You currently have no pals, add users to your pals list
+          </Text>
+        </View>
+      )}
+      <Conversation
+        visible={showConversation}
+        conversation={conversationSelect}
+        close={() => setShowConversation(false)}
+      />
+      <Toast toastText={toastText} />
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -192,21 +182,4 @@ const styles = StyleSheet.create({
   },
 });
 
-const mapStateToProps = (state) => ({
-  friendsProps: state.reducerListFriends,
-  session: state.reducerSession,
-});
-
-const mapDispatchToProps = (dispatch) => ({
-  getUserFriends: (data) => {
-    dispatch(actionGetUserFriends(data));
-  },
-  getMessages: (sConversationId, sUserKey) => {
-    dispatch(actionGetMessages(sConversationId, sUserKey));
-  },
-  setConversationData: (oConversation) => {
-    dispatch(actionSetConversation(oConversation));
-  },
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(NewEditMessage);
+export default NewEditMessage;

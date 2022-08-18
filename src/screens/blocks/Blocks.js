@@ -83,7 +83,7 @@ const Blocks = (props) => {
   };
 
   const onLockHandler = (item) => {
-    setShowQuestion(false);
+    setShowQuestion(true);
     setQuestionId(item.id);
     setQuestionName(item.username);
   };

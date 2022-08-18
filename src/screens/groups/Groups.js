@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   ImageBackground,
@@ -25,25 +25,20 @@ import {
 import { SearchUsername } from "../../components/chat/SearchUsername";
 import { ToastQuestionGeneric } from "../../components/shared/ToastQuestionGeneric";
 import { Toast } from "../../components/shared/Toast";
-import { connect } from "react-redux";
+import { connect, useDispatch, useSelector } from "react-redux";
 import Icon from "react-native-vector-icons/Ionicons";
 import { ShowUserRequestGroup } from "../../components/groups/ShowUsersRequestGroup";
 import { GetUserAccount } from "../../redux/services/FirebaseServices";
 import {
-  actionJoinGroup,
   actionGetGroups,
   actionGetGroupsNearMe,
-  actionLeaveGroup,
   actionRequestJoinGroup,
   actionAddMember,
-  actionResetOpenGroup,
   actionRejectRequest,
   actionAcceptRequest,
   actionGetGroupInvitations,
   actionAcceptInvitationGroup,
   actionRejectInvitationGroup,
-  actionResetUpdateGroup,
-  actionCleanCreateGroup,
   actionGetGroup,
 } from "../../redux/actions/GroupActions";
 import { LoadingSpinner } from "../../components/shared/LoadingSpinner";
@@ -59,117 +54,112 @@ import { OPTIONS_GEOLOCATION_GET_POSITION } from "../../Constants";
 import { actionCleanNavigation } from "../../redux/actions/NavigationActions";
 import { GROUP_PRIVATE } from "../../constants/Groups";
 
-class Groups extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      groups: [],
-      tabSelectMy: true,
-      showToastQuestion: false,
-      loading: false,
-      loadingUsers: false,
-      toastText: "",
-      groupsNearMe: [],
-      search: "",
-      searchMember: "",
-      searchPeople: "",
-      friends: [],
-      friendsBack: null,
-      isAddParticipant: false,
-      newParticipants: [],
-      showUserRequestGroupDetails: false,
-      group: null,
-      refreshing: false,
-      showGroupInvitations: false,
-      isCapitan: false,
-      lastUserViewProfile: {
-        id: null,
-        key: null,
-      },
-      isOpenGroup: false,
-    };
-  }
+const Groups = ({ navigation }) => {
 
-  componentDidMount = () => {
-    this.props.navigation.setParams({
-      tabSelectMy: this.state.tabSelectMy,
-      openOptions: () => this.openOptions(),
+  const session = useSelector((state) => state.reducerSession);
+  const groupProps = useSelector((state) => state.reducerGroup);
+  const invitationsProps = useSelector((state) => state.reducerInvitationsGroup);
+  const myPalsRequest = useSelector((state) => state.reducerRequests);
+  const groupUpdateProps = useSelector((state) => state.reducerUpdateGroup);
+  const friendsProps = useSelector((state) => state.reducerMyPals);
+
+  const dispatch = useDispatch();
+
+  const [tabSelectMy, setTabSelectMy] = useState(true);
+  const [showToastQuestion, setShowToastQuestion] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [refresh, setRefresh] = useState(false);
+  const [loadingUsers, setLoadingUsers] = useState(false);
+  const [toastText, setToastText] = useState("");
+  const [groupsNearMe, setGroupsNearMe] = useState([]);
+  const [search, setSearch] = useState("");
+  const [searchMember, setSearchMember] = useState("");
+  const [searchPeople, setSearchPeople] = useState("");
+  const [friends, setFriends] = useState([]);
+  const [friendsBack, setFriendsBack] = useState(null);
+  const [isAddParticipant, setIsAddParticipant] = useState(false);
+  const [newParticipants, setNewParticipants] = useState([]);
+  const [showUserRequestGroupDetails, setShowUserRequestGroupDetails] = useState(false);
+  const [group, setGroup] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
+  const [showGroupInvitations, setShowGroupInvitations] = useState(false)
+  const [lastUserViewProfile, setLastUserViewProfile] = useState({
+    id: null,
+    key: null,
+  });
+
+
+  useEffect(() => {
+    navigation.setParams({
+      tabSelectMy: tabSelectMy,
+      openOptions: () => openOptions(),
     });
-    this.listGroup();
-    if (null !== this.state.friendsBack && this.state.friendsBack.length > 0)
-      this.setState({
-        friends: this.state.friendsBack,
-        searchPeople: "",
-      });
-    if (true === this.props.navigation.getParam("invitation", null)) {
-      this.setState({ showGroupInvitations: true });
+    listGroup();
+    if (null !== friendsBack && friendsBack.length > 0)
+      setFriends(friendsBack);
+    setSearchPeople("");
+
+    if (true === navigation.getParam("invitation", null)) {
+      setShowGroupInvitations(true);
     } else {
-      var sGroupKey = this.props.navigation.getParam("groupId", null);
+      var sGroupKey = navigation.getParam("groupId", null);
       if (null !== sGroupKey) {
-        this.props.grupProps.listGroup.forEach((oElement) => {
+        groupProps.listGroup.forEach((oElement) => {
           if (oElement.key === sGroupKey) {
-            if (null !== this.props.navigation.getParam("request", null))
-              this.openRequestModal(oElement);
-            else this.openGroup(oElement.key);
+            if (null !== navigation.getParam("request", null))
+              openRequestModal(oElement);
+            else openGroup(oElement.key);
           }
         });
       }
     }
-    this.getGroupNearMe(null);
-  };
+    getGroupNearMe(null);
+  }, []);
 
-  componentWillReceiveProps = (nextProps) => {
-    this.setState({
-      loading: false,
-      refreshing: false,
-    });
-    undefined === this.props.grupProps.listGroup &&
-      undefined === this.props.grupProps.listGroupNearMe &&
-      this.listGroup();
+  useEffect(() => {
+    setLoading(false);
+    setRefreshing(false);
+    undefined === groupProps.listGroup &&
+      undefined === groupProps.listGroupNearMe &&
+      listGroup();
     if (
-      this.props.grupProps.status &&
-      null !== this.props.grupProps.firebaseId &&
-      undefined !== this.props.grupProps.firebaseId
+      groupProps.status &&
+      null !== groupProps.firebaseId &&
+      undefined !== groupProps.firebaseId
     )
-      this.openGroup(this.props.grupProps.firebaseId);
-    undefined !== nextProps.grupProps.messageError &&
-      "" !== nextProps.grupProps.messageError &&
-      null !== nextProps.grupProps.messageError &&
-      this.showToast(nextProps.grupProps.messageError);
+      openGroup(groupProps.firebaseId);
+    undefined !== groupProps.messageError &&
+      "" !== groupProps.messageError &&
+      null !== groupProps.messageError &&
+      showToast(groupProps.messageError);
     if (
-      null !== nextProps.grupProps.friendRefresh &&
-      nextProps.grupProps.friendRefresh
+      null !== groupProps.friendRefresh &&
+      groupProps.friendRefresh
     ) {
-      this.setState({
-        friendsBack: this.props.friendsProps.myFriends,
-        friends: this.props.friendsProps.myFriends,
-      });
+      setFriendsBack(friendsProps.myFriends);
+      setFriends(friendsProps.myFriends)
     }
     if (
-      (undefined !== nextProps.grupProps.listGroup &&
-        null !== nextProps.grupProps.listGroup) ||
-      null !== this.state.group
+      (undefined !== groupProps.listGroup &&
+        null !== groupProps.listGroup) ||
+      null !== group
     ) {
-      if (null !== nextProps.grupProps.listGroup) {
-        nextProps.grupProps.listGroup.forEach((oGroup) => {
-          if (null !== this.state.group) {
-            if (oGroup.key === this.state.group.key) {
+      if (null !== groupProps.listGroup) {
+        groupProps.listGroup.forEach((oGroup) => {
+          if (null !== group) {
+            if (oGroup.key === group.key) {
               if (
                 (undefined !== oGroup.usersRequest &&
                   oGroup.usersRequest.length > 0) ||
-                oGroup.messages !== this.state.group.messages
+                oGroup.messages !== group.messages
               ) {
-                this.setState({
-                  usersRequest: oGroup.usersRequest,
-                  group: oGroup,
-                });
+                setUsersRequest(oGroup.usersRequest);
+                setGroup(oGroup);
               } else {
-                if (this.state.showUserRequestGroupDetails) {
-                  this.setState({
-                    usersRequest: null,
-                    group: null,
-                    showUserRequestGroupDetails: false,
-                  });
+                if (showUserRequestGroupDetails) {
+                  setUsersRequest(null);
+                  setGroup(null);
+                  setShowUserRequestGroupDetails(false);
                 }
               }
             }
@@ -178,69 +168,65 @@ class Groups extends Component {
       }
     }
     if (
-      this.props.invitationsProps !== nextProps.invitationsProps &&
-      nextProps.invitationsProps.invitationAction
+      invitationsProps !== invitationsProps &&
+      invitationsProps.invitationAction
     ) {
-      this.showToast("Invitation processed successfully");
+      showToast("Invitation processed successfully");
     }
     if (
-      this.state.searchPeople !== "" &&
-      nextProps.myPalsRequest.peopleFitrec !== this.state.friends
+      searchPeople !== "" &&
+      myPalsRequest.peopleFitrec !== friends
     ) {
-      this.state.friends = nextProps.myPalsRequest.peopleFitrec;
+      friends = myPalsRequest.peopleFitrec;
     }
     if (
-      this.props.friendsProps.status !== true &&
-      (null === this.props.friendsProps.myFriends ||
-        this.props.friendsProps.myFriends.length === 0)
+      friendsProps.status !== true &&
+      (null === friendsProps.myFriends ||
+        friendsProps.myFriends.length === 0)
     )
-      this.props.getMyFriends(this.props.session.account.key);
-    else if (null === this.state.friendsBack)
-      this.setState({
-        friendsBack: this.props.friendsProps.myFriends,
-        friends: this.props.friendsProps.myFriends,
-      });
-    if (this.props.grupProps.sGroupKey) {
-      this.openGroup(this.props.grupProps.sGroupKey);
-      this.props.clearNavigation();
+      dispatch(actionGetMyFriends(session.account.key));
+    else if (null === friendsBack)
+      setFriendsBack(friendsProps.myFriends);
+    setFriends(friendsProps.myFriends);
+    if (groupProps.sGroupKey) {
+      openGroup(groupProps.sGroupKey);
+      dispatch(actionCleanNavigation());
     }
+  }, []);
+
+
+  const openGroup = (sGroupKey) => {
+    dispatch(actionGetGroup(sGroupKey, session.account.key));
+    navigation.navigate("DetailsGroup");
   };
 
-  openGroup = (sGroupKey) => {
-    this.props.getGroup(sGroupKey, this.props.session.account.key);
-    this.props.navigation.navigate("DetailsGroup");
+  const onRefresh = () => {
+    setRefreshing(true);
+    listGroup();
   };
 
-  onRefresh = () => {
-    this.setState({
-      refreshing: true,
-    });
-    this.listGroup();
-  };
+  const listGroup = (nType = null) => {
+    dispatch(actionGetGroupInvitations({
+      accountId: session.account.key,
+    })
+    );
 
-  listGroup = (nType = null) => {
-    const { tabSelectMy: bIsMyTab } = this.state;
-    this.props.getGroupsInvitation({
-      accountId: this.props.session.account.key,
-    });
-    if (!bIsMyTab) {
-      this.setState({
-        loading: true,
-        showToastQuestion: false,
-      });
+    if (!tabSelectMy) {
+      setLoading(true);
+      setShowToastQuestion(false);
       if (
-        this.state.refreshing ||
-        undefined === this.props.grupProps.listGroup ||
-        null === this.props.grupProps.listGroup ||
-        this.props.grupProps.listGroup.length === 0
+        refreshing ||
+        undefined === groupProps.listGroup ||
+        null === groupProps.listGroup ||
+        groupProps.listGroup.length === 0
       )
-        this.props.getGroups(this.props.session.account.key, this.state.search);
-      this.getGroupNearMe(nType);
+        dispatch(actionGetGroups(session.account.key, search));
+      getGroupNearMe(nType);
     }
   };
 
-  getGroupNearMe = (nType) => {
-    var sFilter = this.state.search,
+  const getGroupNearMe = (nType) => {
+    var sFilter = search,
       sDistance = null,
       nLatitude = null,
       nLongitude = null;
@@ -248,247 +234,230 @@ class Groups extends Component {
       Geolocation.getCurrentPosition(
         (position) => {
           if (
-            null !== this.props.session.account &&
+            null !== session.account &&
             position &&
             undefined !== position.coords
           ) {
             nLatitude = position.coords.latitude;
             nLongitude = position.coords.longitude;
           }
-          this.props.getGroupsNearMe(
-            sFilter,
-            nType,
-            sDistance,
-            nLatitude,
-            nLongitude
+          dispatch(
+            actionGetGroupsNearMe(
+              sFilter,
+              nType,
+              sDistance,
+              nLatitude,
+              nLongitude
+            )
           );
         },
         () => {
-          this.props.getGroupsNearMe(
-            sFilter,
-            nType,
-            sDistance,
-            nLatitude,
-            nLongitude
+          dispatch(
+            actionGetGroupsNearMe(
+              sFilter,
+              nType,
+              sDistance,
+              nLatitude,
+              nLongitude
+            )
           );
         },
         OPTIONS_GEOLOCATION_GET_POSITION
       );
     } catch (oError) {
-      this.props.getGroupsNearMe(
-        sFilter,
-        nType,
-        sDistance,
-        nLatitude,
-        nLongitude
+      dispatch(
+        actionGetGroupsNearMe(
+          sFilter,
+          nType,
+          sDistance,
+          nLatitude,
+          nLongitude
+        )
       );
     }
   };
 
-  addParticipant = (oElement) => {
+  const addParticipant = (oElement) => {
     if (
-      this.state.newParticipants.filter(
+      newParticipants.filter(
         (element) => element.key === oElement.key
       ).length == 0
     ) {
-      this.setState({
-        newParticipants: [...this.state.newParticipants, oElement],
-      });
+      setNewParticipants([...newParticipants, oElement]);
     } else {
       var aParticipants = [];
-      this.state.newParticipants.forEach((oParticipant) => {
+      newParticipants.forEach((oParticipant) => {
         oParticipant.key !== oElement.key && aParticipants.push(oParticipant);
       });
-      this.setState({
-        newParticipants: aParticipants,
-      });
+      setNewParticipants(aParticipants);
     }
   };
 
-  addMember = () => {
-    this.setState({
-      isAddParticipant: !this.state.isAddParticipant,
-      newParticipants: [],
-      search: "",
-      searchMember: "",
-      friends: this.state.friendsBack,
-    });
+  const addMember = () => {
+    setIsAddParticipant(!isAddParticipant);
+    setNewParticipants([]);
+    setSearch("");
+    setSearchMember("");
+    setFriends(friendsBack);
   };
 
-  confirmAddMember = () => {
+  const confirmAddMember = () => {
     // TODO: Look at the group blocked users
-    if (this.state.newParticipants.length > 0) {
-      let nGroupId = this.state.group.id,
-        sGroupKey = this.state.group.key,
-        sGroupName = this.state.group.name,
-        sGroupImage = this.state.group.image,
-        aMembers = this.state.newParticipants;
-      this.setState({
-        isAddParticipant: !this.state.isAddParticipant,
-        newParticipants: [],
-      });
-      this.props.addMember(
-        nGroupId,
-        sGroupKey,
-        sGroupName,
-        sGroupImage,
-        aMembers
+    if (newParticipants.length > 0) {
+      let nGroupId = group.id,
+        sGroupKey = group.key,
+        sGroupName = group.name,
+        sGroupImage = group.image,
+        aMembers = newParticipants;
+      setIsAddParticipant(!isAddParticipant);
+      setNewParticipants([]);
+      dispatch(
+        actionAddMember(
+          nGroupId,
+          sGroupKey,
+          sGroupName,
+          sGroupImage,
+          aMembers
+        )
       );
-      this.props.getMyFriends(this.props.session.account.key);
+      prdispatch(actionGetMyFriends(session.account.key));
     }
   };
 
-  acceptRequest = (oRequest) => {
-    this.setState({
-      loading: true,
-    });
-    let sGroupKey = this.state.group.key,
-      sCapitanKey = this.props.session.account.key,
+  const acceptRequest = (oRequest) => {
+    setLoading(true);
+    let sGroupKey = group.key,
+      sCapitanKey = session.account.key,
       sUserKey = oRequest.key,
       sUserName = oRequest.name;
-    this.props.acceptRequestGroup(sGroupKey, sCapitanKey, sUserKey, sUserName);
+    dispatch(actionAcceptRequest(sGroupKey, sCapitanKey, sUserKey, sUserName));
   };
 
-  cancelRequest = (oRequest) => {
-    this.setState({
-      loading: true,
-    });
-    this.props.rejectRequestGroup({
-      groupId: this.state.group.key,
-      accountId: this.props.session.account.key,
+  const cancelRequest = (oRequest) => {
+    setLoading(true);
+    let data = {
+      groupId: group.key,
+      accountId: session.account.key,
       userId: oRequest.key,
-    });
+    };
+    dispatch(actionRejectRequest(data));
   };
 
-  changeTabSelect = (bValueSelect) => {
-    this.setState({ tabSelectMy: bValueSelect });
-    this.props.navigation.setParams({ tabSelectMy: bValueSelect });
+  const changeTabSelect = (bValueSelect) => {
+    setTabSelectMy(bValueSelect);
+    navigation.setParams({ tabSelectMy: bValueSelect });
   };
 
-  openOptions = () => {
+  const openOptions = () => {
     Keyboard.dismiss();
-    this.setState({ showToastQuestion: !this.state.showToastQuestion });
+    setShowToastQuestion(!showToastQuestion);
   };
 
-  openRequestModal = (oGroup) => {
-    this.setState({
-      showUserRequestGroupDetails: true,
-      usersRequest: oGroup.usersRequest,
-      group: oGroup,
-    });
+  const openRequestModal = (oGroup) => {
+    setShowUserRequestGroupDetails(true);
+    setUsersRequest(oGroup.usersRequest);
+    setGroup(oGroup);
   };
 
-  requestJoinGroup = (oGroup) => {
-    if (!this.state.loading) {
-      this.setState({
-        loading: true,
-      });
+  const requestJoinGroup = (oGroup) => {
+    if (!loading) {
+      setLoading(true);
       var sGroupKey = oGroup.key,
-        sUserKey = this.props.session.account.key,
-        sUserId = this.props.session.account.id,
-        sUserImage = this.props.session.account.image,
-        sUserName = this.props.session.account.name,
-        sUserUsername = this.props.session.account.username,
+        sUserKey = session.account.key,
+        sUserId = session.account.id,
+        sUserImage = session.account.image,
+        sUserName = session.account.name,
+        sUserUsername = session.account.username,
         nGroupId = oGroup.id,
         sGroupName = oGroup.name;
-      this.props.requestJoinGroup(
-        sGroupKey,
-        nGroupId,
-        sGroupName,
-        sUserKey,
-        sUserId,
-        sUserImage,
-        sUserName,
-        sUserUsername
+      dispatch(
+        actionRequestJoinGroup(
+          sGroupKey,
+          nGroupId,
+          sGroupName,
+          sUserKey,
+          sUserId,
+          sUserImage,
+          sUserName,
+          sUserUsername
+        )
       );
     }
   };
 
-  viewProfile = (oUser) => {
+  const viewProfile = (oUser) => {
     if (oUser.sender !== undefined) {
-      if (oUser.sender === this.state.lastUserViewProfile.key) {
-        this.props.getProfile(this.state.lastUserViewProfile.id);
+      if (oUser.sender === lastUserViewProfile.key) {
+        dispatch(actionGetProfile(lastUserViewProfile.id));
       } else {
         GetUserAccount(oUser.sender).then((userAccountSnapshot) => {
           var oUserAccount = userAccountSnapshot.val();
-          this.setState({
-            lastUserViewProfile: {
-              id: oUserAccount.id,
-              key: oUser.sender,
-            },
+          setLastUserViewProfile({
+            id: oUserAccount.id,
+            key: oUser.sender,
           });
-          this.props.getProfile(oUserAccount.id);
+          dispatch(actionGetProfile(oUserAccount.id));
         });
       }
     } else {
-      this.props.getProfile(oUser.id);
+      dispatch(actionGetProfile(oUser.id));
     }
-    this.props.navigation.navigate("ProfileViewDetails");
+    navigation.navigate("ProfileViewDetails");
   };
 
-  acceptAllRequest = (oGroup) => {
+  const acceptAllRequest = (oGroup) => {
     // TODO: Take the erreglo within the 'UsersreQuest' group and generate a function in the action where itere on it and sends to accept the applications, with a single function that Itere will be made a single descent of the group and a single update of the group
-    this.showToast("Function not yet implemented");
+    showToast("Function not yet implemented");
   };
 
-  showToast = (sText) => {
-    this.setState({
-      toastText: sText,
-      loading: false,
-    });
+  const showToast = (text) => {
+    setToastText(text);
+    setLoading(false);
     setTimeout(() => {
-      this.setState({
-        toastText: "",
-      });
+      setToastText("");
     }, 2000);
   };
 
-  rejectInvitation = (groupKey) => {
-    this.setState({
-      loading: true,
-    });
-    this.props.rejectInvitationGroup({
-      accountId: this.props.session.account.key,
+  const rejectInvitation = (groupKey) => {
+    setLoading(true);
+    let data = {
+      accountId: session.account.key,
       groupId: groupKey,
-    });
+    };
+    dispatch(actionRejectInvitationGroup(data));
   };
 
-  acceptInvitation = (sGroupKey, nGroupId) => {
-    this.setState({
-      loading: true,
-    });
-    let nUserId = this.props.session.account.id,
-      sUserKey = this.props.session.account.key,
-      sUserName = this.props.session.account.name;
-    this.props.acceptInvitationGroup(
-      nGroupId,
-      sGroupKey,
-      nUserId,
-      sUserKey,
-      sUserName
+  const acceptInvitation = (sGroupKey, nGroupId) => {
+    setLoading(true);
+    let nUserId = session.account.id,
+      sUserKey = session.account.key,
+      sUserName = session.account.name;
+    dispatch(
+      actionAcceptInvitationGroup(
+        nGroupId,
+        sGroupKey,
+        nUserId,
+        sUserKey,
+        sUserName
+      )
     );
   };
 
-  searchUsers = (sSearch) => {
+  const searchUsers = (sSearch) => {
     if ("" === sSearch) {
-      this.setState({
-        friends: this.state.friendsBack,
-        searchPeople: "",
-      });
+      setFriends(friendsBack);
+      setSearchPeople("");
     } else {
-      this.props.getPeople(sSearch);
-      this.setState({
-        loading: true,
-        searchPeople: sSearch,
-      });
+      dispatch(actionGetPeopleGroup(sSearch));
+      setLoading(true);
+      setSearchPeople(sSearch);
     }
   };
 
-  getMyGroups = () => {
-    const { listGroup: aGroups } = this.props.grupProps;
+  const getMyGroups = () => {
+    const { listGroup: aGroups } = groupProps;
     if (aGroups && aGroups.length > 0) {
-      const { search: sSearch } = this.state;
-      if (sSearch)
+      if (search)
         return aGroups.filter((oGroup) =>
           oGroup.name.toUpperCase().includes(sSearch.toUpperCase())
         );
@@ -497,484 +466,480 @@ class Groups extends Component {
     return null;
   };
 
-  render() {
-    return (
-      <ImageBackground
-        source={require("../../assets/bk.png")}
-        resizeMode="cover"
-        style={GlobalStyles.fullImageGroups}
-      >
-        <View style={GlobalTabs.viewTabs}>
-          <Pressable
-            onPress={() => this.changeTabSelect(true)}
-            style={[
-              GlobalTabs.tabLeft,
-              this.state.tabSelectMy && GlobalTabs.tabActive,
-            ]}
-          >
-            <View>
-              <Text
-                style={
-                  this.state.tabSelectMy
-                    ? GlobalTabs.tabsTextActive
-                    : GlobalTabs.tabsText
-                }
-              >
-                My
-              </Text>
-            </View>
-          </Pressable>
-          <Pressable
-            onPress={() => this.changeTabSelect(false)}
-            style={[
-              GlobalTabs.tabRight,
-              !this.state.tabSelectMy && GlobalTabs.tabActive,
-            ]}
-          >
-            <View>
-              <Text
-                style={
-                  !this.state.tabSelectMy
-                    ? GlobalTabs.tabsTextActive
-                    : GlobalTabs.tabsText
-                }
-              >
-                Near me
-              </Text>
-            </View>
-          </Pressable>
-        </View>
-        {this.state.tabSelectMy ? (
-          //MY
-          <View style={{ flex: 1 }}>
-            {this.props.session.groupInvitations.length > 0 && (
-              <View style={styles.viewButton}>
-                <Pressable
-                  onPress={() => this.setState({ showGroupInvitations: true })}
-                  style={styles.button}
-                >
-                  <Icon name="md-notifications" size={16} color={WhiteColor} />
-                  <Text style={styles.textButton}>Group Invitations</Text>
-                </Pressable>
-              </View>
-            )}
-            <SearchUsername
-              ph={"Search by group name"}
-              value={this.state.search}
-              change={(text) => {
-                this.setState({ search: text });
-                this.listGroup();
-              }}
-              blur={() => this.listGroup()}
-              clean={() => this.setState({ search: "" })}
-            />
-            <ScrollView
-              refreshControl={
-                <RefreshControl
-                  refreshing={this.state.refreshing}
-                  onRefresh={this.onRefresh}
-                  tintColor={GreenFitrecColor}
-                  title="Pull to refresh..."
-                />
+  return (
+    <ImageBackground
+      source={require("../../assets/bk.png")}
+      resizeMode="cover"
+      style={GlobalStyles.fullImageGroups}
+    >
+      <View style={GlobalTabs.viewTabs}>
+        <Pressable
+          onPress={() => changeTabSelect(true)}
+          style={[
+            GlobalTabs.tabLeft,
+            tabSelectMy && GlobalTabs.tabActive,
+          ]}
+        >
+          <View>
+            <Text
+              style={
+                tabSelectMy
+                  ? GlobalTabs.tabsTextActive
+                  : GlobalTabs.tabsText
               }
             >
-              {this.getMyGroups() ? (
-                <FlatList
-                  data={this.getMyGroups()}
-                  keyExtractor={(item, index) => index.toString()}
-                  extraData={this.state.refresh}
-                  renderItem={({ item }) => {
-                    return (
-                      <View style={styles.viewNotificaton}>
-                        <Pressable
-                          onPress={() => this.openGroup(item.key)}
-                          style={{ flexDirection: "row", width: "100%" }}
-                        >
-                          {null === item.image ? (
-                            <Image
-                              style={GlobalStyles.photoProfileCardList}
-                              source={require("../../assets/imgGroup.png")}
-                            />
-                          ) : (
-                            <FastImage
-                              style={GlobalStyles.photoProfileCardList}
-                              source={{
-                                uri: item.image,
-                                priority: FastImage.priority.high,
-                              }}
-                              resizeMode={FastImage.resizeMode.cover}
-                            />
-                          )}
-                          <View
-                            style={{
-                              justifyContent: "center",
-                              marginLeft: 10,
-                              marginRight: 175,
-                            }}
-                          >
-                            <Text style={styles.textUserReference}>
-                              {item.name.length > 40
-                                ? item.name.substring(0, 37) + "..."
-                                : item.name}
-                            </Text>
-                            <Text>
-                              {moment(item.dateCreated).format("MMM DD LT")}
-                            </Text>
-                          </View>
-                          {item.isCapitan === true &&
-                            undefined !== item.usersRequest &&
-                            item.usersRequest.length > 0 && (
-                              <Pressable
-                                onPress={() => this.openRequestModal(item)}
-                                style={styles.viewIconAddMemberRight}
-                              >
-                                <View>
-                                  <Icon
-                                    name="ios-person-add"
-                                    size={36}
-                                    color={SignUpColor}
-                                  />
-                                </View>
-                              </Pressable>
-                            )}
-                          {item.messagesRead > 0 && (
-                            <View
-                              style={[
-                                GlobalMessages.viewGlobalBubble,
-                                styles.viewIconAddMemberRight,
-                                { marginTop: 0, right: 65 },
-                              ]}
-                            >
-                              <View style={GlobalMessages.viewBubble}>
-                                <Text style={GlobalMessages.text}>
-                                  {item.messagesRead}
-                                </Text>
-                              </View>
-                            </View>
-                          )}
-                          <View style={styles.viewIconRight}>
-                            <Icon
-                              name="chevron-forward"
-                              size={36}
-                              color={PlaceholderColor}
-                            />
-                          </View>
-                        </Pressable>
-                      </View>
-                    );
-                  }}
-                />
-              ) : (
-                <Text
-                  style={[
-                    styles.margin,
-                    {
-                      alignItems: "center",
-                      padding: 20,
-                      textAlign: "center",
-                      fontSize: 18,
-                      flexWrap: "wrap",
-                    },
-                  ]}
-                >
-                  You are not yet part of any group
-                </Text>
-              )}
-            </ScrollView>
+              My
+            </Text>
           </View>
-        ) : (
-          //NEAR ME
-          <View style={{ flex: 1 }}>
-            <SearchUsername
-              ph={"Search by group name"}
-              value={this.state.search}
-              change={(text) => {
-                this.setState({ search: text });
-                "" === text && this.listGroup();
-              }}
-              blur={() => this.listGroup()}
-              clean={() => this.setState({ search: "" })}
-            />
-            <ScrollView
-              refreshControl={
-                <RefreshControl
-                  refreshing={this.state.refreshing}
-                  onRefresh={this.onRefresh}
-                  tintColor={GreenFitrecColor}
-                  title="Pull to refresh..."
-                />
+        </Pressable>
+        <Pressable
+          onPress={() => changeTabSelect(false)}
+          style={[
+            GlobalTabs.tabRight,
+            !tabSelectMy && GlobalTabs.tabActive,
+          ]}
+        >
+          <View>
+            <Text
+              style={
+                !tabSelectMy
+                  ? GlobalTabs.tabsTextActive
+                  : GlobalTabs.tabsText
               }
             >
-              {null !== this.props.grupProps.listGroupNearMe &&
-              undefined !== this.props.grupProps.listGroupNearMe &&
-              this.props.grupProps.listGroupNearMe.length > 0 ? (
-                <FlatList
-                  data={this.props.grupProps.listGroupNearMe}
-                  keyExtractor={(item, index) => index.toString()}
-                  extraData={this.state.refresh}
-                  renderItem={({ item }) => {
-                    return (
-                      <View style={styles.viewNotificaton}>
-                        <Pressable
-                          onPress={() => this.openGroup(item.key)}
-                          style={{ flexDirection: "row", width: "100%" }}
-                        >
-                          {null === item.image ? (
-                            <Image
-                              style={GlobalStyles.photoProfileCardList}
-                              source={require("../../assets/imgGroup.png")}
-                            />
-                          ) : (
-                            <FastImage
-                              style={GlobalStyles.photoProfileCardList}
-                              source={{
-                                uri: item.image,
-                                priority: FastImage.priority.high,
-                              }}
-                              resizeMode={FastImage.resizeMode.cover}
-                            />
-                          )}
-                          <View
-                            style={{ justifyContent: "center", marginLeft: 10 }}
-                          >
-                            <Text style={styles.textUserReference}>
-                              {item.name}
-                            </Text>
-                            <Text>
-                              {item.type == GROUP_PRIVATE
-                                ? "Private"
-                                : "Public"}
-                            </Text>
-                          </View>
-                          <View style={styles.viewIconRight}>
-                            <Icon
-                              name="ios-arrow-forward"
-                              size={36}
-                              color={PlaceholderColor}
-                            />
-                          </View>
-                        </Pressable>
-                      </View>
-                    );
-                  }}
-                />
-              ) : (
-                <Text
-                  style={[
-                    styles.margin,
-                    {
-                      alignItems: "center",
-                      padding: 20,
-                      textAlign: "center",
-                      fontSize: 18,
-                      flexWrap: "wrap",
-                    },
-                  ]}
-                >
-                  No nearby groups found
-                </Text>
-              )}
-            </ScrollView>
+              Near me
+            </Text>
           </View>
-        )}
-        <ToastQuestionGeneric
-          visible={this.state.showToastQuestion}
-          title="Select filter"
-          options={
-            <View style={{ padding: 10 }}>
-              <Pressable onPress={() => this.listGroup(0)}>
-                <View style={ToastQuestionGenericStyles.viewButtonOption}>
-                  <Icon name="lock-open" size={22} color={WhiteColor} />
-                  <Text style={ToastQuestionGenericStyles.viewButtonOptionText}>
-                    Public Groups
-                  </Text>
-                </View>
-              </Pressable>
-              <Pressable onPress={() => this.listGroup(1)}>
-                <View style={ToastQuestionGenericStyles.viewButtonOption}>
-                  <Icon name="lock-closed" size={22} color={WhiteColor} />
-                  <Text style={ToastQuestionGenericStyles.viewButtonOptionText}>
-                    Private Groups
-                  </Text>
-                </View>
-              </Pressable>
-              <Pressable onPress={() => this.listGroup()}>
-                <View
-                  style={[
-                    ToastQuestionGenericStyles.viewButtonOption,
-                    { marginBottom: 0 },
-                  ]}
-                >
-                  <Icon name="ios-options" size={22} color={WhiteColor} />
-                  <Text style={ToastQuestionGenericStyles.viewButtonOptionText}>
-                    Default
-                  </Text>
-                </View>
-              </Pressable>
-            </View>
-          }
-        />
-        <ShowUserRequestGroup
-          visible={this.state.showUserRequestGroupDetails}
-          users={this.state.usersRequest}
-          close={() => {
-            this.setState({ showUserRequestGroupDetails: false });
-          }}
-          viewProfile={this.viewProfile}
-          acceptAll={() => {
-            this.acceptAllRequest(this.state.group);
-          }}
-          acceptRequest={(item) => {
-            this.acceptRequest(item);
-          }}
-          cancelRequest={(item) => {
-            this.cancelRequest(item);
-          }}
-        />
-        <LoadingSpinner
-          visible={this.state.loading || this.state.loadingUsers}
-        />
-        <Toast toastText={this.state.toastText} />
-        {this.state.showGroupInvitations &&
-        this.props.session.groupInvitations.length > 0 ? (
-          <View style={GlobalModal.viewContent}>
-            <View style={GlobalModal.viewHead}>
-              <Text style={GlobalModal.headTitle}>Group Invitations</Text>
+        </Pressable>
+      </View>
+      {tabSelectMy ? (
+        //MY
+        <View style={{ flex: 1 }}>
+          {session.groupInvitations.length > 0 && (
+            <View style={styles.viewButton}>
               <Pressable
-                style={[GlobalModal.buttonClose, { flexDirection: "row" }]}
-                onPress={() => this.setState({ showGroupInvitations: false })}
+                onPress={() => setShowGroupInvitations(true)}
+                style={styles.button}
               >
-                <Icon name="md-close" color={SignUpColor} size={22} />
-                <Text style={[GlobalModal.titleClose, { marginLeft: 2 }]}>
-                  Close
-                </Text>
+                <Icon name="md-notifications" size={16} color={WhiteColor} />
+                <Text style={styles.textButton}>Group Invitations</Text>
               </Pressable>
             </View>
-            <ScrollView>
+          )}
+          <SearchUsername
+            ph={"Search by group name"}
+            value={search}
+            change={(text) => {
+              setSearch(text);
+              listGroup();
+            }}
+            blur={() => listGroup()}
+            clean={() => setSearch("")}
+          />
+          <ScrollView
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+                tintColor={GreenFitrecColor}
+                title="Pull to refresh..."
+              />
+            }
+          >
+            {getMyGroups() ? (
               <FlatList
-                data={this.props.session.groupInvitations}
-                renderItem={({ item }) => (
-                  <View>
-                    {item.group !== null ? (
-                      <View style={styles.viewNotificaton}>
+                data={getMyGroups()}
+                keyExtractor={(item, index) => index.toString()}
+                extraData={refresh}
+                renderItem={({ item }) => {
+                  return (
+                    <View style={styles.viewNotificaton}>
+                      <Pressable
+                        onPress={() => openGroup(item.key)}
+                        style={{ flexDirection: "row", width: "100%" }}
+                      >
+                        {null === item.image ? (
+                          <Image
+                            style={GlobalStyles.photoProfileCardList}
+                            source={require("../../assets/imgGroup.png")}
+                          />
+                        ) : (
+                          <FastImage
+                            style={GlobalStyles.photoProfileCardList}
+                            source={{
+                              uri: item.image,
+                              priority: FastImage.priority.high,
+                            }}
+                            resizeMode={FastImage.resizeMode.cover}
+                          />
+                        )}
                         <View
                           style={{
-                            width: "20%",
                             justifyContent: "center",
-                            alignItems: "center",
+                            marginLeft: 10,
+                            marginRight: 175,
                           }}
                         >
-                          {null !== item.group &&
+                          <Text style={styles.textUserReference}>
+                            {item.name.length > 40
+                              ? item.name.substring(0, 37) + "..."
+                              : item.name}
+                          </Text>
+                          <Text>
+                            {moment(item.dateCreated).format("MMM DD LT")}
+                          </Text>
+                        </View>
+                        {item.isCapitan === true &&
+                          undefined !== item.usersRequest &&
+                          item.usersRequest.length > 0 && (
+                            <Pressable
+                              onPress={() => openRequestModal(item)}
+                              style={styles.viewIconAddMemberRight}
+                            >
+                              <View>
+                                <Icon
+                                  name="ios-person-add"
+                                  size={36}
+                                  color={SignUpColor}
+                                />
+                              </View>
+                            </Pressable>
+                          )}
+                        {item.messagesRead > 0 && (
+                          <View
+                            style={[
+                              GlobalMessages.viewGlobalBubble,
+                              styles.viewIconAddMemberRight,
+                              { marginTop: 0, right: 65 },
+                            ]}
+                          >
+                            <View style={GlobalMessages.viewBubble}>
+                              <Text style={GlobalMessages.text}>
+                                {item.messagesRead}
+                              </Text>
+                            </View>
+                          </View>
+                        )}
+                        <View style={styles.viewIconRight}>
+                          <Icon
+                            name="chevron-forward"
+                            size={36}
+                            color={PlaceholderColor}
+                          />
+                        </View>
+                      </Pressable>
+                    </View>
+                  );
+                }}
+              />
+            ) : (
+              <Text
+                style={[
+                  styles.margin,
+                  {
+                    alignItems: "center",
+                    padding: 20,
+                    textAlign: "center",
+                    fontSize: 18,
+                    flexWrap: "wrap",
+                  },
+                ]}
+              >
+                You are not yet part of any group
+              </Text>
+            )}
+          </ScrollView>
+        </View>
+      ) : (
+        //NEAR ME
+        <View style={{ flex: 1 }}>
+          <SearchUsername
+            ph={"Search by group name"}
+            value={search}
+            change={(text) => {
+              setSearch(text);
+              "" === text && listGroup();
+            }}
+            blur={() => listGroup()}
+            clean={() => setSearch("")}
+          />
+          <ScrollView
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+                tintColor={GreenFitrecColor}
+                title="Pull to refresh..."
+              />
+            }
+          >
+            {null !== groupProps.listGroupNearMe &&
+              undefined !== groupProps.listGroupNearMe &&
+              groupProps.listGroupNearMe.length > 0 ? (
+              <FlatList
+                data={groupProps.listGroupNearMe}
+                keyExtractor={(item, index) => index.toString()}
+                extraData={refresh}
+                renderItem={({ item }) => {
+                  return (
+                    <View style={styles.viewNotificaton}>
+                      <Pressable
+                        onPress={() => openGroup(item.key)}
+                        style={{ flexDirection: "row", width: "100%" }}
+                      >
+                        {null === item.image ? (
+                          <Image
+                            style={GlobalStyles.photoProfileCardList}
+                            source={require("../../assets/imgGroup.png")}
+                          />
+                        ) : (
+                          <FastImage
+                            style={GlobalStyles.photoProfileCardList}
+                            source={{
+                              uri: item.image,
+                              priority: FastImage.priority.high,
+                            }}
+                            resizeMode={FastImage.resizeMode.cover}
+                          />
+                        )}
+                        <View
+                          style={{ justifyContent: "center", marginLeft: 10 }}
+                        >
+                          <Text style={styles.textUserReference}>
+                            {item.name}
+                          </Text>
+                          <Text>
+                            {item.type == GROUP_PRIVATE
+                              ? "Private"
+                              : "Public"}
+                          </Text>
+                        </View>
+                        <View style={styles.viewIconRight}>
+                          <Icon
+                            name="ios-arrow-forward"
+                            size={36}
+                            color={PlaceholderColor}
+                          />
+                        </View>
+                      </Pressable>
+                    </View>
+                  );
+                }}
+              />
+            ) : (
+              <Text
+                style={[
+                  styles.margin,
+                  {
+                    alignItems: "center",
+                    padding: 20,
+                    textAlign: "center",
+                    fontSize: 18,
+                    flexWrap: "wrap",
+                  },
+                ]}
+              >
+                No nearby groups found
+              </Text>
+            )}
+          </ScrollView>
+        </View>
+      )}
+      <ToastQuestionGeneric
+        visible={showToastQuestion}
+        title="Select filter"
+        options={
+          <View style={{ padding: 10 }}>
+            <Pressable onPress={() => listGroup(0)}>
+              <View style={ToastQuestionGenericStyles.viewButtonOption}>
+                <Icon name="lock-open" size={22} color={WhiteColor} />
+                <Text style={ToastQuestionGenericStyles.viewButtonOptionText}>
+                  Public Groups
+                </Text>
+              </View>
+            </Pressable>
+            <Pressable onPress={() => listGroup(1)}>
+              <View style={ToastQuestionGenericStyles.viewButtonOption}>
+                <Icon name="lock-closed" size={22} color={WhiteColor} />
+                <Text style={ToastQuestionGenericStyles.viewButtonOptionText}>
+                  Private Groups
+                </Text>
+              </View>
+            </Pressable>
+            <Pressable onPress={() => listGroup()}>
+              <View
+                style={[
+                  ToastQuestionGenericStyles.viewButtonOption,
+                  { marginBottom: 0 },
+                ]}
+              >
+                <Icon name="ios-options" size={22} color={WhiteColor} />
+                <Text style={ToastQuestionGenericStyles.viewButtonOptionText}>
+                  Default
+                </Text>
+              </View>
+            </Pressable>
+          </View>
+        }
+      />
+      <ShowUserRequestGroup
+        visible={showUserRequestGroupDetails}
+        users={groupProps.usersRequest}
+        close={() => setShowUserRequestGroupDetails(false)}
+        viewProfile={viewProfile}
+        acceptAll={() => {
+          acceptAllRequest(group);
+        }}
+        acceptRequest={(item) => {
+          acceptRequest(item);
+        }}
+        cancelRequest={(item) => {
+          cancelRequest(item);
+        }}
+      />
+      <LoadingSpinner
+        visible={loading || loadingUsers}
+      />
+      <Toast toastText={toastText} />
+      {showGroupInvitations &&
+        session.groupInvitations.length > 0 ? (
+        <View style={GlobalModal.viewContent}>
+          <View style={GlobalModal.viewHead}>
+            <Text style={GlobalModal.headTitle}>Group Invitations</Text>
+            <Pressable
+              style={[GlobalModal.buttonClose, { flexDirection: "row" }]}
+              onPress={() => setShowGroupInvitations(false)}
+            >
+              <Icon name="md-close" color={SignUpColor} size={22} />
+              <Text style={[GlobalModal.titleClose, { marginLeft: 2 }]}>
+                Close
+              </Text>
+            </Pressable>
+          </View>
+          <ScrollView>
+            <FlatList
+              data={session.groupInvitations}
+              renderItem={({ item }) => (
+                <View>
+                  {item.group !== null ? (
+                    <View style={styles.viewNotificaton}>
+                      <View
+                        style={{
+                          width: "20%",
+                          justifyContent: "center",
+                          alignItems: "center",
+                        }}
+                      >
+                        {null !== item.group &&
                           null !== item.group.image &&
                           undefined !== item.group.image &&
                           "" !== item.group.image &&
                           "img/group.png" !== item.group.image ? (
-                            <Image
-                              style={[
-                                { height: 60, width: 60 },
-                                { borderRadius: 100 },
-                              ]}
-                              source={{ uri: item.group.image }}
-                            />
-                          ) : (
-                            <Image
-                              style={[
-                                { height: 60, width: 60 },
-                                { borderRadius: 100 },
-                              ]}
-                              source={require("../../assets/imgGroup.png")}
-                            />
-                          )}
-                        </View>
-                        <View
-                          style={{ justifyContent: "center", width: "60%" }}
-                        >
-                          <Text
-                            style={styles.textUserReference}
-                            numberOfLines={1}
-                          >
-                            {item.group.name}
-                          </Text>
-                          <View style={{ marginBottom: 5 }}>
-                            <Text style={{ marginLeft: 5 }}>
-                              {item.group.description}
-                            </Text>
-                          </View>
-                        </View>
-                        <View
-                          style={{
-                            width: "20%",
-                            justifyContent: "center",
-                            alignItems: "center",
-                            flexDirection: "row",
-                          }}
-                        >
-                          <Pressable
-                            onPress={() => this.rejectInvitation(item.id)}
-                            style={{ marginRight: 10 }}
-                          >
-                            <Icon
-                              name="md-close"
-                              size={35}
-                              color={SignUpColor}
-                            />
-                          </Pressable>
-                          <Pressable
-                            onPress={() =>
-                              this.acceptInvitation(item.id, item.group.id)
-                            }
-                          >
-                            <Icon name="md-checkmark" size={35} color="green" />
-                          </Pressable>
-                        </View>
+                          <Image
+                            style={[
+                              { height: 60, width: 60 },
+                              { borderRadius: 100 },
+                            ]}
+                            source={{ uri: item.group.image }}
+                          />
+                        ) : (
+                          <Image
+                            style={[
+                              { height: 60, width: 60 },
+                              { borderRadius: 100 },
+                            ]}
+                            source={require("../../assets/imgGroup.png")}
+                          />
+                        )}
                       </View>
-                    ) : (
-                      <View style={styles.viewNotificaton}>
-                        <View
-                          style={{ justifyContent: "center", width: "85%" }}
+                      <View
+                        style={{ justifyContent: "center", width: "60%" }}
+                      >
+                        <Text
+                          style={styles.textUserReference}
+                          numberOfLines={1}
                         >
-                          <Text
-                            style={{
-                              textAlign: "center",
-                              marginBottom: 5,
-                              fontSize: 18,
-                              color: GreenFitrecColor,
-                            }}
-                            numberOfLines={1}
-                          >
-                            The group has been removed
+                          {item.group.name}
+                        </Text>
+                        <View style={{ marginBottom: 5 }}>
+                          <Text style={{ marginLeft: 5 }}>
+                            {item.group.description}
                           </Text>
                         </View>
-                        <View
-                          style={{
-                            width: "15%",
-                            justifyContent: "flex-end",
-                            alignItems: "center",
-                            flexDirection: "row",
-                          }}
-                        >
-                          <Pressable
-                            onPress={() => this.rejectInvitation(item.id)}
-                            style={{ marginRight: 10 }}
-                          >
-                            <Icon
-                              name="md-close"
-                              size={35}
-                              color={SignUpColor}
-                            />
-                          </Pressable>
-                        </View>
                       </View>
-                    )}
-                  </View>
-                )}
-              />
-            </ScrollView>
-          </View>
-        ) : null}
-      </ImageBackground>
-    );
-  }
+                      <View
+                        style={{
+                          width: "20%",
+                          justifyContent: "center",
+                          alignItems: "center",
+                          flexDirection: "row",
+                        }}
+                      >
+                        <Pressable
+                          onPress={() => rejectInvitation(item.id)}
+                          style={{ marginRight: 10 }}
+                        >
+                          <Icon
+                            name="md-close"
+                            size={35}
+                            color={SignUpColor}
+                          />
+                        </Pressable>
+                        <Pressable
+                          onPress={() =>
+                            acceptInvitation(item.id, item.group.id)
+                          }
+                        >
+                          <Icon name="md-checkmark" size={35} color="green" />
+                        </Pressable>
+                      </View>
+                    </View>
+                  ) : (
+                    <View style={styles.viewNotificaton}>
+                      <View
+                        style={{ justifyContent: "center", width: "85%" }}
+                      >
+                        <Text
+                          style={{
+                            textAlign: "center",
+                            marginBottom: 5,
+                            fontSize: 18,
+                            color: GreenFitrecColor,
+                          }}
+                          numberOfLines={1}
+                        >
+                          The group has been removed
+                        </Text>
+                      </View>
+                      <View
+                        style={{
+                          width: "15%",
+                          justifyContent: "flex-end",
+                          alignItems: "center",
+                          flexDirection: "row",
+                        }}
+                      >
+                        <Pressable
+                          onPress={() => rejectInvitation(item.id)}
+                          style={{ marginRight: 10 }}
+                        >
+                          <Icon
+                            name="md-close"
+                            size={35}
+                            color={SignUpColor}
+                          />
+                        </Pressable>
+                      </View>
+                    </View>
+                  )}
+                </View>
+              )}
+            />
+          </ScrollView>
+        </View>
+      ) : null}
+    </ImageBackground>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -1022,113 +987,4 @@ const styles = StyleSheet.create({
   },
 });
 
-const mapStateToProps = (state) => ({
-  session: state.reducerSession,
-  grupProps: state.reducerGroup,
-  invitationsProps: state.reducerInvitationsGroup,
-  myPalsRequest: state.reducerRequests,
-  groupUpdateProps: state.reducerUpdateGroup,
-  friendsProps: state.reducerMyPals,
-});
-
-const mapDispatchToProps = (dispatch) => ({
-  joinGroup: (sUserKey, sUserName, nUserId, sGroupKey, nGroupId) => {
-    dispatch(
-      actionJoinGroup(sUserKey, sUserName, nUserId, sGroupKey, nGroupId)
-    );
-  },
-  getGroups: (sUserKey, sFilter) => {
-    dispatch(actionGetGroups(sUserKey, sFilter));
-  },
-  getGroupsNearMe: (sFilter, nType, sDistance, nLatitude, nLongitude) => {
-    dispatch(
-      actionGetGroupsNearMe(sFilter, nType, sDistance, nLatitude, nLongitude)
-    );
-  },
-  leaveGroup: (sUserKey, sGroupKey, nGroupId) => {
-    dispatch(actionLeaveGroup(sUserKey, sGroupKey, nGroupId));
-  },
-  requestJoinGroup: (
-    sGroupKey,
-    nGroupId,
-    sGroupName,
-    sUserKey,
-    nUserId,
-    sUserImage,
-    sUserName,
-    sUserUsername
-  ) => {
-    dispatch(
-      actionRequestJoinGroup(
-        sGroupKey,
-        nGroupId,
-        sGroupName,
-        sUserKey,
-        nUserId,
-        sUserImage,
-        sUserName,
-        sUserUsername
-      )
-    );
-  },
-  addMember: (nGroupId, sGroupKey, sGroupName, sGroupImage, aMembers) => {
-    dispatch(
-      actionAddMember(nGroupId, sGroupKey, sGroupName, sGroupImage, aMembers)
-    );
-  },
-  resetOpenGroup: () => {
-    dispatch(actionResetOpenGroup());
-  },
-  getProfile: (data) => {
-    dispatch(actionGetProfile(data, true));
-  },
-  rejectRequestGroup: (data) => {
-    dispatch(actionRejectRequest(data));
-  },
-  acceptRequestGroup: (sGroupKey, sCapitanKey, sUserKey, sUserName) => {
-    dispatch(actionAcceptRequest(sGroupKey, sCapitanKey, sUserKey, sUserName));
-  },
-  getGroupsInvitation: (data) => {
-    dispatch(actionGetGroupInvitations(data));
-  },
-  rejectInvitationGroup: (data) => {
-    dispatch(actionRejectInvitationGroup(data));
-  },
-  acceptInvitationGroup: (
-    nGroupId,
-    sGroupKey,
-    nUserId,
-    sUserKey,
-    sUserName
-  ) => {
-    dispatch(
-      actionAcceptInvitationGroup(
-        nGroupId,
-        sGroupKey,
-        nUserId,
-        sUserKey,
-        sUserName
-      )
-    );
-  },
-  getPeople: (sFilter) => {
-    dispatch(actionGetPeopleGroup(sFilter));
-  },
-  resetUpdateGroup: (data) => {
-    dispatch(actionResetUpdateGroup(data));
-  },
-  getGroup: (sGroupKey, sUserKey) => {
-    dispatch(actionGetGroup(sGroupKey, sUserKey));
-  },
-  getMyFriends: (sUserKey) => {
-    dispatch(actionGetMyFriends(sUserKey));
-  },
-  clearCreateGroup: () => {
-    dispatch(actionCleanCreateGroup());
-  },
-  clearNavigation: () => {
-    dispatch(actionCleanNavigation());
-  },
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(Groups);
+export default Groups;
