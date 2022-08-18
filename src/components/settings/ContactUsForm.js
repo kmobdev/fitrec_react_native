@@ -48,15 +48,12 @@ const ContactUsForm = (props) => {
     if ("" === message) {
       showToast("Message required");
     } else {
-      setLoading(true);
-      let sMessage =
-        "Username: " +
-        session.account.username +
-        "<br> Name: " +
-        session.account.name +
-        "<br> Message: " +
-        message;
-      dispatch(actionSendContactus(sMessage));
+      await this.setState({
+        loading: true,
+      });
+      const account = this.props.session.account
+      const sMessage = `New App Feedback from ${account.name}:\n${this.state.message}\n\nUsername: ${account.username}\nEmail: ${account.email}`
+      this.props.sendContact(sMessage);
     }
   };
 

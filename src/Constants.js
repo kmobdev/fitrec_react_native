@@ -10,6 +10,7 @@ const LOCAL_ENVIRONMENT = false;
 // third party integration keys 
 export const SEGMENT_WRITE_KEY = "0rhZPc61Cf2A3B09SFqdhrDydbUr0DBT";
 export const SENTRY_DNS = "https://982cc31971cd4d48ad5ec746c965eda6@o1335969.ingest.sentry.io/6604329";
+export const SLACK_FEEDBACK_WEBHOOK = "https://hooks.slack.com/services/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";
 
 // URLS OF SERVICES
 const sURLServiceProd = "https://appfitrec.com/1.2.9.24/app/";
