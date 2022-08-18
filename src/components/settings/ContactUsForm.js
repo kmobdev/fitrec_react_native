@@ -51,13 +51,8 @@ class ContactUsForm extends Component {
       await this.setState({
         loading: true,
       });
-      let sMessage =
-        "Username: " +
-        this.props.session.account.username +
-        "<br> Name: " +
-        this.props.session.account.name +
-        "<br> Message: " +
-        this.state.message;
+      const account = this.props.session.account
+      const sMessage = `New App Feedback from ${account.name}:\n${this.state.message}\n\nUsername: ${account.username}\nEmail: ${account.email}`
       this.props.sendContact(sMessage);
     }
   };

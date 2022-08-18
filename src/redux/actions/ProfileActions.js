@@ -1,5 +1,5 @@
 import { GetProfile, UpdateProfile } from "../services/ProfileServices";
-import { Actions, Constants, MESSAGE_ERROR } from "../../Constants";
+import {Actions, Constants, MESSAGE_ERROR, SLACK_FEEDBACK_WEBHOOK} from "../../Constants";
 import { GetDataUser } from "../services/FirebaseServices";
 import { database } from "../services/FirebaseServices";
 import { ContactusSend, GetPals } from "../services/UserServices";
@@ -10,6 +10,7 @@ import {
   actionDeactivateLoading,
 } from "./SharedActions";
 import { actionGetUserHome } from "./HomeActions";
+import axios from "axios";
 
 export const actionGetProfile = (nUserId, bIsHome = false) => {
   return (dispatch) => {
@@ -207,13 +208,17 @@ export const actionUpdateProfileResetState = () => ({
 });
 
 export const actionSendContactus = (sMessage) => {
+  console.log(sMessage)
   return (dispatch) => {
-    ContactusSend(sMessage)
-      .then(() => {
-        dispatch(actionDispatch(Actions.SEND_CONTACT_US_SUCCESS));
-      })
-      .catch(() => {
-        dispatch(actionMessage(MESSAGE_ERROR));
-      });
+    fetch(SLACK_FEEDBACK_WEBHOOK, {
+      method: "POST",
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({text: sMessage})
+    }).then(res => {
+      // console.log("Request complete! response:", res);
+      dispatch(actionDispatch(Actions.SEND_CONTACT_US_SUCCESS));
+    }).catch(() => {
+      dispatch(actionMessage(MESSAGE_ERROR));
+    });
   };
 };
