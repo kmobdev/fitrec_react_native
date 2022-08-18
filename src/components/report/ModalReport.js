@@ -10,10 +10,13 @@ import Icon from "react-native-vector-icons/Ionicons";
 import ReactNativePickerModule from "react-native-picker-module";
 import { actionMessage } from "../../redux/actions/SharedActions";
 import { actionSendReport } from "../../redux/actions/ReportActions";
+import { useDispatch } from "react-redux";
 
 const ModalReport = (props) => {
 
   const picker = useRef();
+
+  const dispatch = useDispatch();
 
   const [reasons, setReasons] = useState([
     "Aggressive",

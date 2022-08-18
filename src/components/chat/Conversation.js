@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -25,7 +25,7 @@ import { ToastQuestion } from "../shared/ToastQuestion";
 import ImagePicker from "react-native-image-crop-picker";
 // Complemento anterior - Leandro Curbelo
 // import ImagePicker from 'react-native-image-picker';
-import { connect } from "react-redux";
+import { connect, useDispatch, useSelector } from "react-redux";
 import moment from "moment/min/moment-with-locales";
 import {
   actionSendMessage,
@@ -47,90 +47,58 @@ import { ModalGifs } from "../shared/ModalGifs";
 import { actionExpandImage } from "../../redux/actions/SharedActions";
 import GiphyLogo from "../../assets/giphyLogo.png";
 
-class Conversation extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      showPhoto: false,
-      sText: "",
-      toastText: "",
-      refresh: false,
-      locationInital: {
-        latitude: 40.5879479,
-        longitude: -109.405,
-      },
-      showMap: false,
-      oMarker: null,
-      keyboardOffset: 0,
-      keyboardHeight: "100%",
-      showKeyboard: false,
-      showMoreOptions: false,
-      showGiphy: false,
-      bShowGifsStickers: false,
-      search: "",
-      loadingImage: false,
-    };
+const Conversation = (props) => {
 
-    this.getKeyboardOffsetStyle = this.getKeyboardOffsetStyle.bind(this);
-    this.handleKeyboardShow = this.handleKeyboardShow.bind(this);
-    this.handleKeyboardHide = this.handleKeyboardHide.bind(this);
+  const scrollView = useRef();
 
-    Keyboard.addListener("keyboardDidShow", this.handleKeyboardShow);
-    Keyboard.addListener("keyboardWillShow", this.handleKeyboardShow);
-    Keyboard.addListener("keyboardWillHide", this.handleKeyboardHide);
-    Keyboard.addListener("keyboardDidHide", this.handleKeyboardHide);
-  }
+  const session = useSelector((state) => state.reducerSession);
+  const chatProps = useSelector((state) => state.reducerChat);
+  const giphyProps = useSelector((state) => state.reducerGiphy);
 
-  handleKeyboardShow = async ({ endCoordinates: { height } }) => {
-    await this.setState({ keyboardOffset: height, showKeyboard: true });
-    if (null !== this.scrollView && undefined !== this.scrollView)
-      this.scrollView.scrollToEnd({ animated: true });
-  };
+  const dispatch = useDispatch();
 
-  handleKeyboardHide = async () => {
-    await this.setState({
-      keyboardOffset: 0,
-      showKeyboard: false,
-      showMoreOptions: false,
-    });
-    if (null !== this.scrollView && undefined !== this.scrollView)
-      this.scrollView.scrollToEnd({ animated: true });
-  };
+  const [locationInital, setLocationInital] = useState({
+    latitude: 40.5879479,
+    longitude: -109.405,
+  });
+  const [showPhoto, setShowPhoto] = useState(false);
+  const [sText, setSText] = useState("");
+  const [toastText, setToastText] = useState("");
+  const [refresh, setRefresh] = useState(false);
+  const [showMap, setShowMap] = useState(false);
+  const [oMarker, setOMarker] = useState(null);
+  const [keyboardOffset, setkeyboardOffset] = useState(0);
+  const [showKeyboard, setshowKeyboard] = useState(false);
+  const [showMoreOptions, setShowMoreOptions] = useState(false);
+  const [showGiphy, setShowGiphy] = useState(false);
+  const [bShowGifsStickers, setBShowGifsStickers] = useState(false);
+  const [search, setSearch] = useState("");
+  const [loadingImage, setLoadingImage] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [showConversation, setShowConversation] = useState(false);
+  const [sImageSend, setSImageSend] = useState("");
 
-  getKeyboardOffsetStyle() {
-    const { keyboardOffset } = this.state;
-    return Platform.select({
-      ios: () => ({ paddingBottom: keyboardOffset }),
-      android: () => ({}),
-    })();
-  }
 
-  componentWillReceiveProps = async (nextProps) => {
+  useEffect(() => {
     if (
-      !this.state.loadingImage &&
-      this.state.loading &&
-      nextProps.chatProps.statusSend
+      !loadingImage &&
+      loading &&
+      chatProps.statusSend
     ) {
-      await this.setState({
-        showConversation: false,
-      });
-      this.showToast("Message sent successfully");
+      setShowConversation(false);
+      showToast("Message sent successfully");
     }
-    if (this.state.loadingImage && nextProps.chatProps.statusSendImage) {
-      await this.setState({
-        loadingImage: false,
-      });
-      this.showToast("Image sent successfully");
+    if (loadingImage && chatProps.statusSendImage) {
+      setLoadingImage(false);
+      showToast("Image sent successfully");
     }
-    await this.setState({
-      loading: false,
-      refresh: !this.state.refresh,
-    });
-  };
+    setLoading(false);
+    setRefresh(!refresh);
+  }, [chatProps]);
 
-  sendMessage = async (sType = SEND_MESSAGE_TYPES.TEXT, oGif = null) => {
-    const { sText, sImageSend, oMarker, bShowGifsStickers } = this.state;
-    const { key: sUserKey, name: sUserName } = this.props.session.account;
+  const sendMessage = (sType = SEND_MESSAGE_TYPES.TEXT, oGif = null) => {
+    const { sText, sImageSend, oMarker, bShowGifsStickers } = state;
+    const { key: sUserKey, name: sUserName } = session.account;
     let sMessage = "",
       oData = null;
     switch (sType) {
@@ -144,7 +112,7 @@ class Conversation extends Component {
         break;
       case SEND_MESSAGE_TYPES.LOCATION:
         if (oMarker === null)
-          return this.showToast("The marker cannot be empty");
+          return showToast("The marker cannot be empty");
         oData = {
           lat: oMarker.latitude,
           lon: oMarker.longitude,
@@ -158,295 +126,304 @@ class Conversation extends Component {
           giphyId: oGif.id,
           isSticker: bShowGifsStickers,
         };
-        this.props.getGiphy("");
+        dispatch(actionGetGiphy(""));
         break;
     }
-    const { conversation: oConversation } = this.props;
+    const { conversation: oConversation } = props;
     const oSender = {
-        key: sUserKey,
-        name: sUserName,
-      },
+      key: sUserKey,
+      name: sUserName,
+    },
       sConversationKey = oConversation.conversation;
     const sFriendKey = oConversation.userFriendKey;
-    this.props.sendMessage(
-      oSender,
-      sMessage,
-      sType,
-      sFriendKey,
-      sConversationKey,
-      oData,
-      true
+    dispatch(
+      actionSendMessage(
+        oSender,
+        sMessage,
+        sType,
+        sFriendKey,
+        sConversationKey,
+        oData,
+        true
+      )
     );
-    await this.setState({
-      sText: "",
-      oMarker: null,
-      showMap: false,
-      sImageSend: "",
-      showGiphy: false,
-      bShowGifsStickers: false,
-      search: "",
-    });
+    setSText("");
+    setOMarker(null);
+    setShowMap(false);
+    setSImageSend("");
+    setShowGiphy(false);
+    setBShowGifsStickers(false);
+    setSearch("");
   };
 
-  addImage = async (sType) => {
-    await this.setState({
-      showPhoto: false,
-      loadingImage: true,
-    });
+  addImage = (sType) => {
+    setShowPhoto(false);
+    setLoadingImage(true);
     if ("camera" === sType) {
       ImagePicker.openCamera(OPTIONS_IMAGE_CROP_CONVERSATION)
-        .then(async (oImage) => {
+        .then((oImage) => {
           var sImageB64 = oImage.data;
-          await this.setState({
-            sImageSend: sImageB64,
-          });
-          this.sendMessage("image");
+          setSImageSend(sImageB64);
+          sendMessage("image");
         })
         .catch((oError) => {
           if (oError.message == "Permission denied")
-            this.showToast(
+            showToast(
               "Permission denied, please check FitRec permissions"
             );
-          else this.showToast(MESSAGE_ERROR);
+          else showToast(MESSAGE_ERROR);
         })
         .finally(() => {
-          this.setState({
-            showPhoto: false,
-            loadingImage: false,
-          });
+          setShowPhoto(false);
+          setLoadingImage(false);
         });
     } else {
       ImagePicker.openPicker(OPTIONS_IMAGE_CROP_CONVERSATION)
-        .then(async (oImage) => {
+        .then((oImage) => {
           var sImageB64 = oImage.data;
-          await this.setState({
-            sImageSend: sImageB64,
-          });
-          this.sendMessage("image");
+          setSImageSend(sImageB64);
+          sendMessage("image");
         })
         .catch((oError) => {
           if (oError.message == "Permission denied")
-            this.showToast(
+            showToast(
               "Permission denied, please check FitRec permissions"
             );
-          else this.showToast(MESSAGE_ERROR);
+          else showToast(MESSAGE_ERROR);
         })
         .finally(() => {
-          this.setState({
-            showPhoto: false,
-            loadingImage: false,
-          });
+          setShowPhoto(false);
+          setLoadingImage(false);
         });
     }
   };
 
-  showToast = async (sText, callback = null) => {
-    await this.setState({
-      toastText: sText,
-      loading: false,
-    });
+  const showToast = (text, callback = null) => {
+    setToastText(text);
+    setLoading(false);
     setTimeout(() => {
-      this.setState({
-        toastText: "",
-      });
+      setToastText("");
       if (null !== callback) {
         callback();
       }
     }, 2000);
   };
 
-  showMap = () => {
+  const showMaphandler = () => {
     Geolocation.getCurrentPosition(
       (position) => {
         if (position && undefined !== position.coords) {
-          this.setState({
-            locationInital: {
-              longitude: position.coords.longitude,
-              latitude: position.coords.latitude,
-              latitudeDelta: 0.0922,
-              longitudeDelta: 0.1,
-            },
-            oMarker: {
-              longitude: position.coords.longitude,
-              latitude: position.coords.latitude,
-            },
-            showMap: true,
+          setLocationInital({
+            longitude: position.coords.longitude,
+            latitude: position.coords.latitude,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.1,
           });
+          setOMarker({
+            longitude: position.coords.longitude,
+            latitude: position.coords.latitude,
+          });
+          setShowMap(true);
         }
       },
       (error) => {
-        this.setState({
-          showMap: true,
-        });
+        setShowMap(true);
       },
       OPTIONS_GEOLOCATION_GET_POSITION
     );
   };
 
-  showGifs = () => {
-    this.setState({ showGiphy: true });
+  const showGifs = () => {
+    setShowGiphy(true);
     Keyboard.dismiss();
-    this.props.getGiphy("");
+    dispatch(actionGetGiphy(""));
   };
 
-  closeGifs = () => {
-    this.setState({
-      showGiphy: false,
-      bShowGifsStickers: false,
-      search: "",
-      keyboardOffset: 0,
-    });
+  const closeGifs = () => {
+    setShowGiphy(false);
+    setBShowGifsStickers(false);
+    setSearch("");
     Keyboard.dismiss();
   };
 
-  expandImage = async (sUrlToImage) => {
-    this.props.expandImage(sUrlToImage);
+  const expandImage = (sUrlToImage) => {
+    dispatch(actionExpandImage(sUrlToImage));
   };
 
-  render() {
-    return (
-      this.props.visible &&
-      this.props.conversation && (
-        <View style={GlobalModal.viewContent}>
-          <View style={GlobalModal.viewHead}>
-            {/*OPTION COMMENTED FOR NEW VERSION
+  return (
+    props.visible &&
+    props.conversation && (
+      <View style={GlobalModal.viewContent}>
+        <View style={GlobalModal.viewHead}>
+          {/*OPTION COMMENTED FOR NEW VERSION
                         <Pressable style={[GlobalModal.buttonLeft, { flexDirection: 'row' }]}
-                            onPress={this.props.close}>
+                            onPress={props.close}>
                             <Icon name="ios-trash" color={SignUpColor} size={22} />
                             <Text style={[GlobalModal.titleClose, { marginLeft: 2 }]}>Empty</Text>
                         </Pressable>
                         */}
-            <Text style={GlobalModal.headTitle}>
-              {this.props.conversation.userFriend}
-            </Text>
-            <Pressable
-              style={[GlobalModal.buttonClose, { flexDirection: "row" }]}
-              onPress={this.props.close}
-            >
-              <Icon name="md-close" color={SignUpColor} size={22} />
-              <Text style={[GlobalModal.titleClose, { marginLeft: 2 }]}>
-                Close
-              </Text>
-            </Pressable>
-          </View>
-          <ScrollView
-            style={{ margin: 10 }}
-            ref={(ref) => (this.scrollView = ref)}
-            onContentSizeChange={() => {
-              if (null !== this.scrollView && undefined !== this.scrollView)
-                this.scrollView.scrollToEnd({ animated: true });
-            }}
+          <Text style={GlobalModal.headTitle}>
+            {props.conversation.userFriend}
+          </Text>
+          <Pressable
+            style={[GlobalModal.buttonClose, { flexDirection: "row" }]}
+            onPress={props.close}
           >
-            <FlatList
-              data={this.props.conversation.conversations}
-              keyExtractor={(item, index) => index.toString()}
-              extraData={this.state.refresh}
-              renderItem={({ item }) => {
-                if (item.sender === this.props.session.account.key)
-                  return (
-                    <View>
-                      <View
-                        style={{
-                          flexDirection: "row",
-                          width: "100%",
-                          marginBottom: 10,
-                        }}
-                      >
-                        <View style={{ width: "80%", paddingRight: 8 }}>
-                          <View style={GlobalMessages.containerMessage}>
-                            {"image" === item.type && (
-                              <Pressable
-                                onPress={() => this.expandImage(item.message)}
-                              >
+            <Icon name="md-close" color={SignUpColor} size={22} />
+            <Text style={[GlobalModal.titleClose, { marginLeft: 2 }]}>
+              Close
+            </Text>
+          </Pressable>
+        </View>
+        <ScrollView
+          style={{ margin: 10 }}
+          ref={scrollView}
+          onContentSizeChange={() => {
+            if (null !== scrollView && undefined !== scrollView)
+              scrollView.current.scrollToEnd({ animated: true });
+          }}
+        >
+          <FlatList
+            data={props.conversation.conversations}
+            keyExtractor={(item, index) => index.toString()}
+            extraData={refresh}
+            renderItem={({ item }) => {
+              if (item.sender === session.account.key)
+                return (
+                  <View>
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        width: "100%",
+                        marginBottom: 10,
+                      }}
+                    >
+                      <View style={{ width: "80%", paddingRight: 8 }}>
+                        <View style={GlobalMessages.containerMessage}>
+                          {"image" === item.type && (
+                            <Pressable
+                              onPress={() => expandImage(item.message)}
+                            >
+                              <FastImage
+                                style={{ height: 200 }}
+                                source={{
+                                  uri: item.message,
+                                  priority: FastImage.priority.normal,
+                                }}
+                                resizeMode={FastImage.resizeMode.cover}
+                              />
+                            </Pressable>
+                          )}
+                          {"gif" === item.type && (
+                            <Pressable
+                              onPress={() => expandImage(item.message)}
+                            >
+                              <View style={{ alignItems: "center" }}>
                                 <FastImage
-                                  style={{ height: 200 }}
+                                  style={GlobalStyles.gifImage}
                                   source={{
                                     uri: item.message,
                                     priority: FastImage.priority.normal,
                                   }}
                                   resizeMode={FastImage.resizeMode.cover}
                                 />
-                              </Pressable>
-                            )}
-                            {"gif" === item.type && (
-                              <Pressable
-                                onPress={() => this.expandImage(item.message)}
-                              >
-                                <View style={{ alignItems: "center" }}>
-                                  <FastImage
-                                    style={GlobalStyles.gifImage}
-                                    source={{
-                                      uri: item.message,
-                                      priority: FastImage.priority.normal,
-                                    }}
-                                    resizeMode={FastImage.resizeMode.cover}
-                                  />
-                                </View>
-                                <Image
-                                  style={GlobalStyles.giphyLogoPositionRight}
-                                  source={GiphyLogo}
-                                />
-                              </Pressable>
-                            )}
-                            {"text" === item.type && (
-                              <Text style={{ color: "#6f6f6f" }}>
-                                {item.message}
-                              </Text>
-                            )}
-                            {"location" === item.type && (
-                              <MapView
-                                provider={this.props.provider}
-                                style={{ height: 200, width: "100%" }}
-                                initialRegion={{
+                              </View>
+                              <Image
+                                style={GlobalStyles.giphyLogoPositionRight}
+                                source={GiphyLogo}
+                              />
+                            </Pressable>
+                          )}
+                          {"text" === item.type && (
+                            <Text style={{ color: "#6f6f6f" }}>
+                              {item.message}
+                            </Text>
+                          )}
+                          {"location" === item.type && (
+                            <MapView
+                              provider={props.provider}
+                              style={{ height: 200, width: "100%" }}
+                              initialRegion={{
+                                latitude: item.lat,
+                                longitude: item.lon,
+                                latitudeDelta: 0.0922,
+                                longitudeDelta: 0.1,
+                              }}
+                            >
+                              <Marker
+                                key={1}
+                                coordinate={{
                                   latitude: item.lat,
                                   longitude: item.lon,
-                                  latitudeDelta: 0.0922,
-                                  longitudeDelta: 0.1,
                                 }}
-                              >
-                                <Marker
-                                  key={1}
-                                  coordinate={{
-                                    latitude: item.lat,
-                                    longitude: item.lon,
-                                  }}
-                                  pinColor="#FF0000"
-                                />
-                              </MapView>
-                            )}
-                          </View>
-                          <View
-                            style={{
-                              width: "100%",
-                              justifyContent: "flex-start",
-                              flexDirection: "row",
-                              paddingTop: 5,
-                            }}
-                          >
-                            <Icon
-                              name="md-time"
-                              size={16}
-                              color={PlaceholderColor}
-                              style={{ marginRight: 5 }}
-                            />
-                            <Text style={{ color: PlaceholderColor }}>
-                              {moment(item.date).format("MMM DD LT")}
-                            </Text>
-                          </View>
-                          <Icon
-                            name="caret-forward"
-                            size={32}
-                            color="#e0e2e4"
-                            style={{ position: "absolute", right: -8, top: 10 }}
-                          />
+                                pinColor="#FF0000"
+                              />
+                            </MapView>
+                          )}
                         </View>
-                        {null !== this.props.conversation.myProfilePic &&
-                        undefined !== this.props.conversation.myProfilePic &&
-                        "" !== this.props.conversation.myProfilePic ? (
+                        <View
+                          style={{
+                            width: "100%",
+                            justifyContent: "flex-start",
+                            flexDirection: "row",
+                            paddingTop: 5,
+                          }}
+                        >
+                          <Icon
+                            name="md-time"
+                            size={16}
+                            color={PlaceholderColor}
+                            style={{ marginRight: 5 }}
+                          />
+                          <Text style={{ color: PlaceholderColor }}>
+                            {moment(item.date).format("MMM DD LT")}
+                          </Text>
+                        </View>
+                        <Icon
+                          name="caret-forward"
+                          size={32}
+                          color="#e0e2e4"
+                          style={{ position: "absolute", right: -8, top: 10 }}
+                        />
+                      </View>
+                      {null !== props.conversation.myProfilePic &&
+                        undefined !== props.conversation.myProfilePic &&
+                        "" !== props.conversation.myProfilePic ? (
+                        <FastImage
+                          style={chatStyles.viewMessageItemImageProfile}
+                          source={{
+                            uri: props.conversation.myProfilePic,
+                            priority: FastImage.priority.high,
+                          }}
+                          resizeMode={FastImage.resizeMode.cover}
+                        />
+                      ) : (
+                        <Image
+                          style={chatStyles.viewMessageItemImageProfile}
+                          source={require("../../assets/imgProfileReadOnly2.png")}
+                        />
+                      )}
+                    </View>
+                  </View>
+                );
+              else
+                return (
+                  <View>
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        width: "100%",
+                        marginBottom: 10,
+                      }}
+                    >
+                      <Pressable onPress={() => props.viewProfile(item)}>
+                        {null !== props.conversation.image &&
+                          undefined !== props.conversation.image &&
+                          "" !== props.conversation.image ? (
                           <FastImage
                             style={chatStyles.viewMessageItemImageProfile}
                             source={{
-                              uri: this.props.conversation.myProfilePic,
+                              uri: props.conversation.image,
                               priority: FastImage.priority.high,
                             }}
                             resizeMode={FastImage.resizeMode.cover}
@@ -454,318 +431,282 @@ class Conversation extends Component {
                         ) : (
                           <Image
                             style={chatStyles.viewMessageItemImageProfile}
-                            source={require("../../assets/imgProfileReadOnly2.png")}
+                            source={require("../../assets/imgProfileReadOnly.png")}
                           />
                         )}
-                      </View>
-                    </View>
-                  );
-                else
-                  return (
-                    <View>
-                      <View
-                        style={{
-                          flexDirection: "row",
-                          width: "100%",
-                          marginBottom: 10,
-                        }}
-                      >
-                        <Pressable onPress={() => this.props.viewProfile(item)}>
-                          {null !== this.props.conversation.image &&
-                          undefined !== this.props.conversation.image &&
-                          "" !== this.props.conversation.image ? (
-                            <FastImage
-                              style={chatStyles.viewMessageItemImageProfile}
-                              source={{
-                                uri: this.props.conversation.image,
-                                priority: FastImage.priority.high,
-                              }}
-                              resizeMode={FastImage.resizeMode.cover}
-                            />
-                          ) : (
-                            <Image
-                              style={chatStyles.viewMessageItemImageProfile}
-                              source={require("../../assets/imgProfileReadOnly.png")}
-                            />
+                      </Pressable>
+                      <View style={{ width: "80%", paddingLeft: 8 }}>
+                        <Icon
+                          name="caret-back"
+                          size={32}
+                          color="#37892c"
+                          style={{ position: "absolute", left: -8, top: 10 }}
+                        />
+                        <View
+                          style={{
+                            borderWidth: 1,
+                            padding: 10,
+                            borderRadius: 5,
+                            backgroundColor: "#4eaa41",
+                            borderColor: "#4eaa41",
+                          }}
+                        >
+                          {"image" === item.type && (
+                            <Pressable
+                              onPress={() => expandImage(item.message)}
+                            >
+                              <FastImage
+                                style={{ height: 200 }}
+                                source={{
+                                  uri: item.message,
+                                  priority: FastImage.priority.normal,
+                                }}
+                                resizeMode={FastImage.resizeMode.cover}
+                              />
+                            </Pressable>
                           )}
-                        </Pressable>
-                        <View style={{ width: "80%", paddingLeft: 8 }}>
-                          <Icon
-                            name="caret-back"
-                            size={32}
-                            color="#37892c"
-                            style={{ position: "absolute", left: -8, top: 10 }}
-                          />
-                          <View
-                            style={{
-                              borderWidth: 1,
-                              padding: 10,
-                              borderRadius: 5,
-                              backgroundColor: "#4eaa41",
-                              borderColor: "#4eaa41",
-                            }}
-                          >
-                            {"image" === item.type && (
-                              <Pressable
-                                onPress={() => this.expandImage(item.message)}
-                              >
+                          {"gif" === item.type && (
+                            <Pressable
+                              onPress={() => expandImage(item.message)}
+                            >
+                              <View style={{ alignItems: "center" }}>
                                 <FastImage
-                                  style={{ height: 200 }}
+                                  style={GlobalStyles.gifImage}
                                   source={{
                                     uri: item.message,
                                     priority: FastImage.priority.normal,
                                   }}
                                   resizeMode={FastImage.resizeMode.cover}
                                 />
-                              </Pressable>
-                            )}
-                            {"gif" === item.type && (
-                              <Pressable
-                                onPress={() => this.expandImage(item.message)}
-                              >
-                                <View style={{ alignItems: "center" }}>
-                                  <FastImage
-                                    style={GlobalStyles.gifImage}
-                                    source={{
-                                      uri: item.message,
-                                      priority: FastImage.priority.normal,
-                                    }}
-                                    resizeMode={FastImage.resizeMode.cover}
-                                  />
-                                </View>
-                                <Image
-                                  style={GlobalStyles.giphyLogoPositionLeft}
-                                  source={GiphyLogo}
-                                />
-                              </Pressable>
-                            )}
-                            {"text" === item.type && (
-                              <Text style={{ color: "white" }}>
-                                {item.message}
-                              </Text>
-                            )}
-                            {"location" === item.type && (
-                              <MapView
-                                provider={this.props.provider}
-                                style={{ height: 200, width: "100%" }}
-                                initialRegion={{
+                              </View>
+                              <Image
+                                style={GlobalStyles.giphyLogoPositionLeft}
+                                source={GiphyLogo}
+                              />
+                            </Pressable>
+                          )}
+                          {"text" === item.type && (
+                            <Text style={{ color: "white" }}>
+                              {item.message}
+                            </Text>
+                          )}
+                          {"location" === item.type && (
+                            <MapView
+                              provider={props.provider}
+                              style={{ height: 200, width: "100%" }}
+                              initialRegion={{
+                                latitude: item.lat,
+                                longitude: item.lon,
+                                latitudeDelta: 0.0922,
+                                longitudeDelta: 0.1,
+                              }}
+                            >
+                              <Marker
+                                key={1}
+                                coordinate={{
                                   latitude: item.lat,
                                   longitude: item.lon,
-                                  latitudeDelta: 0.0922,
-                                  longitudeDelta: 0.1,
                                 }}
-                              >
-                                <Marker
-                                  key={1}
-                                  coordinate={{
-                                    latitude: item.lat,
-                                    longitude: item.lon,
-                                  }}
-                                  pinColor="#FF0000"
-                                />
-                              </MapView>
-                            )}
-                          </View>
-                          <View
-                            style={{
-                              width: "100%",
-                              justifyContent: "flex-end",
-                              flexDirection: "row",
-                              paddingTop: 5,
-                            }}
-                          >
-                            <Icon
-                              name="time"
-                              size={16}
-                              color={PlaceholderColor}
-                              style={{ marginRight: 5 }}
-                            />
-                            <Text style={{ color: PlaceholderColor }}>
-                              {moment(item.date).format("MMM DD LT")}
-                            </Text>
-                          </View>
+                                pinColor="#FF0000"
+                              />
+                            </MapView>
+                          )}
+                        </View>
+                        <View
+                          style={{
+                            width: "100%",
+                            justifyContent: "flex-end",
+                            flexDirection: "row",
+                            paddingTop: 5,
+                          }}
+                        >
+                          <Icon
+                            name="time"
+                            size={16}
+                            color={PlaceholderColor}
+                            style={{ marginRight: 5 }}
+                          />
+                          <Text style={{ color: PlaceholderColor }}>
+                            {moment(item.date).format("MMM DD LT")}
+                          </Text>
                         </View>
                       </View>
                     </View>
-                  );
-              }}
-            />
-          </ScrollView>
-          <View
-            style={[styles.viewWriteMessage, this.getKeyboardOffsetStyle()]}
-          >
-            {!this.state.showKeyboard ||
-            (this.state.showKeyboard && this.state.sText === "") ||
-            this.state.showMoreOptions ? (
-              <View
-                style={[
-                  styles.viewWriteMessageIcons,
-                  this.state.showMoreOptions ? { width: "28%" } : {},
-                ]}
-              >
-                <Pressable
-                  onPress={() => {
-                    this.setState({ showPhoto: true });
-                    Keyboard.dismiss();
-                  }}
-                  style={styles.viewWriteMessageIconCamera}
-                >
-                  <Icon name="camera" size={32} />
-                </Pressable>
-                <Pressable
-                  onPress={() => {
-                    this.showMap();
-                    Keyboard.dismiss();
-                  }}
-                  style={styles.viewWriteMessageIconMap}
-                >
-                  <Icon name="location-sharp" size={24} />
-                </Pressable>
-                <Pressable
-                  onPress={() => this.showGifs()}
-                  style={styles.viewWriteMessageIconMap}
-                >
-                  <Image source={GifIcon} style={{ width: 30, height: 30 }} />
-                </Pressable>
-                {this.state.showMoreOptions && (
-                  <Pressable
-                    onPress={() => this.setState({ showMoreOptions: false })}
-                    style={styles.viewWriteMessageIconDismissMore}
-                  >
-                    <Icon name="chevron-back-circle-outline" size={32} />
-                  </Pressable>
-                )}
-              </View>
-            ) : (
-              <View style={styles.viewWriteMessageIconsMore}>
-                <Pressable
-                  onPress={() => this.setState({ showMoreOptions: true })}
-                  style={styles.viewWriteMessageIconCamera}
-                >
-                  <Icon name="chevron-forward-circle-outline" size={32} />
-                </Pressable>
-              </View>
-            )}
+                  </View>
+                );
+            }}
+          />
+        </ScrollView>
+        <View
+          style={styles.viewWriteMessage}
+        >
+          {!showKeyboard ||
+            (showKeyboard && sText === "") ||
+            showMoreOptions ? (
             <View
               style={[
-                styles.viewWriteMessageViewTextInput,
-                this.state.showKeyboard
-                  ? this.state.sText === ""
-                    ? {}
-                    : !this.state.showMoreOptions
-                    ? { width: "77%" }
-                    : { width: "57%" }
-                  : {},
+                styles.viewWriteMessageIcons,
+                showMoreOptions ? { width: "28%" } : {},
               ]}
             >
-              <TextInput
-                placeholder="Type your message"
-                placeholderTextColor={PlaceholderColor}
-                style={styles.viewWriteMessageTextInput}
-                multiline={true}
-                value={this.state.sText}
-                onChangeText={(text) =>
-                  this.setState({
-                    sText: text,
-                    showMoreOptions:
-                      this.state.showMoreOptions && text === ""
-                        ? false
-                        : this.state.showMoreOptions,
-                  })
-                }
-              />
+              <Pressable
+                onPress={() => {
+                  setShowPhoto(true);
+                  Keyboard.dismiss();
+                }}
+                style={styles.viewWriteMessageIconCamera}
+              >
+                <Icon name="camera" size={32} />
+              </Pressable>
+              <Pressable
+                onPress={() => {
+                  showMaphandler();
+                  Keyboard.dismiss();
+                }}
+                style={styles.viewWriteMessageIconMap}
+              >
+                <Icon name="location-sharp" size={24} />
+              </Pressable>
+              <Pressable
+                onPress={() => showGifs()}
+                style={styles.viewWriteMessageIconMap}
+              >
+                <Image source={GifIcon} style={{ width: 30, height: 30 }} />
+              </Pressable>
+              {showMoreOptions && (
+                <Pressable
+                  onPress={() => setShowMoreOptions(false)}
+                  style={styles.viewWriteMessageIconDismissMore}
+                >
+                  <Icon name="chevron-back-circle-outline" size={32} />
+                </Pressable>
+              )}
             </View>
-            <View style={styles.viewWriteMessageSend}>
-              <Pressable onPress={() => this.sendMessage("text")}>
-                <Text style={styles.viewWriteMessageSendText}>Send</Text>
+          ) : (
+            <View style={styles.viewWriteMessageIconsMore}>
+              <Pressable
+                onPress={() => setShowMoreOptions(true)}
+                style={styles.viewWriteMessageIconCamera}
+              >
+                <Icon name="chevron-forward-circle-outline" size={32} />
               </Pressable>
             </View>
-          </View>
-          <ToastQuestion
-            visible={this.state.showPhoto}
-            functionCamera={() => this.addImage("camera")}
-            functionGallery={() => this.addImage("gallery")}
-          />
-          <Toast toastText={this.state.toastText} />
-          {this.state.showMap && (
-            <View style={GlobalModal.viewContent}>
-              <View style={GlobalModal.viewHead}>
-                <Text style={GlobalModal.headTitle}></Text>
-              </View>
-              <ScrollView>
-                <MapView
-                  provider={this.props.provider}
-                  style={{ height: 300, width: "100%" }}
-                  onPress={(e) =>
-                    this.setState({ oMarker: e.nativeEvent.coordinate })
-                  }
-                  initialRegion={this.state.locationInital}
-                >
-                  {null !== this.state.oMarker && (
-                    <Marker
-                      key={1}
-                      coordinate={this.state.oMarker}
-                      pinColor="#FF0000"
-                    />
-                  )}
-                </MapView>
-                <View style={[styles.viewSection, styles.viewSectionButtons]}>
-                  <View style={styles.viewButton}>
-                    <Pressable
-                      onPress={() =>
-                        this.setState({ showMap: false, oMarker: null })
-                      }
-                      style={[
-                        styles.button,
-                        { backgroundColor: GreenFitrecColor },
-                      ]}
-                    >
-                      <Text style={styles.textButton}>Cancel</Text>
-                    </Pressable>
-                  </View>
-                  <View style={styles.viewButton}>
-                    <Pressable
-                      onPress={() => this.sendMessage("location")}
-                      style={[styles.button, { backgroundColor: SignUpColor }]}
-                    >
-                      <Text style={styles.textButton}>Send</Text>
-                    </Pressable>
-                  </View>
-                </View>
-              </ScrollView>
-            </View>
           )}
-          <ModalGifs
-            bShow={this.state.showGiphy}
-            bShowStickers={this.state.bShowGifsStickers}
-            sSearch={this.state.search}
-            fSearch={() => this.props.getGiphy(this.state.search)}
-            fUpdateSearch={(text) => {
-              this.setState({ search: text });
-            }}
-            fClean={() => {
-              this.setState({ search: "" });
-              this.props.getGiphy("");
-            }}
-            fActionSelect={(oGif) => {
-              this.sendMessage(SEND_MESSAGE_TYPES.GIF, oGif);
-            }}
-            fChangeType={() => {
-              this.setState({
-                bShowGifsStickers: !this.state.bShowGifsStickers,
-              });
-            }}
-            fClose={() => this.closeGifs()}
-            aGifs={this.props.giphyProps.gifs}
-            aStickers={this.props.giphyProps.stickers}
-          />
-          <LoadingSpinner
-            visible={this.state.loading || this.state.loadingImage}
-          />
+          <View
+            style={[
+              styles.viewWriteMessageViewTextInput,
+              showKeyboard
+                ? sText === ""
+                  ? {}
+                  : !showMoreOptions
+                    ? { width: "77%" }
+                    : { width: "57%" }
+                : {},
+            ]}
+          >
+            <TextInput
+              placeholder="Type your message"
+              placeholderTextColor={PlaceholderColor}
+              style={styles.viewWriteMessageTextInput}
+              multiline={true}
+              value={sText}
+              onChangeText={(text) => {
+                setSText(text);
+                setShowMoreOptions(
+                  showMoreOptions && text === ""
+                    ? false
+                    : showMoreOptions);
+
+              }}
+            />
+          </View>
+          <View style={styles.viewWriteMessageSend}>
+            <Pressable onPress={() => sendMessage("text")}>
+              <Text style={styles.viewWriteMessageSendText}>Send</Text>
+            </Pressable>
+          </View>
         </View>
-      )
-    );
-  }
+        <ToastQuestion
+          visible={showPhoto}
+          functionCamera={() => addImage("camera")}
+          functionGallery={() => addImage("gallery")}
+        />
+        <Toast toastText={toastText} />
+        {showMap && (
+          <View style={GlobalModal.viewContent}>
+            <View style={GlobalModal.viewHead}>
+              <Text style={GlobalModal.headTitle}></Text>
+            </View>
+            <ScrollView>
+              <MapView
+                provider={props.provider}
+                style={{ height: 300, width: "100%" }}
+                onPress={(e) => setOMarker(e.nativeEvent.coordinate)}
+                initialRegion={locationInital}
+              >
+                {null !== oMarker && (
+                  <Marker
+                    key={1}
+                    coordinate={oMarker}
+                    pinColor="#FF0000"
+                  />
+                )}
+              </MapView>
+              <View style={[styles.viewSection, styles.viewSectionButtons]}>
+                <View style={styles.viewButton}>
+                  <Pressable
+                    onPress={() => {
+                      setShowMap(false);
+                      setOMarker(null);
+                    }}
+                    style={[
+                      styles.button,
+                      { backgroundColor: GreenFitrecColor },
+                    ]}
+                  >
+                    <Text style={styles.textButton}>Cancel</Text>
+                  </Pressable>
+                </View>
+                <View style={styles.viewButton}>
+                  <Pressable
+                    onPress={() => sendMessage("location")}
+                    style={[styles.button, { backgroundColor: SignUpColor }]}
+                  >
+                    <Text style={styles.textButton}>Send</Text>
+                  </Pressable>
+                </View>
+              </View>
+            </ScrollView>
+          </View>
+        )}
+        <ModalGifs
+          bShow={showGiphy}
+          bShowStickers={bShowGifsStickers}
+          sSearch={search}
+          fSearch={() => dispatch(actionGetGiphy(search))}
+          fUpdateSearch={(text) => {
+            setSearch(text);
+          }}
+          fClean={() => {
+            setSearch("");
+            dispatch(actionGetGiphy(""));
+          }}
+          fActionSelect={(oGif) => {
+            sendMessage(SEND_MESSAGE_TYPES.GIF, oGif);
+          }}
+          fChangeType={() => {
+            setBShowGifsStickers(!bShowGifsStickers);
+          }}
+          fClose={() => closeGifs()}
+          aGifs={giphyProps.gifs}
+          aStickers={giphyProps.stickers}
+        />
+        <LoadingSpinner
+          visible={loading || loadingImage}
+        />
+      </View>
+    )
+  );
 }
 
 export const chatStyles = StyleSheet.create({
@@ -863,34 +804,5 @@ const mapStateToProps = (state) => ({
   giphyProps: state.reducerGiphy,
 });
 
-const mapDispatchToProps = (dispatch) => ({
-  sendMessage: (
-    oSender,
-    sMessage,
-    sType,
-    sFriendKey,
-    sConversationKey,
-    oData,
-    bRefresh
-  ) => {
-    dispatch(
-      actionSendMessage(
-        oSender,
-        sMessage,
-        sType,
-        sFriendKey,
-        sConversationKey,
-        oData,
-        bRefresh
-      )
-    );
-  },
-  getGiphy: (data) => {
-    dispatch(actionGetGiphy(data));
-  },
-  expandImage: (sImage) => {
-    dispatch(actionExpandImage(sImage));
-  },
-});
 
-export default connect(mapStateToProps, mapDispatchToProps)(Conversation);
+export default Conversation;

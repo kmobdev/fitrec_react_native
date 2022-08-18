@@ -72,7 +72,7 @@ const ProfileView = (props) => {
     setLoading(false);
     setRefresh(!refresh);
     setRefreshing(false);
-  }, []);
+  }, [profile]);
 
   const redirectEditHandler = () => {
     if (null !== user) {

@@ -69,7 +69,7 @@ const ProfileViewHome = (props) => {
 
   const dispatch = useDispatch();
 
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState({});
   const [loading, setLoading] = useState(false);
   const [allowRefresh, setAllowRefresh] = useState(true);
   const [toastText, setToastText] = useState("");
@@ -83,6 +83,9 @@ const ProfileViewHome = (props) => {
   const [showGroups, setShowGroups] = useState(false);
   const [showReport, setShowReport] = useState(false);
   const [showBlock, setShowBlock] = useState(false);
+  const [showReportOptions, setShowReportOptions] = useState(false);
+  const [refresh, setRefresh] = useState(false);
+
 
 
   useEffect(() => {
@@ -120,6 +123,72 @@ const ProfileViewHome = (props) => {
         setConversationSelect(profile.conversation);
       }
     }
+  }, [profile]);
+
+  // useEffect(() => {
+  //   if (
+  //     null !== user &&
+  //     null !== profile.conversation &&
+  //     profile.conversation &&
+  //     profile.conversation !== user.conversation
+  //   ) {
+  //     setUser({
+  //       ...user,
+  //       conversation: profile.conversation,
+  //     });
+  //     if (null !== conversationSelect) {
+  //       setConversationSelect(profile.conversation);
+  //     }
+  //   }
+  //   if (
+  //     chatProps.statusSend &&
+  //     props.chatProps !== chatProps
+  //   ) {
+  //     setUser({
+  //       ...user,
+  //       conversation: null,
+  //     });
+  //     getConversation();
+  //   }
+  //   if (
+  //     null !== myPalsRequest.statusUnfollowHome &&
+  //     myPalsRequest.statusUnfollowHome
+  //   ) {
+  //     dispatch(actionResetStateRequestHome());
+  //     showToast("Successfully remove pal");
+  //   }
+  //   if (
+  //     null !== myPalsRequest.statusSendHome &&
+  //     myPalsRequest.statusSendHome
+  //   ) {
+  //     dispatch(actionResetStateRequestHome());
+  //     showToast("Your request has been sent");
+  //   } else if (
+  //     null !== myPalsRequest.statusSendHome &&
+  //     !myPalsRequest.statusSendHome
+  //   ) {
+  //     dispatch(actionResetStateRequestHome());
+  //     if (myPalsRequest.messageError !== "") {
+  //       showToast(myPalsRequest.messageError);
+  //     }
+  //   }
+  //   if (
+  //     undefined !== propsProfilePal.message &&
+  //     "" !== propsProfilePal.message
+  //   ) {
+  //     showToast(propsProfilePal.message);
+  //     dispatch(setEmptyMessage());
+  //   }
+  //   if (blockProps.status) {
+  //     props.navigation.goBack();
+  //     setTimeout(() => {
+  //       dispatch(actionCleanBlock());
+  //     }, 500);
+  //   }
+  //   setLoading(false);
+  // }, [profile,  chatProps, myPalsRequest, propsProfilePal, blockProps])
+
+  useEffect(() => {
     if (
       chatProps.statusSend &&
       props.chatProps !== chatProps
@@ -130,6 +199,10 @@ const ProfileViewHome = (props) => {
       });
       getConversation();
     }
+    setLoading(false);
+  }, [chatProps])
+
+  useEffect(() => {
     if (
       null !== myPalsRequest.statusUnfollowHome &&
       myPalsRequest.statusUnfollowHome
@@ -152,6 +225,11 @@ const ProfileViewHome = (props) => {
         showToast(myPalsRequest.messageError);
       }
     }
+    setLoading(false);
+  }, [myPalsRequest])
+
+
+  useEffect(() => {
     if (
       undefined !== propsProfilePal.message &&
       "" !== propsProfilePal.message
@@ -159,6 +237,10 @@ const ProfileViewHome = (props) => {
       showToast(propsProfilePal.message);
       dispatch(setEmptyMessage());
     }
+    setLoading(false);
+  }, [propsProfilePal])
+
+  useEffect(() => {
     if (blockProps.status) {
       props.navigation.goBack();
       setTimeout(() => {
@@ -166,7 +248,10 @@ const ProfileViewHome = (props) => {
       }, 500);
     }
     setLoading(false);
-  }, [profile, session, chatProps, myPalsRequest, propsProfilePal, groupsProps, blockProps])
+  }, [blockProps])
+
+
+
 
   const getConversation = () => {
     let data = {
@@ -177,17 +262,18 @@ const ProfileViewHome = (props) => {
   };
 
   const showConversationHandler = () => {
-    setConversationSelect(user.conversation);
     setShowConversation(true);
+    setConversationSelect(user.conversation);
   };
 
 
 
-  const showToast = (sText) => {
+  const showToast = (text) => {
     setToastText(text);
-    setLoading(false);
+    setLoading(true);
     setTimeout(() => {
       setToastText("");
+      setLoading(false);
     }, 2000);
   };
 
@@ -302,7 +388,7 @@ const ProfileViewHome = (props) => {
       actionUnFollow(
         user.id_follow,
         user.id,
-        session.account.id
+        // session.account.id
       )
     );
     setShowAddOptions(false);
@@ -417,7 +503,7 @@ const ProfileViewHome = (props) => {
                           />
                         </Pressable>
                       </View>
-                      <Pressable onPress={() => showConversationHandler()}>
+                      <Pressable onPress={showConversationHandler}>
                         <Icon
                           name="chatbubbles"
                           size={32}
@@ -464,7 +550,7 @@ const ProfileViewHome = (props) => {
                       }}
                     >
                       {user.gym !== null
-                        ? " " + user.gym.name
+                        ? " " //+  user.gym.name
                         : " None"}
                     </Text>
                   </Text>
@@ -511,7 +597,7 @@ const ProfileViewHome = (props) => {
                 )}
               {!showMoreActivities ? (
                 <View style={ProfileStyles.viewActivitiesSelected}>
-                  {user.activities.slice(0, 3).map((element) => (
+                  {user.activities && user.activities.slice(0, 3).map((element) => (
                     <View
                       style={GlobalShowActivity.viewActivity}
                       key={element.id}
@@ -521,7 +607,7 @@ const ProfileViewHome = (props) => {
                       </Text>
                     </View>
                   ))}
-                  {user.activities.length > 3 && (
+                  {user.activities && user.activities.length > 3 && (
                     <View
                       style={[
                         GlobalShowActivity.viewActivity,
@@ -793,7 +879,7 @@ const ProfileViewHome = (props) => {
             <Pressable
               onPress={() => {
                 setShowReportOptions(false);
-                setShowBlock(false);
+                setShowBlock(true);
               }}
             >
               <View style={ToastQuestionGenericStyles.viewButtonOption}>
@@ -845,7 +931,7 @@ const ProfileViewHome = (props) => {
         close={() => setShowConversation(false)}
         viewProfile={() => setShowConversation(false)}
       />
-      {showReport && journey !== null && (
+      {showReport && props.journey !== null && (
         <ModalReport
           visible={showReport}
           close={() => setShowReport(false)}
