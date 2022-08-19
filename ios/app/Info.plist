@@ -52,7 +52,11 @@
 		</dict>
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+	<string>Fitrec would like access to your location to find local fitness events and post updates with locations</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+    <string>Fitrec would like access to your photo library to let you import pictures to your feed and profile</string>
+    <key>NSCameraUsageDescription</key>
+    <string>Fitrec would like access to your camera to let you take pictures and upload to your feed and profile</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>AntDesign.ttf</string>
