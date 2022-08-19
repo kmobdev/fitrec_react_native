@@ -48,7 +48,7 @@ const ContactUsForm = (props) => {
     if ("" === message) {
       showToast("Message required");
     } else {
-      await this.setState({
+      this.setState({
         loading: true,
       });
       const account = this.props.session.account
