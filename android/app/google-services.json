@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "848792304762",
+    "firebase_url": "https://fitrec-ac664.firebaseio.com",
+    "project_id": "fitrec-ac664",
+    "storage_bucket": "fitrec-ac664.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:848792304762:android:144e3889ee4b961b",
+        "android_client_info": {
+          "package_name": "com.fitrecApp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "848792304762-fk80b0ttrb8vvf8s079jgsobk6pb9n21.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA_xI2rocr0r8RaSsbeoI2ziwsb7cw0d2Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "848792304762-fk80b0ttrb8vvf8s079jgsobk6pb9n21.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
