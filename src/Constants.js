@@ -2,7 +2,7 @@
  * Application version number, it will appear on the login and settings screens
  */
 // Constant that determines the application environment
-export const APP_VERSION = "v1.2.9.26";
+export const APP_VERSION = "v5.0.3";
 // Constant that being debug in True, determines that test environment is used, if True is used by localhost
 export const DEBUG = false;
 const LOCAL_ENVIRONMENT = false;
