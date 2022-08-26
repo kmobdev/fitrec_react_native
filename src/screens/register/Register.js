@@ -7,7 +7,8 @@ import {
   ScrollView,
   Image,
   Pressable,
-  Platform, SafeAreaView,
+  Platform,
+  SafeAreaView,
 } from "react-native";
 import { ButtonFacebook } from "../../components/shared/ButtonFacebook";
 import { Toast } from "../../components/shared/Toast";
@@ -454,13 +455,11 @@ const Register = ({ navigation }) => {
           style={[
             errors.showUsernameError && GlobalStyles.errorBorder,
             styles.row,
-          ]}
-        >
+          ]}>
           <Pressable
             style={styles.colLabel}
             onPress={() => handleOnPressLabel(usernameRef)}
-            activeOpacity={1}
-          >
+            activeOpacity={1}>
             <Text style={styles.textLabelColumn}>Username</Text>
           </Pressable>
           <View style={styles.colInput}>
@@ -486,13 +485,11 @@ const Register = ({ navigation }) => {
           style={[
             errors.showEmailError && GlobalStyles.errorBorder,
             styles.row,
-          ]}
-        >
+          ]}>
           <Pressable
             style={styles.colLabel}
             onPress={() => handleOnPressLabel(emailRef)}
-            activeOpacity={1}
-          >
+            activeOpacity={1}>
             <Text style={styles.textLabelColumn}>Email</Text>
           </Pressable>
           <View style={styles.colInput}>
@@ -525,13 +522,11 @@ const Register = ({ navigation }) => {
               style={[
                 errors.showPasswordError && GlobalStyles.errorBorder,
                 styles.row,
-              ]}
-            >
+              ]}>
               <Pressable
                 style={styles.colLabel}
                 onPress={() => handleOnPressLabel(passwordRef)}
-                activeOpacity={1}
-              >
+                activeOpacity={1}>
                 <Text style={styles.textLabelColumn}>Password</Text>
               </Pressable>
               <View style={styles.colInput}>
@@ -560,13 +555,11 @@ const Register = ({ navigation }) => {
               style={[
                 errors.showConfirmPasswordError && GlobalStyles.errorBorder,
                 styles.row,
-              ]}
-            >
+              ]}>
               <Pressable
                 style={styles.colLabel}
                 onPress={() => handleOnPressLabel(confirmPasswordRef)}
-                activeOpacity={1}
-              >
+                activeOpacity={1}>
                 <Text style={styles.textLabelColumn}>Confirm Password</Text>
               </Pressable>
               <View style={styles.colInput}>
@@ -595,13 +588,11 @@ const Register = ({ navigation }) => {
           style={[
             errors.showEmailError && GlobalStyles.errorBorder,
             styles.row,
-          ]}
-        >
+          ]}>
           <Pressable
             style={styles.colLabel}
             onPress={() => handleOnPressLabel(nameRef)}
-            activeOpacity={1}
-          >
+            activeOpacity={1}>
             <Text style={styles.textLabelColumn}>Name</Text>
           </Pressable>
           <View style={styles.colInput}>
@@ -629,8 +620,7 @@ const Register = ({ navigation }) => {
             styles.checkInput,
             { alignItems: "flex-end" },
             errors.showAgeError && GlobalStyles.errorBorder,
-          ]}
-        >
+          ]}>
           <Text style={styles.textLabel}>Age</Text>
           <View style={styles.dropdownSelect}>
             <SelectDropdown
@@ -680,8 +670,7 @@ const Register = ({ navigation }) => {
             styles.checkInput,
             { alignItems: "flex-end" },
             errors.showSexError && GlobalStyles.errorBorder,
-          ]}
-        >
+          ]}>
           <Text style={styles.textLabel}>Sex</Text>
           <View style={styles.dropdownSelect}>
             <SelectDropdown
@@ -712,8 +701,7 @@ const Register = ({ navigation }) => {
             styles.checkInput,
             styles.aligItemsRight,
             errors.showLevelError && GlobalStyles.errorBorder,
-          ]}
-        >
+          ]}>
           <Text style={styles.textLabel}>Fitness level</Text>
           <View style={styles.dropdownSelect}>
             <SelectDropdown
@@ -744,8 +732,7 @@ const Register = ({ navigation }) => {
               styles.viewSection,
               styles.checkInput,
               styles.aligItemsRight,
-            ]}
-          >
+            ]}>
             <Text style={styles.textLabel}>Gym</Text>
             <View style={styles.dropdownSelect}>
               <SelectDropdown

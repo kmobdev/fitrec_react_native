@@ -139,8 +139,7 @@ const HomeFilters = (props) => {
         <View style={[styles.viewBubble, styles.viewBubbleSmall]}>
           <Pressable
             style={styles.touchable}
-            onPress={() => pickerGender.current.show()}
-          >
+            onPress={() => pickerGender.current.show()}>
             {showDescriptions && (
               <View style={styles.viewBubbleSmallDescription}>
                 <View style={styles.bubbleSmallDescription}>
@@ -176,8 +175,7 @@ const HomeFilters = (props) => {
         <View style={[styles.viewBubble, styles.viewBubbleSmall]}>
           <Pressable
             style={styles.touchable}
-            onPress={() => pickerRange.current.show()}
-          >
+            onPress={() => pickerRange.current.show()}>
             {showDescriptions && (
               <View style={styles.viewBubbleSmallDescription}>
                 <View style={styles.bubbleSmallDescription}>
@@ -205,8 +203,7 @@ const HomeFilters = (props) => {
         <View style={[styles.viewBubble, styles.viewBubbleSmall]}>
           <Pressable
             style={styles.touchable}
-            onPress={() => applyFilterDefault()}
-          >
+            onPress={() => applyFilterDefault()}>
             {showDescriptions && (
               <View style={styles.viewBubbleSmallDescription}>
                 <View style={styles.bubbleSmallDescription}>

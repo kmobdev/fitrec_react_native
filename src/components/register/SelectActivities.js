@@ -69,8 +69,7 @@ const SelectActivities = (props) => {
                   padding: 20,
                   borderBottomWidth: 0.5,
                   borderBottomColor: PlaceholderColor,
-                }}
-              >
+                }}>
                 <View style={{ flexDirection: "row" }}>
                   <Image
                     source={getIcon(item.name)}
@@ -88,8 +87,7 @@ const SelectActivities = (props) => {
                         bottom: 0,
                         justifyContent: "center",
                         alignItems: "center",
-                      }}
-                    >
+                      }}>
                       <Image source={require("../../assets/checked.png")} />
                     </View>
                   ) : null}

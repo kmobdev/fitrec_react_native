@@ -76,6 +76,9 @@ const Home = (props) => {
   const homeProps = useSelector((state) => state.reducerHome);
   const chatProps = useSelector((state) => state.reducerChat);
   const activity = useSelector((state) => state.reducerActivity);
+  const session = useSelector((state) => state.reducerSession);
+  const blockProps = useSelector((state) => state.reducerBlock);
+  const palsProps = useSelector((state) => state.reducerMyPals);
 
   const dispatch = useDispatch();
 
@@ -99,13 +102,13 @@ const Home = (props) => {
   const [showGyms, setShowGyms] = useState(false);
   const [index, setIndex] = useState(0);
 
-  const { account } = props.session;
+  const { account } = session;
 
   // METHOD OPEN NOTIFICATION
   // onOpened = (oData) => {
   //   // Action when the notification opens
   //   var oNotification = oData.notification.payload.additionalData;
-  //   const { account: oAccount } = this.props.session;
+  //   const { account: oAccount } = this.session;
   //   // Sentence to know if the user is logged
   //   if (oAccount) {
   //     if (!oNotification)
@@ -114,33 +117,33 @@ const Home = (props) => {
   //     // The types of notification are detailed in Readme.MD
   //     switch (oNotification.type) {
   //       case NOTIFICATION_MESSAGE:
-  //         this.props.sendConversationKey(oNotification.id);
-  //         this.props.getMessages(oNotification.id, oAccount.key);
+  //         dispatch(actionSetConversationToNotification(oNotification.id));
+  //         dispatch(actionGetMessages(oNotification.id, oAccount.key));
   //         props.navigation.navigate("Messages");
   //         break;
   //       case NOTIFICATION_NEW_CAPTAIN_GROUP:
   //       case NOTIFICATION_MESSAGE_GROUP:
-  //         this.props.navigateToGroup(oNotification.id);
+  //         dispatch(actionNavigateToGroup(oNotification.id));
   //         props.navigation.navigate("Groups");
   //         break;
   //       case NOTIFICATION_PAL_REQUEST:
   //         props.navigation.navigate("MyPals");
-  //         this.props.navigatePals();
+  //         dispatch(actionNavigateToMyPals());
   //         break;
   //       case NOTIFICATION_REQUEST_JOIN_GROUP:
-  //         this.props.getGroups(oAccount.key);
+  //         dispatch(actionGetGroups(oAccount.key));
   //         props.navigation.navigate("Groups", {
   //           groupId: oNotification.id,
   //           request: true,
   //         });
   //         break;
   //       case NOTIFICATION_GROUP_INITATION:
-  //         this.props.getInvitationsGroup({ accountId: oAccount.key });
+  //          dispatch(actionGetGroupInvitations({ accountId: oAccount.key }));
   //         props.navigation.navigate("Groups", { invitation: true });
   //         break;
   //       case NOTIFICATION_CAPTAIN:
-  //         this.props.getNotifications();
-  //         this.props.navigateToNotification(oNotification.id);
+  //         dispatch(actionGetNotifications());
+  //          dispatch(actionNavigateToNotifications(oNotification.id));
   //         props.navigation.navigate("ListNotifications");
   //         break;
   //       case NOTIFICATION_JOURNEY_TAG:
@@ -162,10 +165,7 @@ const Home = (props) => {
     checkOneSignalCode();
     dispatch(actionGetAllActivities());
     dispatch(actionGetGyms());
-    if (
-      props.palsProps.myFriends.status !== true &&
-      props.palsProps.myFriends.length === 0
-    )
+    if (palsProps.myFriends.status !== true && palsProps.myFriends.length === 0)
       dispatch(actionGetMyFriends());
   }, []);
 
@@ -189,11 +189,13 @@ const Home = (props) => {
     if (activity.gyms.length > 0 && gyms.length === 0) {
       setGyms(activity.gyms);
     }
-    if (props.blockProps.status) {
+    if (blockProps.status) {
       setShowActivity(false);
     }
     if (homeProps.bNavigationHome) {
-      if (swiperRef) swiperRef.current.scrollTo(0, true);
+      if (swiperRef) {
+        swiperRef.current.scrollTo(0, true);
+      }
       dispatch(actionCleanNavigation());
     }
     setLoading(false);
@@ -202,15 +204,15 @@ const Home = (props) => {
   }, [homeProps, chatProps, activity]);
 
   const navigateGroup = (sGroupKey) => {
-    props.getGroup(sGroupKey, props.session.account.key);
+    props.getGroup(sGroupKey, session.account.key);
     props.navigation.navigate("DetailsGroup");
   };
 
   const checkOneSignalCode = () => {
-    if (null !== props.session.account) {
+    if (null !== session.account) {
       dispatch(
         actionCheckOneSignalCode({
-          accountId: props.session.account.key,
+          accountId: session.account.key,
         })
       );
     }
@@ -227,7 +229,7 @@ const Home = (props) => {
   const sharedOption = () => {
     Share.share({
       message:
-        props.session.account.name +
+        session.account.name +
         " has just invited you to check out a hot new Social Fitness application called, " +
         "FITREC. Go to 'www.FITREC.com' to discover why we're better together, when it comes " +
         "to health and fitness. Or, download the app today for Android 'https://play.google.com/" +
@@ -249,6 +251,7 @@ const Home = (props) => {
   const onRefresh = () => {
     setRefreshing(true);
     getUserHome();
+    setRefreshing(false);
   };
 
   const getImgActivity = (sActivityName) => {
@@ -284,11 +287,11 @@ const Home = (props) => {
       }
     }
     let data = {
-      accountId: props.session.account.key,
+      accountId: session.account.key,
       message: message,
       participants: sendUsers,
       type: "text",
-      name: props.session.account.name,
+      name: session.account.name,
     };
     dispatch(actionSendMessageAll(data));
   };
@@ -349,8 +352,7 @@ const Home = (props) => {
       <ImageBackground
         source={require("../../assets/bk.png")}
         resizeMode="stretch"
-        style={GlobalStyles.fullImage}
-      >
+        style={GlobalStyles.fullImage}>
         <ScrollView
           contentContainerStyle={styles.scrollView}
           refreshControl={
@@ -360,8 +362,7 @@ const Home = (props) => {
               tintColor={GreenFitrecColor}
               title="Pull to refresh..."
             />
-          }
-        >
+          }>
           <FlatList
             keyExtractor={(item, index) => index.toString()}
             data={activities}
@@ -464,8 +465,7 @@ const Home = (props) => {
           onIndexChanged={(index) => swipe(index)}
           scrollEnabled={true}
           horizontal={true}
-          ref={swiperRef}
-        >
+          ref={swiperRef}>
           <View style={styles.contentSwipe}>{renderContent()}</View>
           <View style={styles.contentSwipe}>
             <JourneyList
@@ -535,61 +535,4 @@ const styles = StyleSheet.create({
   },
 });
 
-const mapStateToProps = (state) => ({
-  session: state.reducerSession,
-  homeProps: state.reducerHome,
-  chatProps: state.reducerChat,
-  activity: state.reducerActivity,
-  blockProps: state.reducerBlock,
-  palsProps: state.reducerMyPals,
-});
-
-const mapDispatchToProps = (dispatch) => ({
-  getUserHome: (aActivities, sGarder, aGyms, sRange) => {
-    dispatch(actionGetUserHome(aActivities, sGarder, aGyms, sRange));
-  },
-  sendMessage: (data) => {
-    dispatch(actionSendMessageAll(data));
-  },
-  checkOneSignalCode: (data) => {
-    dispatch(actionCheckOneSignalCode(data));
-  },
-  getInvitationsGroup: (data) => {
-    dispatch(actionGetGroupInvitations(data));
-  },
-  getNotifications: () => {
-    dispatch(actionGetNotifications());
-  },
-  getAllActivities: () => {
-    dispatch(actionGetAllActivities());
-  },
-  getGyms: () => {
-    dispatch(actionGetGyms());
-  },
-  cleanNavigation: () => {
-    dispatch(actionCleanNavigation());
-  },
-  sendConversationKey: (sConversationKey) => {
-    dispatch(actionSetConversationToNotification(sConversationKey));
-  },
-  getMessages: (sConversationId, sUserKey) => {
-    dispatch(actionGetMessages(sConversationId, sUserKey));
-  },
-  getGroups: (sUserKey) => {
-    dispatch(actionGetGroups(sUserKey));
-  },
-  navigateToGroup: (sGroupKey) => {
-    dispatch(actionNavigateToGroup(sGroupKey));
-  },
-  navigateToNotification: (nNotificationId) => {
-    dispatch(actionNavigateToNotifications(nNotificationId));
-  },
-  navigatePals: () => {
-    dispatch(actionNavigateToMyPals());
-  },
-  getMyFriends: () => {
-    dispatch(actionGetMyFriends());
-  },
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(Home);
+export default Home;

@@ -112,8 +112,7 @@ const ShowPeople = (props) => {
               props.close();
               resetMessage();
               uncheckUsers();
-            }}
-          >
+            }}>
             <Text style={GlobalModal.titleClose}>Close</Text>
           </Pressable>
         </View>
@@ -124,8 +123,7 @@ const ShowPeople = (props) => {
                 onPress={() => {
                   resetMessage();
                 }}
-                style={{ position: "absolute", zIndex: 999, bottom: 0.5 }}
-              >
+                style={{ position: "absolute", zIndex: 999, bottom: 0.5 }}>
                 <Icon name={"close"} size={24} color={SignUpColor} />
               </Pressable>
             )}
@@ -161,8 +159,7 @@ const ShowPeople = (props) => {
                     redirectionViewProfile(element.id);
                   }
                 }}
-                style={styles.itemContainer}
-              >
+                style={styles.itemContainer}>
                 {renderImage(element.image)}
                 <Text style={{ color: PlaceholderColor, textAlign: "center" }}>
                   {element.username}

@@ -26,7 +26,10 @@ import { ToastQuestion } from "../../components/shared/ToastQuestion";
 import { Toast } from "../../components/shared/Toast";
 import { LoadingSpinner } from "../../components/shared/LoadingSpinner";
 import Icon from "react-native-vector-icons/Ionicons";
-import { actionCreateGroup, actionResetCreateGroup } from "../../redux/actions/GroupActions";
+import {
+  actionCreateGroup,
+  actionResetCreateGroup,
+} from "../../redux/actions/GroupActions";
 import ReactNativePickerModule from "react-native-picker-module";
 import Geolocation from "@react-native-community/geolocation";
 import { actionGetPeopleGroup } from "../../redux/actions/MyPalsActions";
@@ -41,7 +44,6 @@ import {
 let RNFS = require("react-native-fs");
 
 const NewGroup = (props) => {
-
   const pickerSex = useRef();
 
   const session = useSelector((state) => state.reducerSession);
@@ -72,7 +74,7 @@ const NewGroup = (props) => {
   useEffect(() => {
     setLoading(false);
     props.navigation.setParams({ createGroup: createGroup });
-  }, [])
+  }, []);
 
   useEffect(() => {
     if (grupProps.status) {
@@ -92,29 +94,23 @@ const NewGroup = (props) => {
       dispatch(actionResetCreateGroup());
       grupProps
         ? props.navigation.navigate("Groups", {
-          firebaseId: grupProps.firebaseId,
-        })
+            firebaseId: grupProps.firebaseId,
+          })
         : props.navigation.navigate("Groups");
-    } else
-      setLoading(false);
-    if (
-      search !== "" &&
-      myPalsRequest.peopleFitrec !== props.usersFilter
-    ) {
+    } else setLoading(false);
+    if (search !== "" && myPalsRequest.peopleFitrec !== props.usersFilter) {
       setFriends(myPalsRequest.peopleFitrec);
       setUsersFilter(myPalsRequest.peopleFitrec);
       setLoading(false);
     }
     if (
       friendsProps.status !== true &&
-      (null === friendsProps.myFriends ||
-        friendsProps.myFriends.length === 0)
+      (null === friendsProps.myFriends || friendsProps.myFriends.length === 0)
     )
       dispatch(actionGetMyFriends(session.account.key));
-    else if (null === friendsBack)
-      setFriendsBack(friendsProps.myFriends);
+    else if (null === friendsBack) setFriendsBack(friendsProps.myFriends);
     setFriends(friendsProps.myFriends);
-  }, [grupProps, myPalsRequest, myPalsRequest, friendsProps])
+  }, [grupProps, myPalsRequest, myPalsRequest, friendsProps]);
 
   const searchUsers = () => {
     setFriends([]);
@@ -122,8 +118,8 @@ const NewGroup = (props) => {
     if ("" === search) {
       friendsBack.forEach((oUser) => {
         if (
-          participants.filter((element) => element.key === oUser.key)
-            .length == 0
+          participants.filter((element) => element.key === oUser.key).length ==
+          0
         ) {
           setFriends([...friends, oUser]);
         }
@@ -240,7 +236,7 @@ const NewGroup = (props) => {
         .catch((error) => {
           setLoadingImage(false);
           showToast(String(error));
-        })
+        });
     } else {
       ImagePicker.openPicker(OPTIONS_IMAGE_CROP_PROFILE)
         .then((oResponse) => {
@@ -251,7 +247,7 @@ const NewGroup = (props) => {
         .catch((error) => {
           setLoadingImage(false);
           showToast(String(error));
-        })
+        });
     }
   };
 
@@ -337,15 +333,13 @@ const NewGroup = (props) => {
     <ImageBackground
       source={require("../../assets/bk.png")}
       resizeMode="stretch"
-      style={GlobalStyles.fullImage}
-    >
+      style={GlobalStyles.fullImage}>
       <ScrollView>
         {search === "" && (
           <>
             <View style={{ flexDirection: "row", padding: 10 }}>
               <View style={{ width: "40%", alignItems: "center" }}>
-                {null !== imgGroup &&
-                  "" !== imgGroup ? (
+                {null !== imgGroup && "" !== imgGroup ? (
                   <View>
                     <Pressable onPress={showGroupPhotoHandler}>
                       <Image
@@ -373,8 +367,7 @@ const NewGroup = (props) => {
                     paddingTop: 10,
                     paddingBottom: 10,
                     borderBottomWidth: 0.5,
-                  }}
-                >
+                  }}>
                   <TextInput
                     placeholder="Group name"
                     placeholderTextColor={PlaceholderColor}
@@ -399,18 +392,14 @@ const NewGroup = (props) => {
                 styles.viewSection,
                 styles.textInput,
                 { alignItems: "flex-end" },
-              ]}
-            >
+              ]}>
               <Text style={styles.textLabel}>Group Type</Text>
               <View style={[styles.comboSelect]}>
                 <Pressable
                   onPress={() => pickerSex.current.show()}
-                  style={{ flexDirection: "row" }}
-                >
+                  style={{ flexDirection: "row" }}>
                   <Text style={{ paddingRight: 20, fontSize: 15 }}>
-                    {groupType != null
-                      ? groupType
-                      : "Select here"}
+                    {groupType != null ? groupType : "Select here"}
                   </Text>
                   <Icon name="chevron-down" size={22} />
                 </Pressable>
@@ -432,8 +421,7 @@ const NewGroup = (props) => {
                 fontSize: 15,
                 marginStart: 25,
                 color: GreenFitrecColor,
-              }}
-            >
+              }}>
               PARTICIPANTS: {participants.length}
             </Text>
           </View>
@@ -441,25 +429,22 @@ const NewGroup = (props) => {
             <>
               <View style={[styles.viewActivitiesSelected, styles.margin]}>
                 {participants.map((item) =>
-                  null !== selectCapitan &&
-                    selectCapitan ? (
+                  null !== selectCapitan && selectCapitan ? (
                     item.is_capitan ? (
                       <Pressable
                         key={item.key}
                         onPress={() => {
                           removeCapitanSelected(item);
-                        }}
-                      >
+                        }}>
                         <View
                           style={[
                             styles.margin,
                             { alignItems: "center", textAlign: "center" },
-                          ]}
-                        >
+                          ]}>
                           <View>
                             {null == item.image ||
-                              undefined == item.image ||
-                              "" == item.image ? (
+                            undefined == item.image ||
+                            "" == item.image ? (
                               <Image
                                 style={GlobalStyles.photoProfileCardList}
                                 source={require("../../assets/profile.png")}
@@ -475,8 +460,7 @@ const NewGroup = (props) => {
                               />
                             )}
                             <View style={styles.iconUser}>
-                              {null !== selectCapitan &&
-                                selectCapitan ? (
+                              {null !== selectCapitan && selectCapitan ? (
                                 item.is_capitan ? (
                                   <Icon
                                     name="md-checkmark-circle"
@@ -503,18 +487,16 @@ const NewGroup = (props) => {
                         key={item.key}
                         onPress={() => {
                           selectCapitanHandler(item);
-                        }}
-                      >
+                        }}>
                         <View
                           style={[
                             styles.margin,
                             { alignItems: "center", textAlign: "center" },
-                          ]}
-                        >
+                          ]}>
                           <View>
                             {null == item.image ||
-                              undefined == item.image ||
-                              "" == item.image ? (
+                            undefined == item.image ||
+                            "" == item.image ? (
                               <Image
                                 style={GlobalStyles.photoProfileCardList}
                                 source={require("../../assets/profile.png")}
@@ -530,8 +512,7 @@ const NewGroup = (props) => {
                               />
                             )}
                             <View style={styles.iconUser}>
-                              {null !== selectCapitan &&
-                                selectCapitan ? (
+                              {null !== selectCapitan && selectCapitan ? (
                                 item.is_capitan ? (
                                   <Icon
                                     name="md-checkmark-circle"
@@ -559,18 +540,16 @@ const NewGroup = (props) => {
                       key={item.key}
                       onPress={() => {
                         removeParticipant(item);
-                      }}
-                    >
+                      }}>
                       <View
                         style={[
                           styles.margin,
                           { alignItems: "center", textAlign: "center" },
-                        ]}
-                      >
+                        ]}>
                         <View>
                           {null == item.image ||
-                            undefined == item.image ||
-                            "" == item.image ? (
+                          undefined == item.image ||
+                          "" == item.image ? (
                             <Image
                               style={GlobalStyles.photoProfileCardList}
                               source={require("../../assets/profile.png")}
@@ -605,8 +584,7 @@ const NewGroup = (props) => {
               </View>
               {participants.length > 0 ? (
                 <View style={styles.margin}>
-                  {null !== selectCapitan &&
-                    selectCapitan == true ? (
+                  {null !== selectCapitan && selectCapitan == true ? (
                     <Button
                       title="Save captains selected"
                       color={SignUpColor}
@@ -622,9 +600,7 @@ const NewGroup = (props) => {
                 </View>
               ) : (
                 <View style={styles.margin}>
-                  <Text style={styles.textPhoto}>
-                    Add members to the list
-                  </Text>
+                  <Text style={styles.textPhoto}>Add members to the list</Text>
                 </View>
               )}
             </>
@@ -656,13 +632,12 @@ const NewGroup = (props) => {
                   <Pressable
                     onPress={() => {
                       addParticipant(item);
-                    }}
-                  >
+                    }}>
                     <View style={[styles.userCard, styles.margin]}>
                       <View>
                         {null == item.image ||
-                          undefined == item.image ||
-                          "" == item.image ? (
+                        undefined == item.image ||
+                        "" == item.image ? (
                           <Image
                             style={GlobalStyles.photoProfileCardList}
                             source={require("../../assets/profile.png")}
@@ -679,9 +654,7 @@ const NewGroup = (props) => {
                         )}
                       </View>
                       <View style={styles.margin}>
-                        <Text style={{ fontWeight: "bold" }}>
-                          {item.name}
-                        </Text>
+                        <Text style={{ fontWeight: "bold" }}>{item.name}</Text>
                         <Text style={{ fontWeight: "bold" }}>
                           @{item.username}
                         </Text>
@@ -702,8 +675,7 @@ const NewGroup = (props) => {
                   fontSize: 18,
                   flexWrap: "wrap",
                 },
-              ]}
-            >
+              ]}>
               No more friends were found to add to the group
             </Text>
           )}
@@ -715,12 +687,10 @@ const NewGroup = (props) => {
         functionGallery={() => addImageGroup("gallery")}
       />
       <Toast toastText={toastText} />
-      <LoadingSpinner
-        visible={loadingImage || loadingCreate}
-      />
+      <LoadingSpinner visible={loadingImage || loadingCreate} />
     </ImageBackground>
   );
-}
+};
 
 const styles = StyleSheet.create({
   textPhoto: {

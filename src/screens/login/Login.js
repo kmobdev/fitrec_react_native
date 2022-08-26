@@ -122,8 +122,7 @@ const Login = (props) => {
     <ScrollView contentContainerStyle={GlobalStyles.container}>
       <ImageBackground
         source={ImageSet.loginBackground}
-        style={GlobalStyles.fullImage}
-      >
+        style={GlobalStyles.fullImage}>
         <View style={styles.mainContainer}>
           <View style={styles.imageView}>
             <Image source={ImageSet.logoWithName} style={{ marginTop: 40 }} />
@@ -178,15 +177,13 @@ const Login = (props) => {
               onPress={() => {
                 track(SEGMENT_EVENTS.FORGOT_PASSWORD);
                 navigateHandler("ForgotPassword");
-              }}
-            >
+              }}>
               <Text style={styles.textFree}>FORGOT PASSWORD?</Text>
             </Pressable>
 
             <Pressable
               style={styles.touchableTextFree}
-              onPress={showVideoTutorialHandler}
-            >
+              onPress={showVideoTutorialHandler}>
               <Text style={styles.textFree}>VIDEO APP TUTORIAL</Text>
             </Pressable>
           </View>
@@ -194,8 +191,7 @@ const Login = (props) => {
             <View style={styles.switchButtons}>
               <Pressable
                 onPress={showTutorialHandler}
-                style={styles.roundButtonSwitchLeft}
-              >
+                style={styles.roundButtonSwitchLeft}>
                 <Text style={styles.textButton}>TAKE A TOUR</Text>
               </Pressable>
               <Pressable
@@ -203,8 +199,7 @@ const Login = (props) => {
                   track(SEGMENT_EVENTS.SIGN_UP);
                   navigateHandler("Register");
                 }}
-                style={styles.roundButtonSwitchRight}
-              >
+                style={styles.roundButtonSwitchRight}>
                 <Text style={styles.textButton}>SIGN UP</Text>
               </Pressable>
             </View>

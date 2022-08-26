@@ -4,7 +4,6 @@ import { StyleSheet, View, Text, Pressable } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 
 const ShowActivities = (props) => {
-
   return (
     <View>
       {!props.readonly && (
@@ -13,19 +12,13 @@ const ShowActivities = (props) => {
             GlobalStyles.viewSection,
             styles.textInput,
             { alignItems: "flex-end", borderBottomWidth: 0 },
-          ]}
-        >
+          ]}>
           <Text style={styles.textLabel}>Activities</Text>
           <View
-            style={[
-              styles.comboSelect,
-              props.error && styles.paddingExtra,
-            ]}
-          >
+            style={[styles.comboSelect, props.error && styles.paddingExtra]}>
             <Pressable
               style={{ flexDirection: "row", padding: 4 }}
-              onPress={props.press}
-            >
+              onPress={props.press}>
               <Icon
                 name="md-create"
                 size={18}
@@ -64,15 +57,13 @@ const ShowActivities = (props) => {
                 marginRight: 5,
                 marginBottom: 5,
               }}
-              key={element.id}
-            >
+              key={element.id}>
               <Text
                 style={{
                   color: SignUpColor,
                   textAlign: "center",
                   justifyContent: "center",
-                }}
-              >
+                }}>
                 {element.name}
               </Text>
             </View>
@@ -80,7 +71,7 @@ const ShowActivities = (props) => {
       </View>
     </View>
   );
-}
+};
 const styles = StyleSheet.create({
   textLabel: {
     position: "absolute",

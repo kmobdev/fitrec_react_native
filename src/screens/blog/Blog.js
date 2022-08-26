@@ -5,7 +5,6 @@ import { View, ScrollView, RefreshControl } from "react-native";
 import { GreenFitrecColor } from "../../Styles";
 
 const Blog = () => {
-
   const webViewRef = useRef();
 
   const [loading, setLoading] = useState(true);
@@ -33,8 +32,7 @@ const Blog = () => {
             tintColor={GreenFitrecColor}
             title="Pull to refresh..."
           />
-        }
-      >
+        }>
         <WebView
           ref={webViewRef}
           onLoad={hideLoading}
@@ -45,6 +43,6 @@ const Blog = () => {
       <LoadingSpinner visible={loading} />
     </View>
   );
-}
+};
 
 export default Blog;

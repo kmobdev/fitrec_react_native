@@ -66,12 +66,10 @@ const CarouselTutorial = (props) => {
         <GestureRecognizer
           onSwipe={onSwipe}
           config={config}
-          style={styles.gestureRecognizerContainer}
-        >
+          style={styles.gestureRecognizerContainer}>
           <ImageBackground
             source={require("../../assets/tutorial/background.png")}
-            style={GlobalStyles.fullImage}
-          >
+            style={GlobalStyles.fullImage}>
             {displayImage === 1 && (
               <Image
                 source={require("../../assets/tutorial/1.png")}
@@ -132,8 +130,7 @@ const CarouselTutorial = (props) => {
                 <Pressable
                   onPress={() => {
                     setDisplayImage(3);
-                  }}
-                >
+                  }}>
                   <Icon
                     name={
                       displayImage === 3

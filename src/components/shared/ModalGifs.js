@@ -14,8 +14,7 @@ export const ModalGifs = (props) => {
             <View>
               <Pressable
                 style={[styles.buttonLeft, { flexDirection: "row" }]}
-                onPress={() => props.fChangeType()}
-              >
+                onPress={() => props.fChangeType()}>
                 <Text style={[styles.titleClose, { marginLeft: 2 }]}>GIF</Text>
               </Pressable>
               <Text style={styles.headTitle}>Stickers</Text>
@@ -24,8 +23,7 @@ export const ModalGifs = (props) => {
             <View>
               <Pressable
                 style={[styles.buttonLeft, { flexDirection: "row" }]}
-                onPress={props.fChangeType}
-              >
+                onPress={props.fChangeType}>
                 <Text style={[styles.titleClose, { marginLeft: 2 }]}>
                   Stickers
                 </Text>
@@ -35,8 +33,7 @@ export const ModalGifs = (props) => {
           )}
           <Pressable
             style={[styles.buttonClose, { flexDirection: "row" }]}
-            onPress={props.fClose}
-          >
+            onPress={props.fClose}>
             <Icon name="close" color={SignUpColor} size={22} />
             <Text style={[styles.titleClose, { marginLeft: 2 }]}>Close</Text>
           </Pressable>

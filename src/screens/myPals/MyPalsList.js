@@ -54,7 +54,6 @@ import { lABC, OPTIONS_GEOLOCATION_GET_POSITION } from "../../Constants";
 import { actionCleanNavigation } from "../../redux/actions/NavigationActions";
 
 const MyPalsList = (props) => {
-
   const pickerGym = useRef();
   const pickerAge = useRef();
 
@@ -92,22 +91,16 @@ const MyPalsList = (props) => {
     props.navigation.getParam("request", false) && setTabSelectPals(false);
     dispatch(actionGetAllActivities());
     dispatch(actionGetGyms());
-  }, [])
+  }, []);
 
   useEffect(() => {
-    if (
-      null !== myPalsRequest.statusSend &&
-      myPalsRequest.statusSend
-    ) {
+    if (null !== myPalsRequest.statusSend && myPalsRequest.statusSend) {
       dispatch(actionResetStateRequest());
       setSearch("");
       setFilterRequests("");
       searchPeople();
       showToast("Your request has been sent");
-    } else if (
-      null !== myPalsRequest.statusSend &&
-      !myPalsRequest.statusSend
-    ) {
+    } else if (null !== myPalsRequest.statusSend && !myPalsRequest.statusSend) {
       setSearch("");
       setFilterRequests("");
       searchPeople();
@@ -153,7 +146,7 @@ const MyPalsList = (props) => {
     setRefresh(!refresh);
     setLoading(false);
     setRefreshing(false);
-  }, [myPalsRequest, myPals, activity])
+  }, [myPalsRequest, myPals, activity]);
 
   const openOptions = () => {
     Keyboard.dismiss();
@@ -174,8 +167,7 @@ const MyPalsList = (props) => {
     setFilterRequests(search);
     var aActivitiesSelected =
       activities.filter((item) => item.selected).length > 0 &&
-        activities.filter((item) => item.selected).length <
-        activities.length
+      activities.filter((item) => item.selected).length < activities.length
         ? activities.filter((item) => item.selected)
         : null;
 
@@ -209,7 +201,8 @@ const MyPalsList = (props) => {
                 nDistance,
                 nGymId,
                 aActivities
-              ));
+              )
+            );
           },
           () => {
             dispatch(
@@ -275,18 +268,16 @@ const MyPalsList = (props) => {
     }
     if (myPalsRequest.requestsSent.length > 0) {
       if (
-        myPalsRequest.requestsSent.filter(
-          (element) => nIdFitrec === element.id
-        ).length > 0
+        myPalsRequest.requestsSent.filter((element) => nIdFitrec === element.id)
+          .length > 0
       ) {
         return false;
       }
     }
     if (myPals.myFriends.length > 0) {
       if (
-        myPals.myFriends.filter(
-          (element) => nIdFitrec === element.id
-        ).length > 0
+        myPals.myFriends.filter((element) => nIdFitrec === element.id).length >
+        0
       ) {
         return false;
       }
@@ -304,12 +295,14 @@ const MyPalsList = (props) => {
 
   const sendRequest = (sUserPalKey) => {
     setLoading(true);
-    dispatch(actionSendRequest(
-      sUserPalKey,
-      session.account.key,
-      session.account.name,
-      false
-    ));
+    dispatch(
+      actionSendRequest(
+        sUserPalKey,
+        session.account.key,
+        session.account.name,
+        false
+      )
+    );
   };
 
   const acceptRequest = (oPal) => {
@@ -342,7 +335,7 @@ const MyPalsList = (props) => {
       setSearchPals("");
       searchPeople();
     }
-    setTabSelectPals(value)
+    setTabSelectPals(value);
   };
 
   const redirectionViewProfile = (idFitrec) => {
@@ -355,8 +348,7 @@ const MyPalsList = (props) => {
       setAgeRange(value);
       setAgeMin(0);
       setAgeMax(18);
-    }
-    else if (value === "Between 18 and 30 years") {
+    } else if (value === "Between 18 and 30 years") {
       setAgeRange(value);
       setAgeMin(18);
       setAgeMax(30);
@@ -380,55 +372,40 @@ const MyPalsList = (props) => {
     setGym(null);
     setNearMe(false);
     setDistance(5);
-    setRefresh(!refresh)
+    setRefresh(!refresh);
     searchPeople();
   };
 
   const selectGym = (value) => {
-    setGym(value === "None" ? null : value)
+    setGym(value === "None" ? null : value);
   };
 
   return (
     <ImageBackground
       source={require("../../assets/bk.png")}
       resizeMode="stretch"
-      style={GlobalStyles.fullImage}
-    >
+      style={GlobalStyles.fullImage}>
       <View style={GlobalTabs.viewTabs}>
         <Pressable
           onPress={() => changeTab(true)}
-          style={[
-            GlobalTabs.tabLeft,
-            tabSelectPals && GlobalTabs.tabActive,
-          ]}
-        >
+          style={[GlobalTabs.tabLeft, tabSelectPals && GlobalTabs.tabActive]}>
           <View>
             <Text
               style={
-                tabSelectPals
-                  ? GlobalTabs.tabsTextActive
-                  : GlobalTabs.tabsText
-              }
-            >
+                tabSelectPals ? GlobalTabs.tabsTextActive : GlobalTabs.tabsText
+              }>
               Pals
             </Text>
           </View>
         </Pressable>
         <Pressable
           onPress={() => changeTab(false)}
-          style={[
-            GlobalTabs.tabRight,
-            !tabSelectPals && GlobalTabs.tabActive,
-          ]}
-        >
+          style={[GlobalTabs.tabRight, !tabSelectPals && GlobalTabs.tabActive]}>
           <View>
             <Text
               style={
-                !tabSelectPals
-                  ? GlobalTabs.tabsTextActive
-                  : GlobalTabs.tabsText
-              }
-            >
+                !tabSelectPals ? GlobalTabs.tabsTextActive : GlobalTabs.tabsText
+              }>
               Requests
             </Text>
           </View>
@@ -451,8 +428,7 @@ const MyPalsList = (props) => {
                   tintColor={GreenFitrecColor}
                   title="Pull to refresh..."
                 />
-              }
-            >
+              }>
               {myPals.myFriends.length > 0 && (
                 <FlatList
                   data={myPals.myFriends.filter(
@@ -469,8 +445,7 @@ const MyPalsList = (props) => {
                   renderItem={({ item }) => (
                     <Pressable
                       style={styles.imagePressable}
-                      onPress={() => redirectionViewProfile(item.id)}
-                    >
+                      onPress={() => redirectionViewProfile(item.id)}>
                       {undefined === item.image || null === item.image ? (
                         <Image
                           style={styles.dummyImage}
@@ -535,8 +510,7 @@ const MyPalsList = (props) => {
                 tintColor={GreenFitrecColor}
                 title="Pull to refresh..."
               />
-            }
-          >
+            }>
             {myPalsRequest.requestsRecived !== undefined &&
               myPalsRequest.requestsRecived instanceof Array &&
               myPalsRequest.requestsRecived !== null && (
@@ -556,8 +530,7 @@ const MyPalsList = (props) => {
                     <View style={styles.viewNotificaton}>
                       <Pressable
                         onPress={() => redirectionViewProfile(item.id)}
-                        style={styles.dummyImagePressable}
-                      >
+                        style={styles.dummyImagePressable}>
                         {null === item.image || undefined === item.image ? (
                           <Image
                             style={styles.dummyImage}
@@ -576,8 +549,7 @@ const MyPalsList = (props) => {
                         <View style={styles.friendRequestsMainView}>
                           <Text
                             style={styles.textUserReference}
-                            numberOfLines={1}
-                          >
+                            numberOfLines={1}>
                             {item.name}(@{item.username})
                           </Text>
                           <Text style={{ fontSize: 14 }}>
@@ -587,8 +559,7 @@ const MyPalsList = (props) => {
                       </Pressable>
                       <Pressable
                         style={styles.viewIconRight}
-                        onPress={() => acceptRequest(item)}
-                      >
+                        onPress={() => acceptRequest(item)}>
                         <Icon
                           name="md-checkmark"
                           size={32}
@@ -597,8 +568,7 @@ const MyPalsList = (props) => {
                       </Pressable>
                       <Pressable
                         onPress={() => cancelRequest(item, "reject")}
-                        style={[styles.viewIconRight, { right: 50 }]}
-                      >
+                        style={[styles.viewIconRight, { right: 50 }]}>
                         <Icon name="md-close" size={32} color={SignUpColor} />
                       </Pressable>
                     </View>
@@ -618,11 +588,10 @@ const MyPalsList = (props) => {
                   <View style={styles.viewNotificaton}>
                     <Pressable
                       onPress={() => redirectionViewProfile(item.id)}
-                      style={styles.dummyImagePressable}
-                    >
+                      style={styles.dummyImagePressable}>
                       {undefined === item.image ||
-                        null === item.image ||
-                        "" === item.image ? (
+                      null === item.image ||
+                      "" === item.image ? (
                         <Image
                           style={styles.dummyImage}
                           source={require("../../assets/imgProfileReadOnly2.png")}
@@ -640,8 +609,7 @@ const MyPalsList = (props) => {
                       <View style={styles.friendSentRequestsMainView}>
                         <Text
                           style={styles.textUserReference}
-                          numberOfLines={1}
-                        >
+                          numberOfLines={1}>
                           {item.name}(@{item.username})
                         </Text>
                         <Text style={{ fontSize: 14 }}>
@@ -651,8 +619,7 @@ const MyPalsList = (props) => {
                     </Pressable>
                     <Pressable
                       onPress={() => cancelRequest(item, "cancel")}
-                      style={styles.viewIconRight}
-                    >
+                      style={styles.viewIconRight}>
                       <Icon name="md-close" size={32} color={SignUpColor} />
                     </Pressable>
                   </View>
@@ -669,8 +636,7 @@ const MyPalsList = (props) => {
                 <View style={styles.viewNotificaton}>
                   <Pressable
                     onPress={() => redirectionViewProfile(item.id)}
-                    style={styles.dummyImagePressable}
-                  >
+                    style={styles.dummyImagePressable}>
                     {null === item.image ? (
                       <Image
                         style={styles.dummyImage}
@@ -687,15 +653,12 @@ const MyPalsList = (props) => {
                       />
                     )}
                     <View style={styles.requestMainView}>
-                      <Text style={styles.textUserReference}>
-                        {item.name}
-                      </Text>
+                      <Text style={styles.textUserReference}>{item.name}</Text>
                       <Text>@{item.username}</Text>
                     </View>
                     <Pressable
                       onPress={() => sendRequest(item.key)}
-                      style={styles.viewIconRight}
-                    >
+                      style={styles.viewIconRight}>
                       <Icon
                         name="md-person-add"
                         size={30}
@@ -708,13 +671,10 @@ const MyPalsList = (props) => {
             />
           </ScrollView>
           <View style={GlobalBubble.position}>
-            <View
-              style={[GlobalBubble.viewBubble, GlobalBubble.viewBubbleBig]}
-            >
+            <View style={[GlobalBubble.viewBubble, GlobalBubble.viewBubbleBig]}>
               <Pressable
                 style={GlobalBubble.touchable}
-                onPress={() => openOptions()}
-              >
+                onPress={() => openOptions()}>
                 <Text style={GlobalBubble.text}>FILTER</Text>
               </Pressable>
             </View>
@@ -725,14 +685,12 @@ const MyPalsList = (props) => {
         <View style={GlobalModal.viewContent}>
           <View style={GlobalModal.viewHead}>
             {ageRange !== null ||
-              gym !== null ||
-              activities.filter((item) => item.selected).length >
-              0 ||
-              nearMe !== false ? (
+            gym !== null ||
+            activities.filter((item) => item.selected).length > 0 ||
+            nearMe !== false ? (
               <Pressable
                 style={[GlobalModal.buttonLeft, { flexDirection: "row" }]}
-                onPress={() => resetFilters()}
-              >
+                onPress={() => resetFilters()}>
                 <Icon name="refresh-outline" color={SignUpColor} size={22} />
                 <Text style={[GlobalModal.titleClose, { marginLeft: 2 }]}>
                   Default
@@ -742,8 +700,7 @@ const MyPalsList = (props) => {
             <Text style={GlobalModal.headTitle}>Filters</Text>
             <Pressable
               style={[GlobalModal.buttonClose, { flexDirection: "row" }]}
-              onPress={() => setShowFilters(false)}
-            >
+              onPress={() => setShowFilters(false)}>
               <Icon name="close" color={SignUpColor} size={22} />
               <Text style={[GlobalModal.titleClose, { marginLeft: 2 }]}>
                 Close
@@ -757,17 +714,13 @@ const MyPalsList = (props) => {
                   styles.viewSection,
                   styles.checkInput,
                   { alignItems: "flex-end", marginTop: 0 },
-                ]}
-              >
+                ]}>
                 <Text style={styles.textLabel}>Gym</Text>
                 <View style={styles.comboSelect}>
                   <Pressable
                     onPress={() => pickerGym.current.show()}
-                    style={{ flexDirection: "row" }}
-                  >
-                    <Text>
-                      {null !== gym ? gym : "None"}
-                    </Text>
+                    style={{ flexDirection: "row" }}>
+                    <Text>{null !== gym ? gym : "None"}</Text>
                     <Icon
                       name="chevron-down"
                       size={22}
@@ -788,19 +741,13 @@ const MyPalsList = (props) => {
                 styles.viewSection,
                 styles.checkInput,
                 { alignItems: "flex-end" },
-              ]}
-            >
+              ]}>
               <Text style={styles.textLabel}>Age Range</Text>
               <View style={styles.comboSelect}>
                 <Pressable
                   onPress={() => pickerAge.current.show()}
-                  style={{ flexDirection: "row" }}
-                >
-                  <Text>
-                    {null !== ageRange
-                      ? ageRange
-                      : "Select here"}
-                  </Text>
+                  style={{ flexDirection: "row" }}>
+                  <Text>{null !== ageRange ? ageRange : "Select here"}</Text>
                   <Icon
                     name="chevron-down"
                     size={22}
@@ -827,8 +774,7 @@ const MyPalsList = (props) => {
                 styles.viewSection,
                 styles.checkInput,
                 { alignItems: "flex-end" },
-              ]}
-            >
+              ]}>
               <Text style={styles.textLabel}>Near Me</Text>
               <View style={styles.comboSelect}>
                 <GlobalCheckBox
@@ -864,27 +810,22 @@ const MyPalsList = (props) => {
               <View style={[styles.comboSelect, { marginBottom: 7 }]}>
                 <Pressable
                   style={{ flexDirection: "row" }}
-                  onPress={() => setShowSelectActivities(true)}
-                >
+                  onPress={() => setShowSelectActivities(true)}>
                   <Icon
                     name="md-create"
                     size={18}
                     style={styles.iconSelect}
                     color={SignUpColor}
                   />
-                  <Text style={{ color: SignUpColor }}>
-                    Choose Activities
-                  </Text>
+                  <Text style={{ color: SignUpColor }}>Choose Activities</Text>
                 </Pressable>
               </View>
             </View>
             <View style={styles.viewActivitiesSelected}>
               {activities !== undefined &&
-                activities.filter((item) => item.selected) !==
-                undefined &&
-                activities.filter((item) => item.selected).length >
-                0 &&
-                activities.filter((item) => item.selected).length <
+              activities.filter((item) => item.selected) !== undefined &&
+              activities.filter((item) => item.selected).length > 0 &&
+              activities.filter((item) => item.selected).length <
                 activities.length ? (
                 activities
                   .filter((item) => item.selected)
@@ -906,8 +847,7 @@ const MyPalsList = (props) => {
               setShowSelectActivities(false);
               setShowFilters(false);
             }}
-            style={[styles.buttonContent, GlobalStyles.buttonCancel]}
-          >
+            style={[styles.buttonContent, GlobalStyles.buttonCancel]}>
             <Text style={styles.buttonText}>APPLY FILTERS</Text>
           </Pressable>
         </View>
@@ -921,7 +861,7 @@ const MyPalsList = (props) => {
       <Toast toastText={toastText} />
     </ImageBackground>
   );
-}
+};
 
 export default MyPalsList;
 
@@ -1068,4 +1008,3 @@ const styles = StyleSheet.create({
     marginRight: 120,
   },
 });
-

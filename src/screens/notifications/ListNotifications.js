@@ -63,14 +63,14 @@ import {
 import { actionGetProfile } from "../../redux/actions/ProfileActions";
 
 const ListNotifications = (props) => {
-
   const oNotificationRows = useRef();
-
 
   const session = useSelector((state) => state.reducerSession);
   const groupProps = useSelector((state) => state.reducerGroup);
   const journeyProps = useSelector((state) => state.reducerJourney);
-  const invitationsProps = useSelector((state) => state.reducerInvitationsGroup);
+  const invitationsProps = useSelector(
+    (state) => state.reducerInvitationsGroup
+  );
   const notificationProps = useSelector((state) => state.reducerNotification);
 
   const dispatch = useDispatch();
@@ -95,10 +95,7 @@ const ListNotifications = (props) => {
     });
     dispatch(actionGetNotifications());
     dispatch(actionGetJourneyList());
-    var nNotificationId = props.navigation.getParam(
-      "notificationId",
-      null
-    );
+    var nNotificationId = props.navigation.getParam("notificationId", null);
     if (null !== nNotificationId) {
       notificationProps.notifications.forEach((oElement) => {
         if (oElement.id === nNotificationId) {
@@ -108,8 +105,7 @@ const ListNotifications = (props) => {
     }
     setRefreshing(false);
     setLoading(false);
-  }, [])
-
+  }, []);
 
   useEffect(() => {
     if (
@@ -135,7 +131,7 @@ const ListNotifications = (props) => {
         dispatch(actionCleanNavigation());
       }
     }
-  }, [invitationsProps, notificationProps])
+  }, [invitationsProps, notificationProps]);
 
   const showToast = (text, callback = null) => {
     setToastText(text);
@@ -181,7 +177,7 @@ const ListNotifications = (props) => {
           setNotificationText(oNotification.description);
           setCapitanName(oNotification.user.name);
           setGroupName(oNotification.group.name);
-          setGroupKey(oNotification.group.key)
+          setGroupKey(oNotification.group.key);
 
           break;
         case NOTIFICATION_TYPE_LIKE_JOURNEY:
@@ -211,10 +207,12 @@ const ListNotifications = (props) => {
 
   const rejectRequest = () => {
     setLoading(true);
-    dispatch(actionRejectInvitationGroup({
-      accountId: session.account.key,
-      groupId: group.key,
-    }));
+    dispatch(
+      actionRejectInvitationGroup({
+        accountId: session.account.key,
+        groupId: group.key,
+      })
+    );
   };
 
   const acceptRequest = () => {
@@ -243,8 +241,7 @@ const ListNotifications = (props) => {
 
   const deleteAllNotificationsQuestion = () => {
     notificationProps.notifications.length > 0
-      ?
-      setShowQuestionDeleteAll(true)
+      ? setShowQuestionDeleteAll(true)
       : showToast("You have no notifications to delete");
   };
 
@@ -259,8 +256,7 @@ const ListNotifications = (props) => {
       <TouchableHighlight>
         <Pressable
           style={styles.buttonDelete}
-          onPress={() => deleteNotification(item)}
-        >
+          onPress={() => deleteNotification(item)}>
           <Icon name="trash" size={26} color={WhiteColor} />
         </Pressable>
       </TouchableHighlight>
@@ -292,8 +288,7 @@ const ListNotifications = (props) => {
     <ImageBackground
       source={require("../../assets/bk.png")}
       resizeMode="cover"
-      style={GlobalStyles.fullImageGroups}
-    >
+      style={GlobalStyles.fullImageGroups}>
       <ScrollView
         refreshControl={
           <RefreshControl
@@ -302,8 +297,7 @@ const ListNotifications = (props) => {
             tintColor={GreenFitrecColor}
             title="Pull to refresh..."
           />
-        }
-      >
+        }>
         <FlatList
           keyExtractor={(item, index) => index.toString()}
           data={notificationProps.notifications}
@@ -311,8 +305,7 @@ const ListNotifications = (props) => {
             <View>
               <Swipeable
                 renderRightActions={() => deleteButtonRender(item)}
-                ref={oNotificationRows[item.id]}
-              >
+                ref={oNotificationRows[item.id]}>
                 <Pressable onPress={() => openNotification(item)}>
                   <View
                     style={[
@@ -321,8 +314,7 @@ const ListNotifications = (props) => {
                         backgroundColor:
                           1 == item.view ? WhiteColor : "#EDEDED",
                       },
-                    ]}
-                  >
+                    ]}>
                     {null !== item.image ? (
                       <Image
                         style={styles.notificationImage}
@@ -335,16 +327,13 @@ const ListNotifications = (props) => {
                       />
                     )}
                     <View style={styles.userNameMain}>
-                      <Text
-                        style={styles.textUserReference}
-                        numberOfLines={1}
-                      >
+                      <Text style={styles.textUserReference} numberOfLines={1}>
                         {item.user.name}(@{item.user.username})
                       </Text>
                       <View style={styles.iconMainView}>
                         {item.type == NOTIFICATION_SEND_REQUEST ||
-                          item.type == NOTIFICATION_REQUEST_GROUP ||
-                          item.type == NOTIFICATION_TYPE_NEW_FOLLOWER ? (
+                        item.type == NOTIFICATION_REQUEST_GROUP ||
+                        item.type == NOTIFICATION_TYPE_NEW_FOLLOWER ? (
                           <Icon
                             name="md-person-add"
                             size={16}
@@ -352,8 +341,8 @@ const ListNotifications = (props) => {
                           />
                         ) : null}
                         {item.type == NOTIFICATION_CAPITAN_MESSAGE_GROUP ||
-                          item.type == NOTIFICATION_INVITATION_GROUP ||
-                          item.type == NOTIFICATION_TYPE_NEW_CAPTAIN ? (
+                        item.type == NOTIFICATION_INVITATION_GROUP ||
+                        item.type == NOTIFICATION_TYPE_NEW_CAPTAIN ? (
                           <Icon
                             name="md-notifications"
                             size={16}
@@ -361,7 +350,7 @@ const ListNotifications = (props) => {
                           />
                         ) : null}
                         {item.type == NOTIFICATION_TYPE_LIKE_JOURNEY ||
-                          item.type == NOTIFICATION_TYPE_TAG_JOURNEY ? (
+                        item.type == NOTIFICATION_TYPE_TAG_JOURNEY ? (
                           <Icon
                             name="md-images"
                             size={16}
@@ -376,16 +365,12 @@ const ListNotifications = (props) => {
                           />
                         ) : null}
                         <Text
-                          style={[GlobalStyles.textMuted, { marginLeft: 5 }]}
-                        >
+                          style={[GlobalStyles.textMuted, { marginLeft: 5 }]}>
                           {item.description}
                         </Text>
                       </View>
                       <Text style={GlobalStyles.textMuted}>
-                        {moment(
-                          item.created_at,
-                          "YYYY-MM-DD H:m:s"
-                        ).fromNow()}
+                        {moment(item.created_at, "YYYY-MM-DD H:m:s").fromNow()}
                       </Text>
                     </View>
                   </View>
@@ -405,8 +390,7 @@ const ListNotifications = (props) => {
               <View style={styles.width50}>
                 <Pressable
                   style={ToastQuestionGenericStyles.buttonCancel}
-                  onPress={() => setShowQuestionDeleteAll(false)}
-                >
+                  onPress={() => setShowQuestionDeleteAll(false)}>
                   <Text style={ToastQuestionGenericStyles.buttonText}>
                     Cancel
                   </Text>
@@ -415,8 +399,7 @@ const ListNotifications = (props) => {
               <View style={styles.width50}>
                 <Pressable
                   style={ToastQuestionGenericStyles.buttonConfirm}
-                  onPress={() => deleteAllNotifications()}
-                >
+                  onPress={() => deleteAllNotifications()}>
                   <Text style={ToastQuestionGenericStyles.buttonText}>
                     Confirm
                   </Text>
@@ -456,8 +439,7 @@ const ListNotifications = (props) => {
               <View style={styles.cancleButtonView}>
                 <Pressable
                   style={GlobalStyles.buttonCancel}
-                  onPress={onCancleHandler}
-                >
+                  onPress={onCancleHandler}>
                   <Text style={ToastQuestionGenericStyles.buttonText}>
                     Cancel
                   </Text>
@@ -466,8 +448,7 @@ const ListNotifications = (props) => {
               <View style={styles.groupButtonView}>
                 <Pressable
                   style={GlobalStyles.buttonConfirm}
-                  onPress={onViewGroupHandler}
-                >
+                  onPress={onViewGroupHandler}>
                   <Text style={ToastQuestionGenericStyles.buttonText}>
                     View Group
                   </Text>
@@ -481,7 +462,7 @@ const ListNotifications = (props) => {
       <Toast toastText={toastText} />
     </ImageBackground>
   );
-}
+};
 
 const styles = StyleSheet.create({
   viewNotificaton: {

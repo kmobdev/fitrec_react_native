@@ -1,11 +1,10 @@
-
 # FitRec
 
 This is the most recent code for the mobile app. Still under development and not yet deployed
 
-  For the code relating to the FitRec mobile app found on [Google Play](https://play.google.com/store/apps/details?id=com.fitrecApp) and [Apple App Store](https://apps.apple.com/us/app/fitrec/id1183833997), see [this code base](https://bitbucket.org/dynamiadevelopment/fitrec_app/src/master/)
-  
-  Spreadsheet with info on logins for integrations as well as environment variables [here](https://docs.google.com/spreadsheets/d/1CvFgbtMvmq8yYRkGd4xm1KVt0Wa1X9K8iySVb1Uixho/edit#gid=0) [email fitrecapp.config@gmail.com for access]
+For the code relating to the FitRec mobile app found on [Google Play](https://play.google.com/store/apps/details?id=com.fitrecApp) and [Apple App Store](https://apps.apple.com/us/app/fitrec/id1183833997), see [this code base](https://bitbucket.org/dynamiadevelopment/fitrec_app/src/master/)
+
+Spreadsheet with info on logins for integrations as well as environment variables [here](https://docs.google.com/spreadsheets/d/1CvFgbtMvmq8yYRkGd4xm1KVt0Wa1X9K8iySVb1Uixho/edit#gid=0) [email fitrecapp.config@gmail.com for access]
 
 ## Main Technologies Used
 
@@ -28,33 +27,29 @@ Follow these steps to get up and running with this repo after you've cloned it l
 
 ### Install dependencies with yarn
 
-`
-yarn install
-`
+`yarn install`
 
 ### Install Cocoapods dependencies for iOS app
 
-`
-cd ios && pod install
-`
+`cd ios && pod install`
 
 ## Application Folder Structure
 
 The application have the standard folder structure that is been used in most of the react native apps.
 
 - **src** -> This folder is the main container of all the code inside your application
-	- **actions** -> This folder contains all the actions that can be dispatched to redux
-	- **assets** -> This folder contains all the assets i.e (images, vector icons etc.)
-	- **components** -> This folder contains all of the common components that are been used throughout in app.
-	- **constants** -> This folder contains the global constants that will be used in overall application.
-	- **redux** -> This folder should have all your reducers, and with relevant actions of redux setup  
-	- **routes** -> Folder that contains all navigation setup for app, Side Menu and Bottom Tab.  
-	- **screens** -> Folder that contains all your application screens/features.  
-	- **store** -> Folder to put all redux middleware and the store.  
-	- **App.js** -> Main component that starts your whole app.  
-	- **Constants.js** -> File that contains all constants used in ap even action types for redux  
-	- **Styles.js** -> File containing general styles for all over the app.  
-	- **index.js** -> Entry point of your application as per React-Native standards.
+  - **actions** -> This folder contains all the actions that can be dispatched to redux
+  - **assets** -> This folder contains all the assets i.e (images, vector icons etc.)
+  - **components** -> This folder contains all of the common components that are been used throughout in app.
+  - **constants** -> This folder contains the global constants that will be used in overall application.
+  - **redux** -> This folder should have all your reducers, and with relevant actions of redux setup
+  - **routes** -> Folder that contains all navigation setup for app, Side Menu and Bottom Tab.
+  - **screens** -> Folder that contains all your application screens/features.
+  - **store** -> Folder to put all redux middleware and the store.
+  - **App.js** -> Main component that starts your whole app.
+  - **Constants.js** -> File that contains all constants used in ap even action types for redux
+  - **Styles.js** -> File containing general styles for all over the app.
+  - **index.js** -> Entry point of your application as per React-Native standards.
 
 ## Dependencies/Library Usage
 
@@ -63,7 +58,7 @@ We have use the following third party libraries for several other features.
 ### Design System
 
 > For UI components like checkbox, button etc.
-[react-native-elements](https://github.com/react-native-elements/react-native-elements) ==> use for UI base components like checkbox etc.
+> [react-native-elements](https://github.com/react-native-elements/react-native-elements) ==> use for UI base components like checkbox etc.
 
 ### Navigation
 
@@ -73,14 +68,14 @@ We have use the following third party libraries for several other features.
 - [react-navigation-drawer](https://github.com/react-navigation/drawer) ==> use for drawer (side menu) navigation setup
 - [react-navigation-stack](https://github.com/react-navigation/stack) ==> use for stack navigation
 - [react-navigation-tabs](https://github.com/react-navigation/tabs) ==> use for Bottom tab navigations
-- [react-native-gesture-handler](https://github.com/software-mansion/react-native-gesture-handler), 
-- [react-native-safe-area-context](https://github.com/th3rdwave/react-native-safe-area-context),[react-native-screens](https://github.com/software-mansion/react-native-screens) ==> use for native navigation dependency 
+- [react-native-gesture-handler](https://github.com/software-mansion/react-native-gesture-handler),
+- [react-native-safe-area-context](https://github.com/th3rdwave/react-native-safe-area-context),[react-native-screens](https://github.com/software-mansion/react-native-screens) ==> use for native navigation dependency
 
 ### Authentications
 
 > For apple and facebook sign in authentication
 
-- [react-native-apple-authentication](https://github.com/invertase/react-native-apple-authentication) ==> use for apple login 
+- [react-native-apple-authentication](https://github.com/invertase/react-native-apple-authentication) ==> use for apple login
 - [react-native-fbsdk](https://github.com/facebookarchive/react-native-fbsdk) ==> use for facebook integration
 
 ### Network (Rest APIs calls)
@@ -137,17 +132,17 @@ OneSignal is our provider of push notifications, when sending a notification fro
 - [react-native-youtube](https://github.com/davidohayon669/react-native-youtube) ==> use for youtube videos acess in app
 - [react-native-webview](https://github.com/react-native-webview/react-native-webview) ==> use for view some website viewn in app in specific area or place
 - [react-native-fs](https://github.com/itinance/react-native-fs) ==> use for Native filesystem access for react-native
-- [react-native-image-crop-picker](https://github.com/ivpusic/react-native-image-crop-picker) ==> use for select picture with croping functionality from loacl storage to upload on app.  
-- [react-native-image-picker](https://github.com/react-native-image-picker/react-native-image-picker) ==> use for select picture from l;ocal storage.  
-- [react-native-maps](https://github.com/react-native-maps/react-native-maps) ==> use for show and access maps in app  
-- [react-native-modal](https://github.com/react-native-modal/react-native-modal) ==> use for showing modal with some UI.  
-- [react-native-onesignal](https://github.com/OneSignal/react-native-onesignal) ==> use for push notification  
-- [react-native-picker-module](https://github.com/talut/react-native-picker-module) ==> use for picker modal to choose value from the list of picker modal  
-- [react-native-reanimated](https://github.com/software-mansion/react-native-reanimated) ==> use for drawer navigation dependency  
-- [react-native-select-dropdown](https://github.com/AdelRedaa97/react-native-select-dropdown) ==> use for dropdown selection  
-- [react-native-snap-carousel](https://github.com/meliorence/react-native-snap-carousel) ==> use for carousal  
-- [react-native-swipe-gestures](https://github.com/glepur/react-native-swipe-gestures) ==> use for swiping gesture in UI like swipe button etc.  
-- [react-native-swiper](https://github.com/leecade/react-native-swiper) ==> use for swipe gesture  
+- [react-native-image-crop-picker](https://github.com/ivpusic/react-native-image-crop-picker) ==> use for select picture with croping functionality from loacl storage to upload on app.
+- [react-native-image-picker](https://github.com/react-native-image-picker/react-native-image-picker) ==> use for select picture from l;ocal storage.
+- [react-native-maps](https://github.com/react-native-maps/react-native-maps) ==> use for show and access maps in app
+- [react-native-modal](https://github.com/react-native-modal/react-native-modal) ==> use for showing modal with some UI.
+- [react-native-onesignal](https://github.com/OneSignal/react-native-onesignal) ==> use for push notification
+- [react-native-picker-module](https://github.com/talut/react-native-picker-module) ==> use for picker modal to choose value from the list of picker modal
+- [react-native-reanimated](https://github.com/software-mansion/react-native-reanimated) ==> use for drawer navigation dependency
+- [react-native-select-dropdown](https://github.com/AdelRedaa97/react-native-select-dropdown) ==> use for dropdown selection
+- [react-native-snap-carousel](https://github.com/meliorence/react-native-snap-carousel) ==> use for carousal
+- [react-native-swipe-gestures](https://github.com/glepur/react-native-swipe-gestures) ==> use for swiping gesture in UI like swipe button etc.
+- [react-native-swiper](https://github.com/leecade/react-native-swiper) ==> use for swipe gesture
 - [react-native-vector-icons](https://github.com/oblador/react-native-vector-icons) ==> use for icons of app
 - [react-native-fast-image](https://github.com/DylanVann/react-native-fast-image) ==> use for image picker from local device
 - [react-native-datepicker](https://github.com/xgfe/react-native-datepicker) ==> use for selecting date

@@ -1,5 +1,10 @@
 import { GetProfile, UpdateProfile } from "../services/ProfileServices";
-import {Actions, Constants, MESSAGE_ERROR, SLACK_FEEDBACK_WEBHOOK} from "../../Constants";
+import {
+  Actions,
+  Constants,
+  MESSAGE_ERROR,
+  SLACK_FEEDBACK_WEBHOOK,
+} from "../../Constants";
 import { GetDataUser } from "../services/FirebaseServices";
 import { database } from "../services/FirebaseServices";
 import { ContactusSend, GetPals } from "../services/UserServices";
@@ -208,17 +213,19 @@ export const actionUpdateProfileResetState = () => ({
 });
 
 export const actionSendContactus = (sMessage) => {
-  console.log(sMessage)
+  console.log(sMessage);
   return (dispatch) => {
     fetch(SLACK_FEEDBACK_WEBHOOK, {
       method: "POST",
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({text: sMessage})
-    }).then(res => {
-      // console.log("Request complete! response:", res);
-      dispatch(actionDispatch(Actions.SEND_CONTACT_US_SUCCESS));
-    }).catch(() => {
-      dispatch(actionMessage(MESSAGE_ERROR));
-    });
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text: sMessage }),
+    })
+      .then((res) => {
+        // console.log("Request complete! response:", res);
+        dispatch(actionDispatch(Actions.SEND_CONTACT_US_SUCCESS));
+      })
+      .catch(() => {
+        dispatch(actionMessage(MESSAGE_ERROR));
+      });
   };
 };

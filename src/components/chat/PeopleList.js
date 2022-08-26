@@ -27,9 +27,9 @@ export default class PeopleList extends Component {
     };
   }
 
-  selectPal = async (oPal) => {
+  selectPal = (oPal) => {
     oPal.selected = undefined === oPal.selected ? true : !oPal.selected;
-    await this.setState({
+    this.setState({
       refresh: !this.state.refresh,
     });
   };
@@ -47,15 +47,13 @@ export default class PeopleList extends Component {
                 borderBottomColor: PlaceholderColor,
                 borderBottomWidth: 0.5,
               })
-            }
-          >
+            }>
             <Text style={GlobalModal.headTitle}>Your Pals</Text>
             <Pressable
               style={GlobalModal.buttonClose}
               onPress={() => {
                 this.props.close();
-              }}
-            >
+              }}>
               <Text style={GlobalModal.titleClose}>Close</Text>
             </Pressable>
           </View>
@@ -66,8 +64,7 @@ export default class PeopleList extends Component {
                   onPress={() => {
                     this.props.close();
                   }}
-                  style={{ flex: 6, marginRight: 5 }}
-                >
+                  style={{ flex: 6, marginRight: 5 }}>
                   <View style={GlobalStyles.buttonCancel}>
                     <Text style={GlobalStyles.textButton}>Cancel</Text>
                   </View>
@@ -76,8 +73,7 @@ export default class PeopleList extends Component {
                   onPress={() => {
                     this.props.confirm();
                   }}
-                  style={{ flex: 6, marginLeft: 5 }}
-                >
+                  style={{ flex: 6, marginLeft: 5 }}>
                   <View style={GlobalStyles.buttonConfirm}>
                     <Text style={GlobalStyles.textButton}>
                       Confirm
@@ -111,8 +107,7 @@ export default class PeopleList extends Component {
                     <View style={styles.rowPal}>
                       <Pressable
                         onPress={() => this.selectPal(item)}
-                        style={{ flexDirection: "row", width: "100%" }}
-                      >
+                        style={{ flexDirection: "row", width: "100%" }}>
                         {null === item.image ? (
                           <Image
                             style={GlobalStyles.photoProfileCardList}
@@ -133,8 +128,7 @@ export default class PeopleList extends Component {
                             justifyContent: "center",
                             marginLeft: 10,
                             marginRight: 175,
-                          }}
-                        >
+                          }}>
                           <Text style={styles.textUserReference}>
                             {item.name.length > 25
                               ? item.name.substring(0, 22) + "..."

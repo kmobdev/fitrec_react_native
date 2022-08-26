@@ -263,8 +263,7 @@ class GroupChat extends Component {
           <View style={GlobalModal.viewHead}>
             <Pressable
               style={[GlobalModal.buttonLeft, { flexDirection: "row" }]}
-              onPress={() => this.setState({ showMembers: true })}
-            >
+              onPress={() => this.setState({ showMembers: true })}>
               <Icon
                 name="people-circle-outline"
                 color={SignUpColor}
@@ -279,8 +278,7 @@ class GroupChat extends Component {
             </Text>
             <Pressable
               style={[GlobalModal.buttonClose, { flexDirection: "row" }]}
-              onPress={this.props.close}
-            >
+              onPress={this.props.close}>
               <Icon name="close" color={SignUpColor} size={22} />
               <Text style={[GlobalModal.titleClose, { marginLeft: 2 }]}>
                 Close
@@ -293,8 +291,7 @@ class GroupChat extends Component {
             onContentSizeChange={() => {
               if (null !== this.scrollView && undefined !== this.scrollView)
                 this.scrollView.scrollToEnd({ animated: true });
-            }}
-          >
+            }}>
             <FlatList
               data={this.props.conversation.conversations}
               keyExtractor={(item, index) => index.toString()}
@@ -308,8 +305,7 @@ class GroupChat extends Component {
                           flexDirection: "row",
                           width: "100%",
                           marginBottom: 10,
-                        }}
-                      >
+                        }}>
                         <View style={{ width: "80%", paddingRight: 8 }}>
                           <View
                             style={{
@@ -318,12 +314,10 @@ class GroupChat extends Component {
                               borderRadius: 5,
                               backgroundColor: "#e0e2e4",
                               borderColor: "#e0e2e4",
-                            }}
-                          >
+                            }}>
                             {"image" === item.type && (
                               <Pressable
-                                onPress={() => this.expandImage(item.message)}
-                              >
+                                onPress={() => this.expandImage(item.message)}>
                                 <FastImage
                                   style={{ height: 200 }}
                                   source={{
@@ -336,8 +330,7 @@ class GroupChat extends Component {
                             )}
                             {"gif" === item.type && (
                               <Pressable
-                                onPress={() => this.expandImage(item.message)}
-                              >
+                                onPress={() => this.expandImage(item.message)}>
                                 <View style={{ alignItems: "center" }}>
                                   <FastImage
                                     style={GlobalStyles.gifImage}
@@ -368,8 +361,7 @@ class GroupChat extends Component {
                                   longitude: item.lon,
                                   latitudeDelta: 0.0922,
                                   longitudeDelta: 0.1,
-                                }}
-                              >
+                                }}>
                                 <Marker
                                   key={1}
                                   coordinate={{
@@ -387,8 +379,7 @@ class GroupChat extends Component {
                               justifyContent: "flex-start",
                               flexDirection: "row",
                               paddingTop: 5,
-                            }}
-                          >
+                            }}>
                             <Icon
                               name="md-time"
                               size={16}
@@ -437,8 +428,7 @@ class GroupChat extends Component {
                           flexDirection: "row",
                           width: "100%",
                           marginBottom: 10,
-                        }}
-                      >
+                        }}>
                         <Pressable onPress={() => this.props.viewProfile(item)}>
                           {this.props.conversation.users.filter(
                             (oUser) =>
@@ -475,12 +465,10 @@ class GroupChat extends Component {
                               borderRadius: 5,
                               backgroundColor: "#4eaa41",
                               borderColor: "#4eaa41",
-                            }}
-                          >
+                            }}>
                             {"image" === item.type && (
                               <Pressable
-                                onPress={() => this.expandImage(item.message)}
-                              >
+                                onPress={() => this.expandImage(item.message)}>
                                 <FastImage
                                   style={{ height: 200 }}
                                   source={{
@@ -493,8 +481,7 @@ class GroupChat extends Component {
                             )}
                             {"gif" === item.type && (
                               <Pressable
-                                onPress={() => this.expandImage(item.message)}
-                              >
+                                onPress={() => this.expandImage(item.message)}>
                                 <View style={{ alignItems: "center" }}>
                                   <FastImage
                                     style={GlobalStyles.gifImage}
@@ -525,8 +512,7 @@ class GroupChat extends Component {
                                   longitude: item.lon,
                                   latitudeDelta: 0.0922,
                                   longitudeDelta: 0.1,
-                                }}
-                              >
+                                }}>
                                 <Marker
                                   key={1}
                                   coordinate={{
@@ -543,15 +529,13 @@ class GroupChat extends Component {
                               width: "100%",
                               flexDirection: "row",
                               paddingTop: 5,
-                            }}
-                          >
+                            }}>
                             <View
                               style={{
                                 flex: 6,
                                 flexDirection: "row",
                                 justifyContent: "flex-start",
-                              }}
-                            >
+                              }}>
                               <Icon
                                 name="person-circle-outline"
                                 size={16}
@@ -571,8 +555,7 @@ class GroupChat extends Component {
                                 flex: 6,
                                 flexDirection: "row",
                                 justifyContent: "flex-end",
-                              }}
-                            >
+                              }}>
                               <Icon
                                 name="time"
                                 size={16}
@@ -592,8 +575,7 @@ class GroupChat extends Component {
             />
           </ScrollView>
           <View
-            style={[styles.viewWriteMessage, this.getKeyboardOffsetStyle()]}
-          >
+            style={[styles.viewWriteMessage, this.getKeyboardOffsetStyle()]}>
             {!this.state.showKeyboard ||
             (this.state.showKeyboard && this.state.messageSend === "") ||
             this.state.showMoreOptions ? (
@@ -601,15 +583,13 @@ class GroupChat extends Component {
                 style={[
                   styles.viewWriteMessageIcons,
                   this.state.showMoreOptions ? { width: "28%" } : {},
-                ]}
-              >
+                ]}>
                 <Pressable
                   onPress={() => {
                     this.setState({ showPhoto: true });
                     Keyboard.dismiss();
                   }}
-                  style={styles.viewWriteMessageIconCamera}
-                >
+                  style={styles.viewWriteMessageIconCamera}>
                   <Icon name="camera" size={32} />
                 </Pressable>
                 <Pressable
@@ -617,8 +597,7 @@ class GroupChat extends Component {
                     this.showMap();
                     Keyboard.dismiss();
                   }}
-                  style={styles.viewWriteMessageIconMap}
-                >
+                  style={styles.viewWriteMessageIconMap}>
                   <Icon name="location-sharp" size={24} />
                 </Pressable>
                 <Pressable
@@ -627,15 +606,13 @@ class GroupChat extends Component {
                     Keyboard.dismiss();
                     this.props.getGiphy("");
                   }}
-                  style={styles.viewWriteMessageIconMap}
-                >
+                  style={styles.viewWriteMessageIconMap}>
                   <Image source={GifIcon} style={{ width: 30, height: 30 }} />
                 </Pressable>
                 {this.state.showMoreOptions && (
                   <Pressable
                     onPress={() => this.setState({ showMoreOptions: false })}
-                    style={styles.viewWriteMessageIconDismissMore}
-                  >
+                    style={styles.viewWriteMessageIconDismissMore}>
                     <Icon name="chevron-back-circle-outline" size={32} />
                   </Pressable>
                 )}
@@ -644,8 +621,7 @@ class GroupChat extends Component {
               <View style={styles.viewWriteMessageIconsMore}>
                 <Pressable
                   onPress={() => this.setState({ showMoreOptions: true })}
-                  style={styles.viewWriteMessageIconCamera}
-                >
+                  style={styles.viewWriteMessageIconCamera}>
                   <Icon name="chevron-forward-circle-outline" size={32} />
                 </Pressable>
               </View>
@@ -660,8 +636,7 @@ class GroupChat extends Component {
                     ? { width: "77%" }
                     : { width: "57%" }
                   : {},
-              ]}
-            >
+              ]}>
               <TextInput
                 placeholder="Type your message"
                 placeholderTextColor={PlaceholderColor}
@@ -703,8 +678,7 @@ class GroupChat extends Component {
                   onPress={(e) =>
                     this.setState({ marker: e.nativeEvent.coordinate })
                   }
-                  initialRegion={this.state.locationInital}
-                >
+                  initialRegion={this.state.locationInital}>
                   {null !== this.state.marker && (
                     <Marker
                       key={1}
@@ -722,16 +696,14 @@ class GroupChat extends Component {
                       style={[
                         styles.button,
                         { backgroundColor: GreenFitrecColor },
-                      ]}
-                    >
+                      ]}>
                       <Text style={styles.textButton}>Cancel</Text>
                     </Pressable>
                   </View>
                   <View style={styles.viewButton}>
                     <Pressable
                       onPress={() => this.sendMessage("location")}
-                      style={[styles.button, { backgroundColor: SignUpColor }]}
-                    >
+                      style={[styles.button, { backgroundColor: SignUpColor }]}>
                       <Text style={styles.textButton}>Send</Text>
                     </Pressable>
                   </View>
@@ -775,8 +747,7 @@ class GroupChat extends Component {
           <View style={GlobalModal.viewHead}>
             <Pressable
               style={[GlobalModal.buttonLeft, { flexDirection: "row" }]}
-              onPress={() => this.setState({ showMembers: false })}
-            >
+              onPress={() => this.setState({ showMembers: false })}>
               <Icon name="chatbubbles-outline" color={SignUpColor} size={22} />
               <Text style={[GlobalModal.titleClose, { marginLeft: 2 }]}>
                 Messages
@@ -790,8 +761,7 @@ class GroupChat extends Component {
               onPress={() => {
                 this.props.close();
                 this.setState({ showMembers: false });
-              }}
-            >
+              }}>
               <Icon name="close" color={SignUpColor} size={22} />
               <Text style={[GlobalModal.titleClose, { marginLeft: 2 }]}>
                 Close

@@ -16,14 +16,12 @@ export const ToastQuestionGeneric = (props) => {
           backgroundColor: "color:rgba(0, 0, 0, 0.3);",
           paddingBottom: props.padding ? props.padding : 0,
         },
-      ]}
-    >
+      ]}>
       <View
         style={[
           ToastQuestionGenericStyles.viewToast,
           { maxWidth: undefined !== props.maxWidth ? props.maxWidth : 200 },
-        ]}
-      >
+        ]}>
         {undefined !== props.bClose && (
           <Pressable
             onPress={props.close}
@@ -35,14 +33,12 @@ export const ToastQuestionGeneric = (props) => {
               height: 25,
               backgroundColor: SignUpColor,
               borderRadius: 100,
-            }}
-          >
+            }}>
             <Icon
               name="close"
               color={WhiteColor}
               size={22}
-              style={{ alignSelf: "center", marginTop: 1 }}
-            ></Icon>
+              style={{ alignSelf: "center", marginTop: 1 }}></Icon>
           </Pressable>
         )}
         {props.icon && (
@@ -53,8 +49,7 @@ export const ToastQuestionGeneric = (props) => {
             style={[
               ToastQuestionGenericStyles.textToast,
               { fontWeight: "bold", fontSize: 20 },
-            ]}
-          >
+            ]}>
             {props.titleBig}
           </Text>
         )}

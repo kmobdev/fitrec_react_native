@@ -6,33 +6,36 @@ import { StyleSheet } from "react-native";
 import { PlaceholderColor, WhiteColor } from "../../Styles";
 import Conversation, { chatStyles } from "../../components/chat/Conversation";
 import { useDispatch, useSelector } from "react-redux";
-import { actionGetUserFriends, actionSetConversation } from "../../redux/actions/ChatActions";
+import {
+  actionGetMessages,
+  actionGetUserFriends,
+  actionSetConversation,
+} from "../../redux/actions/ChatActions";
 import { Toast } from "../../components/shared/Toast";
 import FastImage from "react-native-fast-image";
 
 const NewEditMessage = (props) => {
-
   const friendsProps = useSelector((state) => state.reducerListFriends);
   const session = useSelector((state) => state.reducerSession);
 
   const dispatch = useDispatch();
 
   const [showConversation, setShowConversation] = useState(false);
+  const [refresh, setRefresh] = useState(false);
   const [conversationSelect, setConversationSelect] = useState(null);
   const [toastText, setToastText] = useState("");
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    dispatch(actionGetUserFriends({
-      accountId: session.account.key,
-    }));
-  }, [])
+    dispatch(
+      actionGetUserFriends({
+        accountId: session.account.key,
+      })
+    );
+  }, []);
 
   useEffect(() => {
-    if (
-      friendsProps.friends.length > 0 &&
-      null !== conversationSelect
-    ) {
+    if (friendsProps.friends.length > 0 && null !== conversationSelect) {
       for (var i = 0; i < friendsProps.friends.length; i++) {
         if (
           friendsProps.friends[i].userFriendKey ===
@@ -42,24 +45,24 @@ const NewEditMessage = (props) => {
         }
       }
     }
-  }, [friendsProps])
+  }, [friendsProps]);
 
-  const showConversationHandler = (oFriend) => {
-    let oConversation = {
-      key: oFriend.conversation,
+  const showConversationHandler = (friend) => {
+    let conversation = {
+      key: friend.conversation,
       type: 1,
       users: [
         {
-          id: oFriend.id,
-          key: oFriend.key,
-          name: oFriend.name,
-          username: oFriend.username,
-          image: oFriend.image,
+          id: friend.id,
+          key: friend.key,
+          name: friend.name,
+          username: friend.username,
+          image: friend.image,
         },
       ],
     };
-    dispatch(actionSetConversation(oConversation));
-    dispatch(actionSetConversation(oFriend.conversation, session.account.key));
+    dispatch(actionSetConversation(conversation));
+    dispatch(actionGetMessages(friend.conversation, session.account.key));
     props.navigation.navigate("Messages");
   };
 
@@ -110,9 +113,7 @@ const NewEditMessage = (props) => {
                     )}
                     <View style={styles.viewMessageData}>
                       <Text style={styles.itemName}>{item.name}</Text>
-                      <Text style={styles.itemUsername}>
-                        @{item.username}
-                      </Text>
+                      <Text style={styles.itemUsername}>@{item.username}</Text>
                     </View>
                   </View>
                 </Pressable>
@@ -128,8 +129,7 @@ const NewEditMessage = (props) => {
               styles.textGray,
               styles.mgT20,
               styles.fontBold,
-            ]}
-          >
+            ]}>
             You currently have no pals, add users to your pals list
           </Text>
         </View>
@@ -142,7 +142,7 @@ const NewEditMessage = (props) => {
       <Toast toastText={toastText} />
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   viewMessageItemImageProfile: {

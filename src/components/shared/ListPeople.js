@@ -12,8 +12,7 @@ export const ListPeople = (props) =>
             <Pressable
               key={item.key + item.id}
               style={styles.margin}
-              onPress={() => props.action(item)}
-            >
+              onPress={() => props.action(item)}>
               <View>
                 {item.image === null ? (
                   <Image
@@ -67,8 +66,7 @@ export const ListPeople = (props) =>
               <Pressable
                 style={styles.margin}
                 onPress={() => props.action(item)}
-                style={styles.rowTouchable}
-              >
+                style={styles.rowTouchable}>
                 {null === item.image ? (
                   <Image
                     style={GlobalStyles.photoProfileCardList}

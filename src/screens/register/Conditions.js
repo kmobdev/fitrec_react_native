@@ -315,8 +315,7 @@ const Conditions = (props) => {
             ]}
             onPress={() => {
               props.navigation.navigate("Register");
-            }}
-          >
+            }}>
             <Text style={{ color: WhiteColor }}>DISAGREE</Text>
           </Pressable>
           <Pressable
@@ -325,8 +324,7 @@ const Conditions = (props) => {
               props.navigation.navigate("RegisterFinalStep", {
                 user: props.navigation.getParam("user", null),
               });
-            }}
-          >
+            }}>
             <Text style={{ color: WhiteColor }}>AGREE</Text>
           </Pressable>
         </View>

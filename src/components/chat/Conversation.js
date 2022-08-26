@@ -48,7 +48,6 @@ import { actionExpandImage } from "../../redux/actions/SharedActions";
 import GiphyLogo from "../../assets/giphyLogo.png";
 
 const Conversation = (props) => {
-
   const scrollView = useRef();
 
   const session = useSelector((state) => state.reducerSession);
@@ -78,13 +77,8 @@ const Conversation = (props) => {
   const [showConversation, setShowConversation] = useState(false);
   const [sImageSend, setSImageSend] = useState("");
 
-
   useEffect(() => {
-    if (
-      !loadingImage &&
-      loading &&
-      chatProps.statusSend
-    ) {
+    if (!loadingImage && loading && chatProps.statusSend) {
       setShowConversation(false);
       showToast("Message sent successfully");
     }
@@ -97,7 +91,6 @@ const Conversation = (props) => {
   }, [chatProps]);
 
   const sendMessage = (sType = SEND_MESSAGE_TYPES.TEXT, oGif = null) => {
-    const { sText, sImageSend, oMarker, bShowGifsStickers } = state;
     const { key: sUserKey, name: sUserName } = session.account;
     let sMessage = "",
       oData = null;
@@ -111,8 +104,7 @@ const Conversation = (props) => {
         sMessage = sImageSend;
         break;
       case SEND_MESSAGE_TYPES.LOCATION:
-        if (oMarker === null)
-          return showToast("The marker cannot be empty");
+        if (oMarker === null) return showToast("The marker cannot be empty");
         oData = {
           lat: oMarker.latitude,
           lon: oMarker.longitude,
@@ -131,9 +123,9 @@ const Conversation = (props) => {
     }
     const { conversation: oConversation } = props;
     const oSender = {
-      key: sUserKey,
-      name: sUserName,
-    },
+        key: sUserKey,
+        name: sUserName,
+      },
       sConversationKey = oConversation.conversation;
     const sFriendKey = oConversation.userFriendKey;
     dispatch(
@@ -168,9 +160,7 @@ const Conversation = (props) => {
         })
         .catch((oError) => {
           if (oError.message == "Permission denied")
-            showToast(
-              "Permission denied, please check FitRec permissions"
-            );
+            showToast("Permission denied, please check FitRec permissions");
           else showToast(MESSAGE_ERROR);
         })
         .finally(() => {
@@ -186,9 +176,7 @@ const Conversation = (props) => {
         })
         .catch((oError) => {
           if (oError.message == "Permission denied")
-            showToast(
-              "Permission denied, please check FitRec permissions"
-            );
+            showToast("Permission denied, please check FitRec permissions");
           else showToast(MESSAGE_ERROR);
         })
         .finally(() => {
@@ -267,8 +255,7 @@ const Conversation = (props) => {
           </Text>
           <Pressable
             style={[GlobalModal.buttonClose, { flexDirection: "row" }]}
-            onPress={props.close}
-          >
+            onPress={props.close}>
             <Icon name="md-close" color={SignUpColor} size={22} />
             <Text style={[GlobalModal.titleClose, { marginLeft: 2 }]}>
               Close
@@ -281,8 +268,7 @@ const Conversation = (props) => {
           onContentSizeChange={() => {
             if (null !== scrollView && undefined !== scrollView)
               scrollView.current.scrollToEnd({ animated: true });
-          }}
-        >
+          }}>
           <FlatList
             data={props.conversation.conversations}
             keyExtractor={(item, index) => index.toString()}
@@ -296,14 +282,12 @@ const Conversation = (props) => {
                         flexDirection: "row",
                         width: "100%",
                         marginBottom: 10,
-                      }}
-                    >
+                      }}>
                       <View style={{ width: "80%", paddingRight: 8 }}>
                         <View style={GlobalMessages.containerMessage}>
                           {"image" === item.type && (
                             <Pressable
-                              onPress={() => expandImage(item.message)}
-                            >
+                              onPress={() => expandImage(item.message)}>
                               <FastImage
                                 style={{ height: 200 }}
                                 source={{
@@ -316,8 +300,7 @@ const Conversation = (props) => {
                           )}
                           {"gif" === item.type && (
                             <Pressable
-                              onPress={() => expandImage(item.message)}
-                            >
+                              onPress={() => expandImage(item.message)}>
                               <View style={{ alignItems: "center" }}>
                                 <FastImage
                                   style={GlobalStyles.gifImage}
@@ -348,8 +331,7 @@ const Conversation = (props) => {
                                 longitude: item.lon,
                                 latitudeDelta: 0.0922,
                                 longitudeDelta: 0.1,
-                              }}
-                            >
+                              }}>
                               <Marker
                                 key={1}
                                 coordinate={{
@@ -367,8 +349,7 @@ const Conversation = (props) => {
                             justifyContent: "flex-start",
                             flexDirection: "row",
                             paddingTop: 5,
-                          }}
-                        >
+                          }}>
                           <Icon
                             name="md-time"
                             size={16}
@@ -387,8 +368,8 @@ const Conversation = (props) => {
                         />
                       </View>
                       {null !== props.conversation.myProfilePic &&
-                        undefined !== props.conversation.myProfilePic &&
-                        "" !== props.conversation.myProfilePic ? (
+                      undefined !== props.conversation.myProfilePic &&
+                      "" !== props.conversation.myProfilePic ? (
                         <FastImage
                           style={chatStyles.viewMessageItemImageProfile}
                           source={{
@@ -414,12 +395,11 @@ const Conversation = (props) => {
                         flexDirection: "row",
                         width: "100%",
                         marginBottom: 10,
-                      }}
-                    >
+                      }}>
                       <Pressable onPress={() => props.viewProfile(item)}>
                         {null !== props.conversation.image &&
-                          undefined !== props.conversation.image &&
-                          "" !== props.conversation.image ? (
+                        undefined !== props.conversation.image &&
+                        "" !== props.conversation.image ? (
                           <FastImage
                             style={chatStyles.viewMessageItemImageProfile}
                             source={{
@@ -449,12 +429,10 @@ const Conversation = (props) => {
                             borderRadius: 5,
                             backgroundColor: "#4eaa41",
                             borderColor: "#4eaa41",
-                          }}
-                        >
+                          }}>
                           {"image" === item.type && (
                             <Pressable
-                              onPress={() => expandImage(item.message)}
-                            >
+                              onPress={() => expandImage(item.message)}>
                               <FastImage
                                 style={{ height: 200 }}
                                 source={{
@@ -467,8 +445,7 @@ const Conversation = (props) => {
                           )}
                           {"gif" === item.type && (
                             <Pressable
-                              onPress={() => expandImage(item.message)}
-                            >
+                              onPress={() => expandImage(item.message)}>
                               <View style={{ alignItems: "center" }}>
                                 <FastImage
                                   style={GlobalStyles.gifImage}
@@ -499,8 +476,7 @@ const Conversation = (props) => {
                                 longitude: item.lon,
                                 latitudeDelta: 0.0922,
                                 longitudeDelta: 0.1,
-                              }}
-                            >
+                              }}>
                               <Marker
                                 key={1}
                                 coordinate={{
@@ -518,8 +494,7 @@ const Conversation = (props) => {
                             justifyContent: "flex-end",
                             flexDirection: "row",
                             paddingTop: 5,
-                          }}
-                        >
+                          }}>
                           <Icon
                             name="time"
                             size={16}
@@ -537,25 +512,21 @@ const Conversation = (props) => {
             }}
           />
         </ScrollView>
-        <View
-          style={styles.viewWriteMessage}
-        >
+        <View style={styles.viewWriteMessage}>
           {!showKeyboard ||
-            (showKeyboard && sText === "") ||
-            showMoreOptions ? (
+          (showKeyboard && sText === "") ||
+          showMoreOptions ? (
             <View
               style={[
                 styles.viewWriteMessageIcons,
                 showMoreOptions ? { width: "28%" } : {},
-              ]}
-            >
+              ]}>
               <Pressable
                 onPress={() => {
                   setShowPhoto(true);
                   Keyboard.dismiss();
                 }}
-                style={styles.viewWriteMessageIconCamera}
-              >
+                style={styles.viewWriteMessageIconCamera}>
                 <Icon name="camera" size={32} />
               </Pressable>
               <Pressable
@@ -563,21 +534,18 @@ const Conversation = (props) => {
                   showMaphandler();
                   Keyboard.dismiss();
                 }}
-                style={styles.viewWriteMessageIconMap}
-              >
+                style={styles.viewWriteMessageIconMap}>
                 <Icon name="location-sharp" size={24} />
               </Pressable>
               <Pressable
                 onPress={() => showGifs()}
-                style={styles.viewWriteMessageIconMap}
-              >
+                style={styles.viewWriteMessageIconMap}>
                 <Image source={GifIcon} style={{ width: 30, height: 30 }} />
               </Pressable>
               {showMoreOptions && (
                 <Pressable
                   onPress={() => setShowMoreOptions(false)}
-                  style={styles.viewWriteMessageIconDismissMore}
-                >
+                  style={styles.viewWriteMessageIconDismissMore}>
                   <Icon name="chevron-back-circle-outline" size={32} />
                 </Pressable>
               )}
@@ -586,8 +554,7 @@ const Conversation = (props) => {
             <View style={styles.viewWriteMessageIconsMore}>
               <Pressable
                 onPress={() => setShowMoreOptions(true)}
-                style={styles.viewWriteMessageIconCamera}
-              >
+                style={styles.viewWriteMessageIconCamera}>
                 <Icon name="chevron-forward-circle-outline" size={32} />
               </Pressable>
             </View>
@@ -599,11 +566,10 @@ const Conversation = (props) => {
                 ? sText === ""
                   ? {}
                   : !showMoreOptions
-                    ? { width: "77%" }
-                    : { width: "57%" }
+                  ? { width: "77%" }
+                  : { width: "57%" }
                 : {},
-            ]}
-          >
+            ]}>
             <TextInput
               placeholder="Type your message"
               placeholderTextColor={PlaceholderColor}
@@ -613,10 +579,8 @@ const Conversation = (props) => {
               onChangeText={(text) => {
                 setSText(text);
                 setShowMoreOptions(
-                  showMoreOptions && text === ""
-                    ? false
-                    : showMoreOptions);
-
+                  showMoreOptions && text === "" ? false : showMoreOptions
+                );
               }}
             />
           </View>
@@ -642,14 +606,9 @@ const Conversation = (props) => {
                 provider={props.provider}
                 style={{ height: 300, width: "100%" }}
                 onPress={(e) => setOMarker(e.nativeEvent.coordinate)}
-                initialRegion={locationInital}
-              >
+                initialRegion={locationInital}>
                 {null !== oMarker && (
-                  <Marker
-                    key={1}
-                    coordinate={oMarker}
-                    pinColor="#FF0000"
-                  />
+                  <Marker key={1} coordinate={oMarker} pinColor="#FF0000" />
                 )}
               </MapView>
               <View style={[styles.viewSection, styles.viewSectionButtons]}>
@@ -662,16 +621,14 @@ const Conversation = (props) => {
                     style={[
                       styles.button,
                       { backgroundColor: GreenFitrecColor },
-                    ]}
-                  >
+                    ]}>
                     <Text style={styles.textButton}>Cancel</Text>
                   </Pressable>
                 </View>
                 <View style={styles.viewButton}>
                   <Pressable
                     onPress={() => sendMessage("location")}
-                    style={[styles.button, { backgroundColor: SignUpColor }]}
-                  >
+                    style={[styles.button, { backgroundColor: SignUpColor }]}>
                     <Text style={styles.textButton}>Send</Text>
                   </Pressable>
                 </View>
@@ -701,13 +658,11 @@ const Conversation = (props) => {
           aGifs={giphyProps.gifs}
           aStickers={giphyProps.stickers}
         />
-        <LoadingSpinner
-          visible={loading || loadingImage}
-        />
+        <LoadingSpinner visible={loading || loadingImage} />
       </View>
     )
   );
-}
+};
 
 export const chatStyles = StyleSheet.create({
   viewMessageItemImageProfile: {
@@ -797,12 +752,5 @@ export const styles = StyleSheet.create({
     borderBottomColor: PlaceholderColor,
   },
 });
-
-const mapStateToProps = (state) => ({
-  session: state.reducerSession,
-  chatProps: state.reducerChat,
-  giphyProps: state.reducerGiphy,
-});
-
 
 export default Conversation;

@@ -13,7 +13,6 @@ import { actionSendReport } from "../../redux/actions/ReportActions";
 import { useDispatch } from "react-redux";
 
 const ModalReport = (props) => {
-
   const picker = useRef();
 
   const dispatch = useDispatch();
@@ -36,17 +35,15 @@ const ModalReport = (props) => {
 
   const send = () => {
     if (reason !== "Other" || description.trim() !== "") {
-      dispatch(actionSendReport(
-        props.id,
-        props.type,
-        reason,
-        description.trim()
-      )
+      dispatch(
+        actionSendReport(props.id, props.type, reason, description.trim())
       );
       close();
     } else {
       setDescription(description.trim());
-      dispatch(actionMessage("You must provide a description if the reason is Other"));
+      dispatch(
+        actionMessage("You must provide a description if the reason is Other")
+      );
     }
   };
 
@@ -62,26 +59,18 @@ const ModalReport = (props) => {
               styles.viewSection,
               styles.checkInput,
               styles.aligItemsRight,
-            ]}
-          >
+            ]}>
             <Text style={styles.textLabel}>Reason</Text>
             <View style={styles.comboSelect}>
               <Pressable
                 onPress={() => {
                   picker.current.show();
                 }}
-                style={{ flexDirection: "row" }}
-              >
+                style={{ flexDirection: "row" }}>
                 <Text style={GlobalStyles.textWhite}>
-                  {null !== reason
-                    ? reason
-                    : "Select here"}
+                  {null !== reason ? reason : "Select here"}
                 </Text>
-                <Icon
-                  name="chevron-down"
-                  size={22}
-                  style={styles.iconSelect}
-                />
+                <Icon name="chevron-down" size={22} style={styles.iconSelect} />
               </Pressable>
             </View>
             <ReactNativePickerModule
@@ -103,8 +92,7 @@ const ModalReport = (props) => {
             <View style={styles.widhtMedium}>
               <Pressable
                 style={ToastQuestionGenericStyles.buttonCancel}
-                onPress={() => close()}
-              >
+                onPress={() => close()}>
                 <Text style={ToastQuestionGenericStyles.buttonText}>
                   Cancel
                 </Text>
@@ -113,11 +101,8 @@ const ModalReport = (props) => {
             <View style={styles.widhtMedium}>
               <Pressable
                 style={ToastQuestionGenericStyles.buttonConfirm}
-                onPress={() => send()}
-              >
-                <Text style={ToastQuestionGenericStyles.buttonText}>
-                  Send
-                </Text>
+                onPress={() => send()}>
+                <Text style={ToastQuestionGenericStyles.buttonText}>Send</Text>
               </Pressable>
             </View>
           </View>
@@ -125,7 +110,7 @@ const ModalReport = (props) => {
       </View>
     )
   );
-}
+};
 
 const styles = StyleSheet.create({
   widhtMedium: {

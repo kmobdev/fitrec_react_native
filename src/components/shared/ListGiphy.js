@@ -12,8 +12,7 @@ export const ListGiphy = (props) =>
             <Pressable
               key={item.id}
               style={styles.margin}
-              onPress={() => props.action(item)}
-            >
+              onPress={() => props.action(item)}>
               <View>
                 <FastImage
                   style={GlobalStyles.gifImageSmall}
@@ -53,8 +52,7 @@ export const ListGiphy = (props) =>
           <Pressable
             key={item.id}
             style={styles.margin}
-            onPress={() => props.action(item)}
-          >
+            onPress={() => props.action(item)}>
             <View>
               <FastImage
                 style={GlobalStyles.gifImageSmall}

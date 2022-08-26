@@ -45,8 +45,7 @@ import PalsOptions from "../../components/pals/PalsOptions";
 import { actionCleanNavigation } from "../../redux/actions/NavigationActions";
 
 const ListMessages = (props) => {
-
-  const oConversationRows = useRef([]);
+  const oConversationRows = useRef();
 
   const session = useSelector((state) => state.reducerSession);
   const messages = useSelector((state) => state.reducerListMessages);
@@ -71,6 +70,7 @@ const ListMessages = (props) => {
   const [membersNewChatGroup, setMembersNewChatGroup] = useState([]);
 
   useEffect(() => {
+    // console.log('messages ============= >>>>> ', messages);
     setLoading(true);
     dispatch(actionListMessages(session.account.key));
     if (
@@ -80,12 +80,10 @@ const ListMessages = (props) => {
       dispatch(actionGetMyFriends(session.account.key));
     }
     if (null !== conversationSelect) {
-      for (var i = 0; i < nextProps.messages.messages.length; i++) {
-        if (
-          nextProps.messages.messages[i].key ===
-          conversationSelect.key
-        ) {
-          setConversationSelect(nextProps.messages.messages[i]);
+      setShowConversation(true);
+      for (var i = 0; i < messages.messages.length; i++) {
+        if (messages.messages[i].key === conversationSelect.key) {
+          setConversationSelect(messages.messages[i]);
         }
       }
     }
@@ -101,8 +99,7 @@ const ListMessages = (props) => {
     setLoading(false);
     setRefreshing(false);
     setRefresh(!refresh);
-
-  }, [])
+  }, [messages]);
 
   const redirectNewMessage = () => {
     props.navigation.navigate("NewEditMessage");
@@ -124,7 +121,6 @@ const ListMessages = (props) => {
     dispatch(actionGetMessages(conversation.key, session.account.key));
     props.navigation.navigate("Messages");
   };
-
 
   const showToast = (text, callback = null) => {
     setToastText(text);
@@ -159,11 +155,13 @@ const ListMessages = (props) => {
 
   const deleteConversation = (conversation) => {
     setLoading(true);
-    dispatch(actionDeleteConversation(
-      session.account.key,
-      conversation.key,
-      conversation.type
-    ));
+    dispatch(
+      actionDeleteConversation(
+        session.account.key,
+        conversation.key,
+        conversation.type
+      )
+    );
     oConversationRows[conversation.key].close();
   };
 
@@ -213,12 +211,14 @@ const ListMessages = (props) => {
 
   const crateNewChatGroup = () => {
     if ("" !== nameChatGroup) {
-      dispatch(actionCreateChatGroup(
-        nameChatGroup,
-        session.account.key,
-        session.account.name,
-        membersNewChatGroup
-      ));
+      dispatch(
+        actionCreateChatGroup(
+          nameChatGroup,
+          session.account.key,
+          session.account.name,
+          membersNewChatGroup
+        )
+      );
       setNameChatGroup("");
       setMembersNewChatGroup([]);
       setShowNameNewChatGroup(false);
@@ -231,8 +231,7 @@ const ListMessages = (props) => {
     <ImageBackground
       source={require("../../assets/bk.png")}
       resizeMode="stretch"
-      style={GlobalStyles.fullImageWidht}
-    >
+      style={GlobalStyles.fullImageWidht}>
       {messages.messages.length > 0 ? (
         <FlatList
           refreshControl={
@@ -256,27 +255,23 @@ const ListMessages = (props) => {
           extraData={refresh}
           renderItem={({ item }) => (
             <View
-              style={[styles.viewMessageItem, { backgroundColor: "white" }]}
-            >
+              style={[styles.viewMessageItem, { backgroundColor: "white" }]}>
               <Swipeable
                 renderRightActions={() => (
                   <Pressable
                     style={styles.buttonDelete}
                     onPress={() => {
                       deleteConversation(item);
-                    }}
-                  >
+                    }}>
                     <Icon name="trash" size={30} color={WhiteColor} />
                   </Pressable>
                 )}
-                ref={oConversationRows[item.key]}
-              >
+                ref={oConversationRows[item.key]}>
                 <View style={styles.viewMessageItemDetails}>
                   <View style={{ width: "100%" }}>
                     <Pressable
                       onPress={() => showConversationHandler(item)}
-                      style={{ flexDirection: "row" }}
-                    >
+                      style={{ flexDirection: "row" }}>
                       {showDelete && (
                         <View style={{ justifyContent: "center" }}>
                           <Icon
@@ -324,13 +319,10 @@ const ListMessages = (props) => {
                             styles.messagePreview,
                             GlobalStyles.textMuted,
                           ]}
-                          numberOfLines={1}
-                        >
+                          numberOfLines={1}>
                           {item.message}
                         </Text>
-                        <Text style={GlobalStyles.textMuted}>
-                          {item.time}
-                        </Text>
+                        <Text style={GlobalStyles.textMuted}>{item.time}</Text>
                       </View>
                       <View style={styles.viewDetailsDate}>
                         <View style={styles.viewDateAndIcon}>
@@ -367,8 +359,7 @@ const ListMessages = (props) => {
               styles.textGray,
               styles.pd10,
               styles.fontBold,
-            ]}
-          >
+            ]}>
             Here you will find the chats with other users
           </Text>
           <Text style={[styles.textCenter, styles.textGray, styles.fontBold]}>
@@ -378,9 +369,7 @@ const ListMessages = (props) => {
       )}
       {showDelete && (
         <View style={styles.viewButtonDeleteMessages}>
-          <Pressable
-            style={{ flexDirection: "row", justifyContent: "center" }}
-          >
+          <Pressable style={{ flexDirection: "row", justifyContent: "center" }}>
             <Icon
               name="ios-trash"
               size={20}
@@ -427,26 +416,22 @@ const ListMessages = (props) => {
                   onPress={() => {
                     setShowNameNewChatGroup(false);
                     setMembersNewChatGroup(null);
-                  }}
-                >
+                  }}>
                   <Text style={GlobalStyles.textButton}>Cancel</Text>
                 </Pressable>
               </View>
               <View style={{ width: "50%" }}>
                 <Pressable
                   style={GlobalStyles.buttonConfirm}
-                  onPress={() => crateNewChatGroup()}
-                >
+                  onPress={() => crateNewChatGroup()}>
                   <Text style={GlobalStyles.textButton}>Confirm</Text>
                 </Pressable>
               </View>
             </View>
           </View>
         </View>
-      )
-      }
-      {
-        showGroupConversation ||
+      )}
+      {showGroupConversation ||
         (!showConversation && (
           <PalsOptions
             visible={showOptions}
@@ -457,8 +442,7 @@ const ListMessages = (props) => {
             newMessage={() => redirectNewMessage()}
             openOptions={() => setShowOptions(!showOptions)}
           />
-        ))
-      }
+        ))}
       <PeopleList
         visible={showListPals}
         close={() => closePeopleList()}
@@ -467,9 +451,9 @@ const ListMessages = (props) => {
       />
       <LoadingSpinner visible={loading} />
       <Toast toastText={toastText} />
-    </ImageBackground >
+    </ImageBackground>
   );
-}
+};
 
 export default ListMessages;
 
@@ -549,4 +533,3 @@ const styles = StyleSheet.create({
     color: PlaceholderColor,
   },
 });
-

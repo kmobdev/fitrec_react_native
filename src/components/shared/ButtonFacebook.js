@@ -10,8 +10,7 @@ export const ButtonFacebook = (props) => (
       styles.facebookButton,
       !props.login && { borderRadius: 5, width: "90%" },
     ]}
-    onPress={props.onPress}
-  >
+    onPress={props.onPress}>
     <FontAwesome
       name="facebook"
       color={WhiteColor}

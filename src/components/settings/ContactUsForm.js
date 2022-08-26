@@ -23,7 +23,6 @@ import { Toast } from "../shared/Toast";
 import { LoadingSpinner } from "../shared/LoadingSpinner";
 
 const ContactUsForm = (props) => {
-
   const session = useSelector((state) => state.reducerSession);
   const profile = useSelector((state) => state.reducerProfile);
 
@@ -33,7 +32,6 @@ const ContactUsForm = (props) => {
   const [message, setMessage] = useState("");
   const [toastText, setToastText] = useState("");
 
-
   useEffect(() => {
     if (null !== profile.statusSend && profile.statusSend) {
       showToast("Contact sent successfully", () => {
@@ -42,7 +40,7 @@ const ContactUsForm = (props) => {
       });
     }
     setLoading(false);
-  }, [])
+  }, []);
 
   const sendContact = () => {
     if ("" === message) {
@@ -51,8 +49,8 @@ const ContactUsForm = (props) => {
       this.setState({
         loading: true,
       });
-      const account = this.props.session.account
-      const sMessage = `New App Feedback from ${account.name}:\n${this.state.message}\n\nUsername: ${account.username}\nEmail: ${account.email}`
+      const account = this.props.session.account;
+      const sMessage = `New App Feedback from ${account.name}:\n${this.state.message}\n\nUsername: ${account.username}\nEmail: ${account.email}`;
       this.props.sendContact(sMessage);
     }
   };
@@ -68,16 +66,12 @@ const ContactUsForm = (props) => {
     }, 2000);
   };
 
-
   return (
     props.visible && (
       <View style={GlobalModal.viewContent}>
         <View style={GlobalModal.viewHead}>
           <Text style={GlobalModal.headTitle}>Contact us</Text>
-          <Pressable
-            style={GlobalModal.buttonClose}
-            onPress={props.close}
-          >
+          <Pressable style={GlobalModal.buttonClose} onPress={props.close}>
             <Text style={GlobalModal.titleClose}>Close</Text>
           </Pressable>
         </View>
@@ -106,16 +100,14 @@ const ContactUsForm = (props) => {
             <View style={styles.viewButton}>
               <Pressable
                 onPress={props.close}
-                style={[styles.button, { backgroundColor: GreenFitrecColor }]}
-              >
+                style={[styles.button, { backgroundColor: GreenFitrecColor }]}>
                 <Text style={styles.textButton}>Cancel</Text>
               </Pressable>
             </View>
             <View style={styles.viewButton}>
               <Pressable
                 onPress={() => sendContact()}
-                style={[styles.button, { backgroundColor: SignUpColor }]}
-              >
+                style={[styles.button, { backgroundColor: SignUpColor }]}>
                 <Text style={styles.textButton}>Send</Text>
               </Pressable>
             </View>
@@ -126,7 +118,7 @@ const ContactUsForm = (props) => {
       </View>
     )
   );
-}
+};
 
 const styles = StyleSheet.create({
   viewSectionButtons: {

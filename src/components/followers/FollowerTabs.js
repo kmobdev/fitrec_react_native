@@ -12,15 +12,13 @@ const FollowerTabs = (props) => {
         leftTab ? GlobalTabs.tabLeft : GlobalTabs.tabRight,
         isActive ? GlobalTabs.tabActive : null,
         tabStyle,
-      ]}
-    >
+      ]}>
       <View>
         <Text
           style={[
             isActive ? GlobalTabs.tabsTextActive : GlobalTabs.tabsText,
             titleStyle,
-          ]}
-        >
+          ]}>
           {title}
         </Text>
       </View>

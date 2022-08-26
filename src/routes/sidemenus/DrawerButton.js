@@ -15,8 +15,7 @@ class DrawerButton extends Component {
       <Pressable
         onPress={() => {
           this.props.navigation.openDrawer();
-        }}
-      >
+        }}>
         <View style={{ flexDirection: "row" }}>
           <Icon
             name="ios-menu"
@@ -32,8 +31,7 @@ class DrawerButton extends Component {
               style={[
                 GlobalMessages.viewGlobalBubble,
                 { marginTop: 0, justifyContent: "center" },
-              ]}
-            >
+              ]}>
               <View style={GlobalMessages.viewBubble}>
                 <Text style={GlobalMessages.text}>
                   {this.props.chatProps.messageRead > 0 &&

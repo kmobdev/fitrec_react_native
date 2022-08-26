@@ -58,15 +58,13 @@ export const ShowFooter = (props) => {
                     justifyContent: "center",
                     flexDirection: "row",
                   },
-                ]}
-              >
+                ]}>
                 <Text style={styles.textLike}>{props.likes}</Text>
                 <View
                   style={[
                     GlobalMessages.viewBubble,
                     { backgroundColor: GreenFitrecColor },
-                  ]}
-                >
+                  ]}>
                   <Icon name="thumb-up" size={18} color={WhiteColor} />
                 </View>
               </Pressable>

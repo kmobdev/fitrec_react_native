@@ -44,6 +44,7 @@ import {
 } from "../../Constants";
 import MapView, { Marker } from "react-native-maps";
 import Geolocation from "@react-native-community/geolocation";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 
 const UserImageDefault = require("../../assets/profile.png");
 const GifIcon = require("../../assets/gif.png");
@@ -53,7 +54,6 @@ const OPTION_CAMERA = "camera";
 const OPTION_GALLERY = "gallery";
 
 const Messages = (props) => {
-
   const oScrollView = useRef();
 
   const oMessageProps = useSelector((state) => state.reducerMessages);
@@ -85,15 +85,16 @@ const Messages = (props) => {
     dispatch(actionGetMessages());
     if (getIsGroupChat() && !asignMessageFunction) {
       props.navigation.setParams({
+        goBack: goBackHandler,
         people: showPeopleHandler,
-        showPeople: showPeople,
+        bShowPeople: !showPeople,
       });
       setAsignMessageFunction(true);
     }
-  }, [])
+  }, []);
 
   const goBackHandler = () => {
-    dispatch(actionGetMessages());
+    // dispatch(actionGetMessages());
     props.navigation.goBack();
   };
 
@@ -107,8 +108,8 @@ const Messages = (props) => {
 
   const getIsGroupChat = () => {
     if (oMessageProps.oConversation === null) return false;
-    const { type: nType } = oMessageProps.oConversation;
-    return nType === 2;
+    const { type } = oMessageProps.oConversation;
+    return type === 2;
   };
 
   const expandImage = (urlToImage) => {
@@ -127,7 +128,7 @@ const Messages = (props) => {
   const handleCleanSearch = (nType = null) => {
     if (nType === SEND_MESSAGE_TYPES.GIF) {
       dispatch(actionGetGiphy(""));
-      setSearch("")
+      setSearch("");
     }
   };
 
@@ -144,13 +145,12 @@ const Messages = (props) => {
   };
 
   const resetState = () => {
-    setKeyboardPadding(keyboardPadding)
-    setText("")
+    setKeyboardPadding(keyboardPadding);
+    setText("");
   };
 
   const sendMessage = (sType = SEND_MESSAGE_TYPES.TEXT, oGif = null) => {
     const { oConversation } = oMessageProps;
-    const { key: sUserKey, name: sUserName } = session.account;
     let sMessage = "",
       oData = null;
     switch (sType) {
@@ -181,10 +181,10 @@ const Messages = (props) => {
         break;
     }
     const { key: sConversationKey, users: aUsers } =
-      oMessageProps.oConversation,
+        oMessageProps.oConversation,
       oSender = {
-        key: sUserKey,
-        name: sUserName,
+        key: session.account.sUserKey,
+        name: session.account.sUserName,
       };
     if (oConversation.type === 1) {
       const sFriendKey = aUsers[0].key;
@@ -218,13 +218,16 @@ const Messages = (props) => {
         ImagePicker.openCamera(OPTIONS_IMAGE_CROP_CONVERSATION)
           .then((oResponse) => {
             var imageB64 = oResponse.data;
-            setImage(imageB64)
+            setImage(imageB64);
             sendMessage(SEND_MESSAGE_TYPES.IMAGE);
           })
           .catch(() => {
-            if (oError.message == "Permission denied")
-              return
-            dispatch(actionMessage("Permission denied, please check FitRec permissions"));
+            if (oError.message == "Permission denied") return;
+            dispatch(
+              actionMessage(
+                "Permission denied, please check FitRec permissions"
+              )
+            );
             dispatch(actionMessage(MESSAGE_ERROR));
           });
         break;
@@ -233,13 +236,16 @@ const Messages = (props) => {
         ImagePicker.openPicker(OPTIONS_IMAGE_CROP_CONVERSATION)
           .then((oResponse) => {
             var imageB64 = oResponse.data;
-            setImage(imageB64)
+            setImage(imageB64);
             sendMessage(SEND_MESSAGE_TYPES.IMAGE);
           })
           .catch(() => {
-            if (oError.message == "Permission denied")
-              return
-            dispatch(actionMessage("Permission denied, please check FitRec permissions"));
+            if (oError.message == "Permission denied") return;
+            dispatch(
+              actionMessage(
+                "Permission denied, please check FitRec permissions"
+              )
+            );
             dispatch(actionMessage(MESSAGE_ERROR));
           });
         break;
@@ -276,7 +282,7 @@ const Messages = (props) => {
     Keyboard.dismiss();
     if (optionName === "showGifsModal") {
       dispatch(actionGetGiphy(""));
-      setOptionName(true)
+      setOptionName(true);
     }
   };
 
@@ -314,8 +320,7 @@ const Messages = (props) => {
                       borderBottomColor: PlaceholderColor,
                     },
                   ]}
-                  onPress={() => viewProfile(oUser.key)}
-                >
+                  onPress={() => viewProfile(oUser.key)}>
                   {null === oUser.image ? (
                     <Image
                       style={GlobalStyles.photoProfileCardList}
@@ -346,46 +351,46 @@ const Messages = (props) => {
   };
 
   const renderMessages = () => {
-    const { aMessages } = oMessageProps;
-    const { key: sConversationKey } = oMessageProps.oConversation;
-    const { key: sUserKey } = session.account;
     return (
-      <View style={oStyles.container}>
-        <ScrollView
-          style={oStyles.pd10}
-          ref={oScrollView}
-          onContentSizeChange={() => {
-            if (null !== oScrollView && undefined !== oScrollView)
-              oScrollView.current.scrollToEnd({ animated: true });
-          }}
-        >
-          {aMessages ? (
-            aMessages.map((oMessage) => (
-              <View key={`${oMessage.date}${oMessage.sender}`}>
-                {sConversationKey === oMessage.sender
-                  ? renderGroupMessage(oMessage)
-                  : sUserKey === oMessage.sender
+      <KeyboardAwareScrollView
+        extraScrollHeight={35}
+        contentContainerStyle={{ flex: 1 }}>
+        <View style={oStyles.container}>
+          <ScrollView
+            style={oStyles.pd10}
+            ref={oScrollView}
+            onContentSizeChange={() => {
+              if (null !== oScrollView && undefined !== oScrollView)
+                oScrollView.current.scrollToEnd({ animated: true });
+            }}>
+            {oMessageProps.aMessages ? (
+              oMessageProps.aMessages.map((oMessage) => (
+                <View key={`${oMessage.date}${oMessage.sender}`}>
+                  {oMessageProps.oConversation.sConversationKey ===
+                  oMessage.sender
+                    ? renderGroupMessage(oMessage)
+                    : session.account.sUserKey === oMessage.sender
                     ? renderMyMessage(oMessage)
                     : renderMessageOtherSender(oMessage)}
+                </View>
+              ))
+            ) : (
+              <View>
+                <Text
+                  style={[
+                    oStyles.textCenter,
+                    oStyles.textGray,
+                    oStyles.pd10,
+                    oStyles.fontBold,
+                  ]}>
+                  Start a conversation
+                </Text>
               </View>
-            ))
-          ) : (
-            <View>
-              <Text
-                style={[
-                  oStyles.textCenter,
-                  oStyles.textGray,
-                  oStyles.pd10,
-                  oStyles.fontBold,
-                ]}
-              >
-                Start a conversation
-              </Text>
-            </View>
-          )}
-        </ScrollView>
-        {renderInput()}
-      </View>
+            )}
+          </ScrollView>
+          {renderInput()}
+        </View>
+      </KeyboardAwareScrollView>
     );
   };
 
@@ -400,8 +405,7 @@ const Messages = (props) => {
               padding: 5,
               justifyContent: "center",
               alignSelf: "center",
-            }}
-          >
+            }}>
             {renderMessage(oMessage, "#EFEFEF")}
           </View>
         </View>
@@ -414,8 +418,7 @@ const Messages = (props) => {
       <View style={[oStyles.row, oStyles.mgB10, oStyles.leftAlign]}>
         <Pressable
           activeOpacity={1}
-          onPress={() => viewProfile(oMessage.sender)}
-        >
+          onPress={() => viewProfile(oMessage.sender)}>
           {getImageUser(oMessage.sender) ? (
             <FastImage
               style={oStyles.userImage}
@@ -430,8 +433,7 @@ const Messages = (props) => {
           )}
         </Pressable>
         <View
-          style={[oStyles.w78, oStyles.containerMessageLeft, oStyles.pdB10]}
-        >
+          style={[oStyles.w78, oStyles.containerMessageLeft, oStyles.pdB10]}>
           <View
             style={[
               GlobalMessages.containerMessageRight,
@@ -445,9 +447,8 @@ const Messages = (props) => {
                 borderColor: "white",
               },
               oMessage.isSticker !== undefined &&
-              !oMessage.isSticker && { backgroundColor: "none" },
-            ]}
-          >
+                !oMessage.isSticker && { backgroundColor: "none" },
+            ]}>
             {renderMessage(oMessage)}
           </View>
           <View style={[oStyles.row, oStyles.pdT5, { width: "100%" }]}>
@@ -456,8 +457,7 @@ const Messages = (props) => {
                 oStyles.row,
                 oStyles.middleFlex,
                 { justifyContent: "flex-start" },
-              ]}
-            >
+              ]}>
               <Icon
                 name="person-circle-outline"
                 size={16}
@@ -473,8 +473,7 @@ const Messages = (props) => {
                 oStyles.row,
                 oStyles.middleFlex,
                 { justifyContent: "flex-end" },
-              ]}
-            >
+              ]}>
               <Icon
                 name="time"
                 size={16}
@@ -492,12 +491,10 @@ const Messages = (props) => {
   };
 
   const renderMyMessage = (oMessage) => {
-    const { key: sUserKey, image: sUserImage } = session.account;
     return (
       <View style={[oStyles.row, oStyles.mgB10, oStyles.rigthAlign]}>
         <View
-          style={[oStyles.w78, oStyles.containerMessageRight, oStyles.pdB10]}
-        >
+          style={[oStyles.w78, oStyles.containerMessageRight, oStyles.pdB10]}>
           <View
             style={[
               GlobalMessages.containerMessage,
@@ -511,9 +508,8 @@ const Messages = (props) => {
                 borderColor: "white",
               },
               oMessage.isSticker !== undefined &&
-              !oMessage.isSticker && { backgroundColor: "none" },
-            ]}
-          >
+                !oMessage.isSticker && { backgroundColor: "none" },
+            ]}>
             {renderMessage(oMessage, "#6f6f6f")}
           </View>
           <View style={[oStyles.row, oStyles.pdT5]}>
@@ -528,11 +524,11 @@ const Messages = (props) => {
             </Text>
           </View>
         </View>
-        {sUserImage ? (
+        {session.account.sUserImage ? (
           <FastImage
             style={oStyles.userImage}
             source={{
-              uri: sUserImage,
+              uri: session.account.sUserImage,
               priority: FastImage.priority.high,
             }}
             resizeMode={FastImage.resizeMode.cover}
@@ -593,8 +589,7 @@ const Messages = (props) => {
               longitude: oMessage.lon,
               latitudeDelta: 0.0922,
               longitudeDelta: 0.1,
-            }}
-          >
+            }}>
             <Marker
               key={1}
               coordinate={{
@@ -612,42 +607,34 @@ const Messages = (props) => {
   const renderInput = () => {
     return (
       <View
-        style={[oStyles.viewWriteMessage, { paddingBottom: keyboardPadding }]}
-      >
-        {!showKeyboard ||
-          (showKeyboard && text === "") ||
-          showMoreOptions ? (
+        style={[oStyles.viewWriteMessage, { paddingBottom: keyboardPadding }]}>
+        {!showKeyboard || (showKeyboard && text === "") || showMoreOptions ? (
           <View
             style={[
               oStyles.row,
               oStyles.alignCenter,
               { width: showMoreOptions ? "28%" : "20%" },
-            ]}
-          >
+            ]}>
             <Pressable
               onPress={() => handlePressOptions("showOptionImage")}
-              style={oStyles.pdT2}
-            >
+              style={oStyles.pdT2}>
               <Icon name="camera" size={32} />
             </Pressable>
             <Pressable
               onPress={showMapHandler}
-              style={oStyles.viewWriteMessageIconMap}
-            >
+              style={oStyles.viewWriteMessageIconMap}>
               <Icon name="location-sharp" size={24} />
             </Pressable>
             <Pressable
               onPress={() => handlePressOptions("showGifsModal")}
-              style={oStyles.viewWriteMessageIconMap}
-            >
+              style={oStyles.viewWriteMessageIconMap}>
               <Image source={GifIcon} style={{ width: 30, height: 30 }} />
             </Pressable>
             {showMoreOptions && (
               <Pressable
                 activeOpacity={1}
                 onPress={() => setShowMoreOptions(false)}
-                style={oStyles.viewWriteMessageIconDismissMore}
-              >
+                style={oStyles.viewWriteMessageIconDismissMore}>
                 <Icon name="chevron-back-circle-outline" size={32} />
               </Pressable>
             )}
@@ -657,8 +644,7 @@ const Messages = (props) => {
             <Pressable
               activeOpacity={1}
               onPress={() => setShowMoreOptions(true)}
-              style={oStyles.pdT2}
-            >
+              style={oStyles.pdT2}>
               <Icon name="chevron-forward-circle-outline" size={32} />
             </Pressable>
           </View>
@@ -670,11 +656,10 @@ const Messages = (props) => {
               ? text === ""
                 ? "65%"
                 : !showMoreOptions
-                  ? "77%"
-                  : "57%"
+                ? "77%"
+                : "57%"
               : "65%",
-          }}
-        >
+          }}>
           <TextInput
             placeholder="Type your message"
             placeholderTextColor={PlaceholderColor}
@@ -684,9 +669,10 @@ const Messages = (props) => {
             value={text}
             onChangeText={(text) => {
               setText(text);
-              setShowMoreOptions(showMoreOptions && text === "" ? false : showMoreOptions);
-            }
-            }
+              setShowMoreOptions(
+                showMoreOptions && text === "" ? false : showMoreOptions
+              );
+            }}
           />
         </View>
         <View style={oStyles.w15}>
@@ -712,9 +698,7 @@ const Messages = (props) => {
           fClose={() => {
             resetState();
           }}
-          fActionSelect={(oGif) =>
-            sendMessage(SEND_MESSAGE_TYPES.GIF, oGif)
-          }
+          fActionSelect={(oGif) => sendMessage(SEND_MESSAGE_TYPES.GIF, oGif)}
           fChangeType={() => setShowGifsStickers(!showGifsStickers)}
           aGifs={oGiphyProps.gifs}
           aStickers={oGiphyProps.stickers}
@@ -732,15 +716,13 @@ const Messages = (props) => {
             style={[
               GlobalModal.viewContent,
               { marginTop: 0, borderTopLeftRadius: 0, borderTopRightRadius: 0 },
-            ]}
-          >
+            ]}>
             <ScrollView>
               <MapView
                 provider={props.provider}
                 style={{ height: 300, width: "100%", marginTop: 20 }}
                 onPress={(e) => setMarker(e.nativeEvent.coordinate)}
-                initialRegion={locationInital}
-              >
+                initialRegion={locationInital}>
                 {null !== marker && (
                   <Marker key={1} coordinate={marker} pinColor="#FF0000" />
                 )}
@@ -751,13 +733,11 @@ const Messages = (props) => {
                     onPress={() => {
                       setShowMap(false);
                       setMarker(null);
-                    }
-                    }
+                    }}
                     style={[
                       oStyles.button,
                       { backgroundColor: GreenFitrecColor },
-                    ]}
-                  >
+                    ]}>
                     <Text style={[oStyles.textButton, oStyles.font18]}>
                       Cancel
                     </Text>
@@ -765,11 +745,8 @@ const Messages = (props) => {
                 </View>
                 <View style={[oStyles.w50, oStyles.alignCenter]}>
                   <Pressable
-                    onPress={() =>
-                      sendMessage(SEND_MESSAGE_TYPES.LOCATION)
-                    }
-                    style={[oStyles.button, { backgroundColor: SignUpColor }]}
-                  >
+                    onPress={() => sendMessage(SEND_MESSAGE_TYPES.LOCATION)}
+                    style={[oStyles.button, { backgroundColor: SignUpColor }]}>
                     <Text style={[oStyles.textButton, oStyles.font18]}>
                       Send
                     </Text>
@@ -783,12 +760,9 @@ const Messages = (props) => {
     );
   };
 
-
-  const { oConversation } = oMessageProps;
-
   return (
     <>
-      {oConversation ? (
+      {oMessageProps.oConversation ? (
         <>
           {showPeople ? (
             renderPeople()
@@ -804,8 +778,7 @@ const Messages = (props) => {
       )}
     </>
   );
-
-}
+};
 
 const oStyles = StyleSheet.create({
   container: {
@@ -949,58 +922,4 @@ const oStyles = StyleSheet.create({
   },
 });
 
-const mapStateToProps = (state) => ({
-  session: state.reducerSession,
-  oMessageProps: state.reducerMessages,
-  oGiphyProps: state.reducerGiphy,
-});
-
-const mapDispatchToProps = (dispatch) => ({
-  sendMessage: (
-    oSender,
-    sMessage,
-    sType,
-    sFriendKey,
-    sConversationKey,
-    oData
-  ) => {
-    dispatch(
-      actionSendMessage(
-        oSender,
-        sMessage,
-        sType,
-        sFriendKey,
-        sConversationKey,
-        oData
-      )
-    );
-  },
-  sendMessageGroup: (oSender, sMessage, sType, sConversationKey, oData) => {
-    dispatch(
-      actionSendMessageChatGroup(
-        oSender,
-        sMessage,
-        sType,
-        sConversationKey,
-        oData
-      )
-    );
-  },
-  message: (sMessage) => {
-    dispatch(actionMessage(sMessage));
-  },
-  cleanMessages: () => {
-    dispatch(actionGetMessages());
-  },
-  expandImage: (image) => {
-    dispatch(actionExpandImage(image));
-  },
-  getProfile: (data) => {
-    dispatch(actionGetProfile(data, true));
-  },
-  getGiphy: (sFilter) => {
-    dispatch(actionGetGiphy(sFilter));
-  },
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(Messages);
+export default Messages;

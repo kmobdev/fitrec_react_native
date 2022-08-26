@@ -22,14 +22,12 @@ export const ToastQuestion = (props) => {
               height: 25,
               backgroundColor: SignUpColor,
               borderRadius: 100,
-            }}
-          >
+            }}>
             <Icon
               name="close"
               color={WhiteColor}
               size={22}
-              style={{ alignSelf: "center", marginTop: 1 }}
-            ></Icon>
+              style={{ alignSelf: "center", marginTop: 1 }}></Icon>
           </Pressable>
         )}
         <Icon name="ios-link" color={WhiteColor} size={22}></Icon>
@@ -40,20 +38,17 @@ export const ToastQuestion = (props) => {
           <View style={ToastQuestionGenericStyles.viewButtons}>
             <Pressable
               onPress={props.functionGallery}
-              style={ToastQuestionGenericStyles.threeButtons}
-            >
+              style={ToastQuestionGenericStyles.threeButtons}>
               <Icon name="md-images" color={WhiteColor} size={22}></Icon>
             </Pressable>
             <Pressable
               onPress={props.functionCamera}
-              style={ToastQuestionGenericStyles.threeButtons}
-            >
+              style={ToastQuestionGenericStyles.threeButtons}>
               <Icon name="ios-camera" color={WhiteColor} size={22}></Icon>
             </Pressable>
             <Pressable
               onPress={props.functionVideo}
-              style={ToastQuestionGenericStyles.threeButtons}
-            >
+              style={ToastQuestionGenericStyles.threeButtons}>
               <Icon name="videocam" color={WhiteColor} size={22}></Icon>
             </Pressable>
           </View>
@@ -61,14 +56,12 @@ export const ToastQuestion = (props) => {
           <View style={ToastQuestionGenericStyles.viewButtons}>
             <Pressable
               onPress={props.functionGallery}
-              style={ToastQuestionGenericStyles.button}
-            >
+              style={ToastQuestionGenericStyles.button}>
               <Icon name="md-images" color={WhiteColor} size={22}></Icon>
             </Pressable>
             <Pressable
               onPress={props.functionCamera}
-              style={ToastQuestionGenericStyles.button}
-            >
+              style={ToastQuestionGenericStyles.button}>
               <Icon name="ios-camera" color={WhiteColor} size={22}></Icon>
             </Pressable>
           </View>

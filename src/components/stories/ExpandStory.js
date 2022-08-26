@@ -37,7 +37,6 @@ import { ifIphoneX } from "react-native-iphone-x-helper";
 import moment from "moment/min/moment-with-locales";
 
 const ExpandStory = (props) => {
-
   const oSession = useSelector((state) => state.reducerSession);
   const story = useSelector((state) => state.reducerStory);
 
@@ -48,8 +47,6 @@ const ExpandStory = (props) => {
   const [oInterval, setOInterval] = useState(null);
   const [nActualStory, setNActualStory] = useState(null);
   const [loading, setLoading] = useState(false);
-
-
 
   useEffect(() => {
     if (!story.stopStory) {
@@ -71,10 +68,7 @@ const ExpandStory = (props) => {
         let oInterval = setInterval(() => {
           if (story.expand) {
             if (!story.stopStory) {
-              if (
-                story.nextStory ||
-                story.previusStory
-              ) {
+              if (story.nextStory || story.previusStory) {
                 clearInterval(oInterval);
                 setOInterval(null);
                 setNActualStory(null);
@@ -107,7 +101,7 @@ const ExpandStory = (props) => {
         setOInterval(oInterval);
       }
     }
-  }, [story])
+  }, [story]);
 
   const close = () => {
     if (null !== oInterval) clearInterval(oInterval);
@@ -124,8 +118,7 @@ const ExpandStory = (props) => {
     setNProgress(0);
     setNActualStory(null);
     setLoading(false);
-    if (story.total - 1 !== story.index)
-      dispatch(actionNextStory());
+    if (story.total - 1 !== story.index) dispatch(actionNextStory());
     else close();
   };
 
@@ -162,12 +155,7 @@ const ExpandStory = (props) => {
         oSection.push(
           <View
             style={[styles.sectionHeader, styles.sectionHeaderView]}
-            key={
-              nIndex.toString() +
-              story.id.toString() +
-              story.date
-            }
-          ></View>
+            key={nIndex.toString() + story.id.toString() + story.date}></View>
         );
       } else {
         if (nIndex === story.index) {
@@ -175,11 +163,7 @@ const ExpandStory = (props) => {
             oSection.push(
               <ProgressBar
                 progress={nProgress}
-                key={
-                  nIndex.toString() +
-                  story.id.toString() +
-                  story.date
-                }
+                key={nIndex.toString() + story.id.toString() + story.date}
                 color={WhiteColor}
                 styleAttr={"Horizontal"}
                 style={styles.sectionHeader}
@@ -191,11 +175,7 @@ const ExpandStory = (props) => {
             oSection.push(
               <ProgressViewIOS
                 progress={nProgress}
-                key={
-                  nIndex.toString() +
-                  story.id.toString() +
-                  story.date
-                }
+                key={nIndex.toString() + story.id.toString() + story.date}
                 progressTintColor={WhiteColor}
                 progressViewStyle={"bar"}
                 style={[
@@ -208,12 +188,7 @@ const ExpandStory = (props) => {
           oSection.push(
             <View
               style={[styles.sectionHeader, styles.sectionHeaderNotView]}
-              key={
-                nIndex.toString() +
-                story.id.toString() +
-                story.date
-              }
-            ></View>
+              key={nIndex.toString() + story.id.toString() + story.date}></View>
           );
         }
       }
@@ -243,7 +218,9 @@ const ExpandStory = (props) => {
                 let nProgress =
                   oDataProgress.currentTime / oDataProgress.playableDuration;
                 if (nProgress <= 1) {
-                  setNProgress(oDataProgress.currentTime / oDataProgress.playableDuration);
+                  setNProgress(
+                    oDataProgress.currentTime / oDataProgress.playableDuration
+                  );
                 }
               }}
               ref={(ref) => {
@@ -279,16 +256,11 @@ const ExpandStory = (props) => {
                   resizeMode={FastImage.resizeMode.contain}
                 />
                 <View style={styles.containerData}>
-                  <Text style={styles.textName}>
-                    {story.name}
-                  </Text>
+                  <Text style={styles.textName}>{story.name}</Text>
                   <Text style={styles.textLevel}>
                     {getFitnnesLevel(story.level) +
                       " - " +
-                      moment(
-                        story.date,
-                        "YYYY-MM-DD H:m:s"
-                      ).fromNow()}
+                      moment(story.date, "YYYY-MM-DD H:m:s").fromNow()}
                   </Text>
                 </View>
               </View>
@@ -303,8 +275,7 @@ const ExpandStory = (props) => {
               onPress={() => {
                 setConfirmationDeletestory(true);
                 dispatch(actionStopStory());
-              }}
-            >
+              }}>
               <Icon name="trash-outline" color={SignUpColor} size={32} />
             </Pressable>
           )}
@@ -321,8 +292,7 @@ const ExpandStory = (props) => {
               setLoading(true);
               dispatch(actionViewStory(story.id));
             }}
-            resizeMode={FastImage.resizeMode.contain}
-          >
+            resizeMode={FastImage.resizeMode.contain}>
             <>
               <View style={styles.touchableContainer}>
                 <Pressable
@@ -356,16 +326,11 @@ const ExpandStory = (props) => {
                   resizeMode={FastImage.resizeMode.contain}
                 />
                 <View style={styles.containerData}>
-                  <Text style={styles.textName}>
-                    {story.name}
-                  </Text>
+                  <Text style={styles.textName}>{story.name}</Text>
                   <Text style={styles.textLevel}>
                     {getFitnnesLevel(story.level) +
                       " - " +
-                      moment(
-                        story.date,
-                        "YYYY-MM-DD H:m:s"
-                      ).fromNow()}
+                      moment(story.date, "YYYY-MM-DD H:m:s").fromNow()}
                   </Text>
                 </View>
               </View>
@@ -380,8 +345,7 @@ const ExpandStory = (props) => {
               onPress={() => {
                 setConfirmationDeletestory(true);
                 dispatch(actionStopStory());
-              }}
-            >
+              }}>
               <Icon name="trash-outline" color={SignUpColor} size={32} />
             </Pressable>
           )}
@@ -398,8 +362,7 @@ const ExpandStory = (props) => {
               style={[
                 ToastQuestionStyles.button,
                 { backgroundColor: GreenFitrecColor, marginRight: 10 },
-              ]}
-            >
+              ]}>
               <Text style={ToastQuestionStyles.textButton}>Cancel</Text>
             </Pressable>
             <Pressable
@@ -407,8 +370,7 @@ const ExpandStory = (props) => {
               style={[
                 ToastQuestionStyles.button,
                 { backgroundColor: SignUpColor },
-              ]}
-            >
+              ]}>
               <Text style={ToastQuestionStyles.textButton}>Ok</Text>
             </Pressable>
           </View>
@@ -416,7 +378,7 @@ const ExpandStory = (props) => {
       />
     </>
   ) : null;
-}
+};
 
 const styles = StyleSheet.create({
   container: {

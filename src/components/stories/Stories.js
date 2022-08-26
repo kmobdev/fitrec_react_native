@@ -116,8 +116,7 @@ class Stories extends Component {
           horizontal={true}
           scrollEnabled={true}
           showsHorizontalScrollIndicator={false}
-          style={styles.scrollContent}
-        >
+          style={styles.scrollContent}>
           <FlatList
             keyExtractor={(item, index) => index.toString()}
             data={this.props.oStory.stories}
@@ -128,24 +127,21 @@ class Stories extends Component {
               item.id == this.props.oSession.account.id ? (
                 <Pressable
                   style={styles.actionStyle}
-                  onPress={() => this.openMeStory(item)}
-                >
+                  onPress={() => this.openMeStory(item)}>
                   <View
                     style={[
                       styles.imageContent,
                       item.view
                         ? styles.borderStoryView
                         : styles.borderStoryNotView,
-                    ]}
-                  >
+                    ]}>
                     <FastImage
                       style={styles.imageStyle}
                       source={{
                         uri: item.image !== null ? item.image : sNoProfileImage,
                         priority: FastImage.priority.normal,
                       }}
-                      resizeMode={FastImage.resizeMode.cover}
-                    >
+                      resizeMode={FastImage.resizeMode.cover}>
                       <View style={styles.shadowView}></View>
                     </FastImage>
                     <View style={styles.containerIconPlus}>
@@ -164,24 +160,21 @@ class Stories extends Component {
               ) : (
                 <Pressable
                   style={styles.actionStyle}
-                  onPress={() => this.expandStory(item)}
-                >
+                  onPress={() => this.expandStory(item)}>
                   <View
                     style={[
                       styles.imageContent,
                       item.view
                         ? styles.borderStoryView
                         : styles.borderStoryNotView,
-                    ]}
-                  >
+                    ]}>
                     <FastImage
                       style={styles.imageStyle}
                       source={{
                         uri: item.image !== null ? item.image : sNoProfileImage,
                         priority: FastImage.priority.normal,
                       }}
-                      resizeMode={FastImage.resizeMode.cover}
-                    >
+                      resizeMode={FastImage.resizeMode.cover}>
                       {item.view && <View style={styles.shadowView}></View>}
                     </FastImage>
                   </View>

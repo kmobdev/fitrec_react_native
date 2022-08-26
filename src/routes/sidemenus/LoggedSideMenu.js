@@ -72,8 +72,7 @@ class LoggedSideMenu extends Component {
         </View>
         <View style={styles.viewTouchable}>
           <Pressable
-            onPress={() => this.navigatePage("ProfileViewDetailsProfile")}
-          >
+            onPress={() => this.navigatePage("ProfileViewDetailsProfile")}>
             <View style={styles.viewText}>
               <Icon name="person-circle" size={22} color={SignUpColor} />
               <Text style={styles.textButton}>My profile</Text>
@@ -102,8 +101,7 @@ class LoggedSideMenu extends Component {
                       justifyContent: "center",
                       marginLeft: 5,
                     },
-                  ]}
-                >
+                  ]}>
                   <View style={GlobalMessages.viewBubble}>
                     <Text style={GlobalMessages.text}>
                       {this.props.chatProps.messageReadGroup}
@@ -128,8 +126,7 @@ class LoggedSideMenu extends Component {
                       justifyContent: "center",
                       marginLeft: 5,
                     },
-                  ]}
-                >
+                  ]}>
                   <View style={GlobalMessages.viewBubble}>
                     <Text style={GlobalMessages.text}>
                       {this.props.chatProps.messageRead}
@@ -156,8 +153,7 @@ class LoggedSideMenu extends Component {
                         justifyContent: "center",
                         marginLeft: 5,
                       },
-                    ]}
-                  >
+                    ]}>
                     <View style={GlobalMessages.viewBubble}>
                       <Text style={GlobalMessages.text}>
                         {this.props.notifications.notificationsUnRead}

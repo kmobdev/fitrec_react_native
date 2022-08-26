@@ -5,8 +5,11 @@ import { GlobalCheckBox } from "../shared/GlobalCheckBox";
 
 export const CheckBox = (props) => (
   <View
-    style={[GlobalStyles.viewSection, styles.displayComboBox, props.stylesView]}
-  >
+    style={[
+      GlobalStyles.viewSection,
+      styles.displayComboBox,
+      props.stylesView,
+    ]}>
     <Text style={[styles.textLabel, props.stylesText]}>{props.title}</Text>
     <GlobalCheckBox
       onPress={props.onPress}

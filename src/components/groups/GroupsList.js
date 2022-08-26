@@ -22,7 +22,6 @@ import Icon from "react-native-vector-icons/Ionicons";
 import { GROUP_PRIVATE, GROUP_PUBLIC } from "../../constants/Groups";
 
 const GroupsList = (props) => {
-
   const session = useSelector((state) => state.reducerSession);
 
   const [refresh, setRefresh] = useState(false);
@@ -31,7 +30,7 @@ const GroupsList = (props) => {
   const selectGroup = (oGroup) => {
     oGroup.selected =
       oGroup.selected === undefined || oGroup.selected === false ? true : false;
-    setRefresh(!refresh)
+    setRefresh(!refresh);
   };
 
   const close = () => {
@@ -40,14 +39,12 @@ const GroupsList = (props) => {
       oGroup.selected = false;
       aGroups.push(oGroup);
     });
-    setGroups(aGroups)
+    setGroups(aGroups);
     props.close();
   };
 
   const sendInvitations = () => {
-    var aGroups = props.groups.filter(
-      (element) => element.selected === true
-    );
+    var aGroups = props.groups.filter((element) => element.selected === true);
     var oMember = {
       key: props.pal.key,
       id: props.pal.id,
@@ -76,8 +73,7 @@ const GroupsList = (props) => {
               borderBottomColor: PlaceholderColor,
               borderBottomWidth: 0.5,
             })
-          }
-        >
+          }>
           <Text style={GlobalModal.headTitle}>Your Groups</Text>
           {props.groups !== undefined &&
             props.groups.filter((element) => element.isCapitan === true)
@@ -86,26 +82,24 @@ const GroupsList = (props) => {
                 style={GlobalModal.buttonClose}
                 onPress={() => {
                   close();
-                }}
-              >
+                }}>
                 <Text style={GlobalModal.titleClose}>Close</Text>
               </Pressable>
             )}
         </View>
         {props.groups !== undefined &&
-          props.groups.filter(
-            (element) =>
-              (element.type === GROUP_PRIVATE && element.isCapitan === true) ||
-              element.type === GROUP_PUBLIC
-          ).length > 0 ? (
+        props.groups.filter(
+          (element) =>
+            (element.type === GROUP_PRIVATE && element.isCapitan === true) ||
+            element.type === GROUP_PUBLIC
+        ).length > 0 ? (
           <ScrollView style={styles.listView}>
             <View style={{ flexDirection: "row", marginTop: 15 }}>
               <Pressable
                 onPress={() => {
                   close();
                 }}
-                style={{ flex: 6, marginRight: 5 }}
-              >
+                style={{ flex: 6, marginRight: 5 }}>
                 <View style={GlobalStyles.buttonCancel}>
                   <Text style={GlobalStyles.textButton}>Cancel</Text>
                 </View>
@@ -114,8 +108,7 @@ const GroupsList = (props) => {
                 onPress={() => {
                   sendInvitations();
                 }}
-                style={{ flex: 6, marginLeft: 5 }}
-              >
+                style={{ flex: 6, marginLeft: 5 }}>
                 <View style={GlobalStyles.buttonConfirm}>
                   <Text style={GlobalStyles.textButton}>
                     Confirm
@@ -123,18 +116,17 @@ const GroupsList = (props) => {
                       props.groups.filter(
                         (element) => element.selected === true
                       ).length &&
-                      null !==
+                    null !==
                       props.groups.filter(
                         (element) => element.selected === true
                       ).length &&
-                      props.groups.filter(
-                        (element) => element.selected === true
-                      ).length > 0
+                    props.groups.filter((element) => element.selected === true)
+                      .length > 0
                       ? " (" +
-                      props.groups
-                        .filter((element) => element.selected === true)
-                        .length.toString() +
-                      ")"
+                        props.groups
+                          .filter((element) => element.selected === true)
+                          .length.toString() +
+                        ")"
                       : ""}
                   </Text>
                 </View>
@@ -149,16 +141,15 @@ const GroupsList = (props) => {
                   <View style={styles.viewNotificaton}>
                     {(item.type === GROUP_PUBLIC ||
                       (item.type === GROUP_PRIVATE && item.isCapitan)) &&
-                      !props.groupsPal.filter(
-                        (oElement) => oElement.group === item.key
-                      ).length > 0 &&
-                      !props.invitations.filter(
-                        (oElement) => oElement.id === item.key
-                      ).length > 0 ? (
+                    !props.groupsPal.filter(
+                      (oElement) => oElement.group === item.key
+                    ).length > 0 &&
+                    !props.invitations.filter(
+                      (oElement) => oElement.id === item.key
+                    ).length > 0 ? (
                       <Pressable
                         onPress={() => selectGroup(item)}
-                        style={{ flexDirection: "row", width: "100%" }}
-                      >
+                        style={{ flexDirection: "row", width: "100%" }}>
                         {null === item.image ? (
                           <Image
                             style={GlobalStyles.photoProfileCardList}
@@ -175,8 +166,7 @@ const GroupsList = (props) => {
                             justifyContent: "center",
                             marginLeft: 10,
                             marginRight: 175,
-                          }}
-                        >
+                          }}>
                           <Text style={styles.textUserReference}>
                             {item.name.length > 25
                               ? item.name.substring(0, 22) + "..."
@@ -204,8 +194,7 @@ const GroupsList = (props) => {
                     ) : (
                       <View
                         onPress={() => selectGroup(item)}
-                        style={{ flexDirection: "row", width: "100%" }}
-                      >
+                        style={{ flexDirection: "row", width: "100%" }}>
                         {null === item.image ? (
                           <Image
                             style={GlobalStyles.photoProfileCardList}
@@ -222,8 +211,7 @@ const GroupsList = (props) => {
                             justifyContent: "center",
                             marginLeft: 10,
                             marginRight: 175,
-                          }}
-                        >
+                          }}>
                           <Text style={styles.textUserReference}>
                             {item.name.length > 23
                               ? item.name.substring(0, 20) + "..."
@@ -241,8 +229,7 @@ const GroupsList = (props) => {
                             style={{
                               color: GreenFitrecColor,
                               fontWeight: "bold",
-                            }}
-                          >
+                            }}>
                             {props.groupsPal.filter(
                               (oElement) => oElement.group === item.key
                             ).length > 0 ? (
@@ -275,7 +262,7 @@ const GroupsList = (props) => {
       </View>
     )
   );
-}
+};
 
 const styles = StyleSheet.create({
   viewNotificaton: {

@@ -36,7 +36,6 @@ import FastImage from "react-native-fast-image";
 import ImagePicker from "react-native-image-crop-picker";
 
 const ProfileEdit = (props) => {
-
   const scrollView = useRef();
 
   const activity = useSelector((state) => state.reducerActivity);
@@ -82,14 +81,11 @@ const ProfileEdit = (props) => {
   }, []);
 
   useEffect(() => {
-    if (
-      null === user.activitiesSelect &&
-      activity.activities.length > 0
-    ) {
+    if (null === user.activitiesSelect && activity.activities.length > 0) {
       checkActivitiesSelect(activity.activities);
       setUser({
         ...user,
-        activitiesSelect: activity.activities
+        activitiesSelect: activity.activities,
       });
     }
     if (profile.statusUpdateProfile) {
@@ -187,8 +183,7 @@ const ProfileEdit = (props) => {
           (element) => element.selected === true
         );
       if (newImage !== null) sImage = newImage;
-      if (newImageBackground !== null)
-        sImageBackground = newImageBackground;
+      if (newImageBackground !== null) sImageBackground = newImageBackground;
       if (newGym) {
         nGymId = 0;
         sGymName = newGymName;
@@ -380,15 +375,12 @@ const ProfileEdit = (props) => {
                 GlobalStyles.viewSection,
                 GlobalStyles.photoProfileViewSectionPhotos,
                 styles.contentImages,
-              ]}
-            >
+              ]}>
               {null !== newImageBackground ? (
                 <Image
                   style={GlobalStyles.photoProfileCoverPreviewPhoto}
                   source={{
-                    uri:
-                      "data:image/jpeg;base64," +
-                      newImageBackground,
+                    uri: "data:image/jpeg;base64," + newImageBackground,
                   }}
                 />
               ) : null !== user &&
@@ -440,15 +432,13 @@ const ProfileEdit = (props) => {
                   <Pressable
                     onPress={() => {
                       showProfilePhotoHandler();
-                    }}
-                  >
+                    }}>
                     <Icon
                       style={{
                         textAlign: "center",
                       }}
                       name="touch-app"
-                      size={22}
-                    ></Icon>
+                      size={22}></Icon>
                     <Text style={{ fontSize: 12 }}>UPDATE</Text>
                   </Pressable>
                 </View>
@@ -460,11 +450,7 @@ const ProfileEdit = (props) => {
               />
             </View>
             <View>
-              <InputText
-                title="Email"
-                value={user.email}
-                readonly={true}
-              />
+              <InputText title="Email" value={user.email} readonly={true} />
               <InputText
                 title="Username"
                 value={user.username}
@@ -476,7 +462,7 @@ const ProfileEdit = (props) => {
                 onChange={(text) => {
                   setUser({
                     ...user,
-                    name: text
+                    name: text,
                   });
                 }}
                 error={errors.showNameError}
@@ -506,7 +492,7 @@ const ProfileEdit = (props) => {
                 onValueChange={(value) => {
                   setUser({
                     ...user,
-                    sex: getSexValue(value)
+                    sex: getSexValue(value),
                   });
                 }}
               />
@@ -641,7 +627,7 @@ const ProfileEdit = (props) => {
       <Toast toastText={toastText} />
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   buttonUpdateProfileImage: {
@@ -657,7 +643,5 @@ const styles = StyleSheet.create({
     backgroundColor: "gray",
   },
 });
-
-
 
 export default ProfileEdit;

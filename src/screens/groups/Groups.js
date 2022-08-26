@@ -55,10 +55,11 @@ import { actionCleanNavigation } from "../../redux/actions/NavigationActions";
 import { GROUP_PRIVATE } from "../../constants/Groups";
 
 const Groups = ({ navigation }) => {
-
   const session = useSelector((state) => state.reducerSession);
   const groupProps = useSelector((state) => state.reducerGroup);
-  const invitationsProps = useSelector((state) => state.reducerInvitationsGroup);
+  const invitationsProps = useSelector(
+    (state) => state.reducerInvitationsGroup
+  );
   const myPalsRequest = useSelector((state) => state.reducerRequests);
   const groupUpdateProps = useSelector((state) => state.reducerUpdateGroup);
   const friendsProps = useSelector((state) => state.reducerMyPals);
@@ -79,15 +80,15 @@ const Groups = ({ navigation }) => {
   const [friendsBack, setFriendsBack] = useState(null);
   const [isAddParticipant, setIsAddParticipant] = useState(false);
   const [newParticipants, setNewParticipants] = useState([]);
-  const [showUserRequestGroupDetails, setShowUserRequestGroupDetails] = useState(false);
+  const [showUserRequestGroupDetails, setShowUserRequestGroupDetails] =
+    useState(false);
   const [group, setGroup] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
-  const [showGroupInvitations, setShowGroupInvitations] = useState(false)
+  const [showGroupInvitations, setShowGroupInvitations] = useState(false);
   const [lastUserViewProfile, setLastUserViewProfile] = useState({
     id: null,
     key: null,
   });
-
 
   useEffect(() => {
     navigation.setParams({
@@ -95,8 +96,7 @@ const Groups = ({ navigation }) => {
       openOptions: () => openOptions(),
     });
     listGroup();
-    if (null !== friendsBack && friendsBack.length > 0)
-      setFriends(friendsBack);
+    if (null !== friendsBack && friendsBack.length > 0) setFriends(friendsBack);
     setSearchPeople("");
 
     if (true === navigation.getParam("invitation", null)) {
@@ -132,16 +132,12 @@ const Groups = ({ navigation }) => {
       "" !== groupProps.messageError &&
       null !== groupProps.messageError &&
       showToast(groupProps.messageError);
-    if (
-      null !== groupProps.friendRefresh &&
-      groupProps.friendRefresh
-    ) {
+    if (null !== groupProps.friendRefresh && groupProps.friendRefresh) {
       setFriendsBack(friendsProps.myFriends);
-      setFriends(friendsProps.myFriends)
+      setFriends(friendsProps.myFriends);
     }
     if (
-      (undefined !== groupProps.listGroup &&
-        null !== groupProps.listGroup) ||
+      (undefined !== groupProps.listGroup && null !== groupProps.listGroup) ||
       null !== group
     ) {
       if (null !== groupProps.listGroup) {
@@ -173,27 +169,21 @@ const Groups = ({ navigation }) => {
     ) {
       showToast("Invitation processed successfully");
     }
-    if (
-      searchPeople !== "" &&
-      myPalsRequest.peopleFitrec !== friends
-    ) {
+    if (searchPeople !== "" && myPalsRequest.peopleFitrec !== friends) {
       friends = myPalsRequest.peopleFitrec;
     }
     if (
       friendsProps.status !== true &&
-      (null === friendsProps.myFriends ||
-        friendsProps.myFriends.length === 0)
+      (null === friendsProps.myFriends || friendsProps.myFriends.length === 0)
     )
       dispatch(actionGetMyFriends(session.account.key));
-    else if (null === friendsBack)
-      setFriendsBack(friendsProps.myFriends);
+    else if (null === friendsBack) setFriendsBack(friendsProps.myFriends);
     setFriends(friendsProps.myFriends);
     if (groupProps.sGroupKey) {
       openGroup(groupProps.sGroupKey);
       dispatch(actionCleanNavigation());
     }
   }, []);
-
 
   const openGroup = (sGroupKey) => {
     dispatch(actionGetGroup(sGroupKey, session.account.key));
@@ -206,9 +196,10 @@ const Groups = ({ navigation }) => {
   };
 
   const listGroup = (nType = null) => {
-    dispatch(actionGetGroupInvitations({
-      accountId: session.account.key,
-    })
+    dispatch(
+      actionGetGroupInvitations({
+        accountId: session.account.key,
+      })
     );
 
     if (!tabSelectMy) {
@@ -266,22 +257,15 @@ const Groups = ({ navigation }) => {
       );
     } catch (oError) {
       dispatch(
-        actionGetGroupsNearMe(
-          sFilter,
-          nType,
-          sDistance,
-          nLatitude,
-          nLongitude
-        )
+        actionGetGroupsNearMe(sFilter, nType, sDistance, nLatitude, nLongitude)
       );
     }
   };
 
   const addParticipant = (oElement) => {
     if (
-      newParticipants.filter(
-        (element) => element.key === oElement.key
-      ).length == 0
+      newParticipants.filter((element) => element.key === oElement.key)
+        .length == 0
     ) {
       setNewParticipants([...newParticipants, oElement]);
     } else {
@@ -312,13 +296,7 @@ const Groups = ({ navigation }) => {
       setIsAddParticipant(!isAddParticipant);
       setNewParticipants([]);
       dispatch(
-        actionAddMember(
-          nGroupId,
-          sGroupKey,
-          sGroupName,
-          sGroupImage,
-          aMembers
-        )
+        actionAddMember(nGroupId, sGroupKey, sGroupName, sGroupImage, aMembers)
       );
       prdispatch(actionGetMyFriends(session.account.key));
     }
@@ -470,43 +448,28 @@ const Groups = ({ navigation }) => {
     <ImageBackground
       source={require("../../assets/bk.png")}
       resizeMode="cover"
-      style={GlobalStyles.fullImageGroups}
-    >
+      style={GlobalStyles.fullImageGroups}>
       <View style={GlobalTabs.viewTabs}>
         <Pressable
           onPress={() => changeTabSelect(true)}
-          style={[
-            GlobalTabs.tabLeft,
-            tabSelectMy && GlobalTabs.tabActive,
-          ]}
-        >
+          style={[GlobalTabs.tabLeft, tabSelectMy && GlobalTabs.tabActive]}>
           <View>
             <Text
               style={
-                tabSelectMy
-                  ? GlobalTabs.tabsTextActive
-                  : GlobalTabs.tabsText
-              }
-            >
+                tabSelectMy ? GlobalTabs.tabsTextActive : GlobalTabs.tabsText
+              }>
               My
             </Text>
           </View>
         </Pressable>
         <Pressable
           onPress={() => changeTabSelect(false)}
-          style={[
-            GlobalTabs.tabRight,
-            !tabSelectMy && GlobalTabs.tabActive,
-          ]}
-        >
+          style={[GlobalTabs.tabRight, !tabSelectMy && GlobalTabs.tabActive]}>
           <View>
             <Text
               style={
-                !tabSelectMy
-                  ? GlobalTabs.tabsTextActive
-                  : GlobalTabs.tabsText
-              }
-            >
+                !tabSelectMy ? GlobalTabs.tabsTextActive : GlobalTabs.tabsText
+              }>
               Near me
             </Text>
           </View>
@@ -519,8 +482,7 @@ const Groups = ({ navigation }) => {
             <View style={styles.viewButton}>
               <Pressable
                 onPress={() => setShowGroupInvitations(true)}
-                style={styles.button}
-              >
+                style={styles.button}>
                 <Icon name="md-notifications" size={16} color={WhiteColor} />
                 <Text style={styles.textButton}>Group Invitations</Text>
               </Pressable>
@@ -544,8 +506,7 @@ const Groups = ({ navigation }) => {
                 tintColor={GreenFitrecColor}
                 title="Pull to refresh..."
               />
-            }
-          >
+            }>
             {getMyGroups() ? (
               <FlatList
                 data={getMyGroups()}
@@ -556,8 +517,7 @@ const Groups = ({ navigation }) => {
                     <View style={styles.viewNotificaton}>
                       <Pressable
                         onPress={() => openGroup(item.key)}
-                        style={{ flexDirection: "row", width: "100%" }}
-                      >
+                        style={{ flexDirection: "row", width: "100%" }}>
                         {null === item.image ? (
                           <Image
                             style={GlobalStyles.photoProfileCardList}
@@ -578,8 +538,7 @@ const Groups = ({ navigation }) => {
                             justifyContent: "center",
                             marginLeft: 10,
                             marginRight: 175,
-                          }}
-                        >
+                          }}>
                           <Text style={styles.textUserReference}>
                             {item.name.length > 40
                               ? item.name.substring(0, 37) + "..."
@@ -594,8 +553,7 @@ const Groups = ({ navigation }) => {
                           item.usersRequest.length > 0 && (
                             <Pressable
                               onPress={() => openRequestModal(item)}
-                              style={styles.viewIconAddMemberRight}
-                            >
+                              style={styles.viewIconAddMemberRight}>
                               <View>
                                 <Icon
                                   name="ios-person-add"
@@ -611,8 +569,7 @@ const Groups = ({ navigation }) => {
                               GlobalMessages.viewGlobalBubble,
                               styles.viewIconAddMemberRight,
                               { marginTop: 0, right: 65 },
-                            ]}
-                          >
+                            ]}>
                             <View style={GlobalMessages.viewBubble}>
                               <Text style={GlobalMessages.text}>
                                 {item.messagesRead}
@@ -643,8 +600,7 @@ const Groups = ({ navigation }) => {
                     fontSize: 18,
                     flexWrap: "wrap",
                   },
-                ]}
-              >
+                ]}>
                 You are not yet part of any group
               </Text>
             )}
@@ -671,11 +627,10 @@ const Groups = ({ navigation }) => {
                 tintColor={GreenFitrecColor}
                 title="Pull to refresh..."
               />
-            }
-          >
+            }>
             {null !== groupProps.listGroupNearMe &&
-              undefined !== groupProps.listGroupNearMe &&
-              groupProps.listGroupNearMe.length > 0 ? (
+            undefined !== groupProps.listGroupNearMe &&
+            groupProps.listGroupNearMe.length > 0 ? (
               <FlatList
                 data={groupProps.listGroupNearMe}
                 keyExtractor={(item, index) => index.toString()}
@@ -685,8 +640,7 @@ const Groups = ({ navigation }) => {
                     <View style={styles.viewNotificaton}>
                       <Pressable
                         onPress={() => openGroup(item.key)}
-                        style={{ flexDirection: "row", width: "100%" }}
-                      >
+                        style={{ flexDirection: "row", width: "100%" }}>
                         {null === item.image ? (
                           <Image
                             style={GlobalStyles.photoProfileCardList}
@@ -703,15 +657,12 @@ const Groups = ({ navigation }) => {
                           />
                         )}
                         <View
-                          style={{ justifyContent: "center", marginLeft: 10 }}
-                        >
+                          style={{ justifyContent: "center", marginLeft: 10 }}>
                           <Text style={styles.textUserReference}>
                             {item.name}
                           </Text>
                           <Text>
-                            {item.type == GROUP_PRIVATE
-                              ? "Private"
-                              : "Public"}
+                            {item.type == GROUP_PRIVATE ? "Private" : "Public"}
                           </Text>
                         </View>
                         <View style={styles.viewIconRight}>
@@ -737,8 +688,7 @@ const Groups = ({ navigation }) => {
                     fontSize: 18,
                     flexWrap: "wrap",
                   },
-                ]}
-              >
+                ]}>
                 No nearby groups found
               </Text>
             )}
@@ -771,8 +721,7 @@ const Groups = ({ navigation }) => {
                 style={[
                   ToastQuestionGenericStyles.viewButtonOption,
                   { marginBottom: 0 },
-                ]}
-              >
+                ]}>
                 <Icon name="ios-options" size={22} color={WhiteColor} />
                 <Text style={ToastQuestionGenericStyles.viewButtonOptionText}>
                   Default
@@ -797,19 +746,15 @@ const Groups = ({ navigation }) => {
           cancelRequest(item);
         }}
       />
-      <LoadingSpinner
-        visible={loading || loadingUsers}
-      />
+      <LoadingSpinner visible={loading || loadingUsers} />
       <Toast toastText={toastText} />
-      {showGroupInvitations &&
-        session.groupInvitations.length > 0 ? (
+      {showGroupInvitations && session.groupInvitations.length > 0 ? (
         <View style={GlobalModal.viewContent}>
           <View style={GlobalModal.viewHead}>
             <Text style={GlobalModal.headTitle}>Group Invitations</Text>
             <Pressable
               style={[GlobalModal.buttonClose, { flexDirection: "row" }]}
-              onPress={() => setShowGroupInvitations(false)}
-            >
+              onPress={() => setShowGroupInvitations(false)}>
               <Icon name="md-close" color={SignUpColor} size={22} />
               <Text style={[GlobalModal.titleClose, { marginLeft: 2 }]}>
                 Close
@@ -828,13 +773,12 @@ const Groups = ({ navigation }) => {
                           width: "20%",
                           justifyContent: "center",
                           alignItems: "center",
-                        }}
-                      >
+                        }}>
                         {null !== item.group &&
-                          null !== item.group.image &&
-                          undefined !== item.group.image &&
-                          "" !== item.group.image &&
-                          "img/group.png" !== item.group.image ? (
+                        null !== item.group.image &&
+                        undefined !== item.group.image &&
+                        "" !== item.group.image &&
+                        "img/group.png" !== item.group.image ? (
                           <Image
                             style={[
                               { height: 60, width: 60 },
@@ -852,13 +796,10 @@ const Groups = ({ navigation }) => {
                           />
                         )}
                       </View>
-                      <View
-                        style={{ justifyContent: "center", width: "60%" }}
-                      >
+                      <View style={{ justifyContent: "center", width: "60%" }}>
                         <Text
                           style={styles.textUserReference}
-                          numberOfLines={1}
-                        >
+                          numberOfLines={1}>
                           {item.group.name}
                         </Text>
                         <View style={{ marginBottom: 5 }}>
@@ -873,32 +814,23 @@ const Groups = ({ navigation }) => {
                           justifyContent: "center",
                           alignItems: "center",
                           flexDirection: "row",
-                        }}
-                      >
+                        }}>
                         <Pressable
                           onPress={() => rejectInvitation(item.id)}
-                          style={{ marginRight: 10 }}
-                        >
-                          <Icon
-                            name="md-close"
-                            size={35}
-                            color={SignUpColor}
-                          />
+                          style={{ marginRight: 10 }}>
+                          <Icon name="md-close" size={35} color={SignUpColor} />
                         </Pressable>
                         <Pressable
                           onPress={() =>
                             acceptInvitation(item.id, item.group.id)
-                          }
-                        >
+                          }>
                           <Icon name="md-checkmark" size={35} color="green" />
                         </Pressable>
                       </View>
                     </View>
                   ) : (
                     <View style={styles.viewNotificaton}>
-                      <View
-                        style={{ justifyContent: "center", width: "85%" }}
-                      >
+                      <View style={{ justifyContent: "center", width: "85%" }}>
                         <Text
                           style={{
                             textAlign: "center",
@@ -906,8 +838,7 @@ const Groups = ({ navigation }) => {
                             fontSize: 18,
                             color: GreenFitrecColor,
                           }}
-                          numberOfLines={1}
-                        >
+                          numberOfLines={1}>
                           The group has been removed
                         </Text>
                       </View>
@@ -917,17 +848,11 @@ const Groups = ({ navigation }) => {
                           justifyContent: "flex-end",
                           alignItems: "center",
                           flexDirection: "row",
-                        }}
-                      >
+                        }}>
                         <Pressable
                           onPress={() => rejectInvitation(item.id)}
-                          style={{ marginRight: 10 }}
-                        >
-                          <Icon
-                            name="md-close"
-                            size={35}
-                            color={SignUpColor}
-                          />
+                          style={{ marginRight: 10 }}>
+                          <Icon name="md-close" size={35} color={SignUpColor} />
                         </Pressable>
                       </View>
                     </View>
@@ -940,7 +865,7 @@ const Groups = ({ navigation }) => {
       ) : null}
     </ImageBackground>
   );
-}
+};
 
 const styles = StyleSheet.create({
   viewNotificaton: {

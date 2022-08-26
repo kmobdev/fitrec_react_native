@@ -22,15 +22,13 @@ export const SearchUsername = (props) => (
     {props.close !== undefined && props.value === "" ? (
       <Pressable
         onPress={props.close}
-        style={[styles.searchBarIcon, styles.searchBarIconRight]}
-      >
+        style={[styles.searchBarIcon, styles.searchBarIconRight]}>
         <Text style={{ color: SignUpColor, marginTop: 3 }}>Close</Text>
       </Pressable>
     ) : (
       <Pressable
         onPress={props.clean}
-        style={[styles.searchBarIcon, styles.searchBarIconRight]}
-      >
+        style={[styles.searchBarIcon, styles.searchBarIconRight]}>
         <Icon name="md-close" size={24} color={SignUpColor} />
       </Pressable>
     )}

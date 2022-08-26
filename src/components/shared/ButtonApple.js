@@ -10,8 +10,7 @@ export const ButtonApple = (props) => (
       styles.appleButton,
       !props.login && { borderRadius: 5, width: "90%" },
     ]}
-    onPress={props.onPress}
-  >
+    onPress={props.onPress}>
     <FontAwesome
       name="apple"
       color={BlackColor}

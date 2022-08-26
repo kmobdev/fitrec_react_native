@@ -25,8 +25,7 @@ export const ShowUserRequestGroup = (props) =>
         style={
           (GlobalModal.viewHead,
           { justifyContent: "center", alignContent: "center" })
-        }
-      >
+        }>
         {
           //TODO: commented for a future
           // <Pressable style={GlobalModal.buttonLeft}
@@ -70,14 +69,12 @@ export const ShowUserRequestGroup = (props) =>
                 </View>
                 <Pressable
                   style={styles.viewIconRight}
-                  onPress={() => props.acceptRequest(item)}
-                >
+                  onPress={() => props.acceptRequest(item)}>
                   <Icon name="md-checkmark" size={32} color="yellowgreen" />
                 </Pressable>
                 <Pressable
                   onPress={() => props.cancelRequest(item)}
-                  style={[styles.viewIconRight, { right: 60 }]}
-                >
+                  style={[styles.viewIconRight, { right: 60 }]}>
                   <Icon name="md-close" size={32} color={SignUpColor} />
                 </Pressable>
               </View>

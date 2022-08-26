@@ -2,6 +2,7 @@ import {
   Actions,
   Constants,
   MESSAGE_ERROR,
+  MESSAGE_PUSH_ERROR,
   NOTIFICATION_SEND_REQUEST,
 } from "../../Constants";
 import {
@@ -258,7 +259,8 @@ export const actionSendRequest = (
                     sUserPalKey
                 )
                 .set(true);
-              console.log("sIdPush ======>>>>> ", sIdPush);
+              //TODO: This console log is for checking the push ID value. need to fix the undefined push ID issue
+              console.log("checking sIdPush ======>>>>> ", sIdPush);
               if (undefined !== sIdPush && null !== sIdPush) {
                 var oDataNotification = {
                   headings: { en: sDescription },
@@ -293,6 +295,8 @@ export const actionSendRequest = (
                     console.log("Error =================>>>>> :", error);
                   }
                 );
+              } else {
+                dispatch(actionMessage(MESSAGE_PUSH_ERROR));
               }
             })
             .catch(() => {});

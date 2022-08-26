@@ -12,8 +12,7 @@ const Button = (props) => {
   return (
     <Pressable
       onPress={onPress}
-      style={[styles.roundButton, styles.loginButton]}
-    >
+      style={[styles.roundButton, styles.loginButton]}>
       <Text style={styles.loginText}>{title}</Text>
       <Icon name="arrow-forward" color={GreenFitrecColor} size={22} />
     </Pressable>

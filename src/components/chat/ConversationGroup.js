@@ -254,14 +254,12 @@ class ConversationGroup extends Component {
               style={[
                 GlobalModal.headTitle,
                 { marginRight: 80, marginLeft: 80 },
-              ]}
-            >
+              ]}>
               {this.props.group.name} messages
             </Text>
             <Pressable
               style={[GlobalModal.buttonClose, { flexDirection: "row" }]}
-              onPress={this.props.close}
-            >
+              onPress={this.props.close}>
               <Icon name="md-close" color={SignUpColor} size={22} />
               <Text style={[GlobalModal.titleClose, { marginLeft: 2 }]}>
                 Close
@@ -274,8 +272,7 @@ class ConversationGroup extends Component {
             onContentSizeChange={() => {
               if (null !== this.scrollView && undefined !== this.scrollView)
                 this.scrollView.scrollToEnd({ animated: true });
-            }}
-          >
+            }}>
             <FlatList
               data={this.props.group.messages}
               keyExtractor={(item, index) => index.toString()}
@@ -289,14 +286,12 @@ class ConversationGroup extends Component {
                           flexDirection: "row",
                           width: "100%",
                           marginBottom: 10,
-                        }}
-                      >
+                        }}>
                         <View style={{ width: "80%", paddingRight: 8 }}>
                           <View style={GlobalMessages.containerMessage}>
                             {"image" === item.type && (
                               <Pressable
-                                onPress={() => this.expandImage(item.message)}
-                              >
+                                onPress={() => this.expandImage(item.message)}>
                                 <FastImage
                                   style={{ height: 200 }}
                                   source={{
@@ -309,8 +304,7 @@ class ConversationGroup extends Component {
                             )}
                             {"gif" === item.type && (
                               <Pressable
-                                onPress={() => this.expandImage(item.message)}
-                              >
+                                onPress={() => this.expandImage(item.message)}>
                                 <View style={{ alignItems: "center" }}>
                                   <FastImage
                                     style={GlobalStyles.gifImage}
@@ -341,8 +335,7 @@ class ConversationGroup extends Component {
                                   longitude: item.lon,
                                   latitudeDelta: 0.0922,
                                   longitudeDelta: 0.1,
-                                }}
-                              >
+                                }}>
                                 <Marker
                                   key={1}
                                   coordinate={{
@@ -360,8 +353,7 @@ class ConversationGroup extends Component {
                               justifyContent: "flex-start",
                               flexDirection: "row",
                               paddingTop: 5,
-                            }}
-                          >
+                            }}>
                             <Icon
                               name="md-time"
                               size={16}
@@ -406,8 +398,7 @@ class ConversationGroup extends Component {
                           flexDirection: "row",
                           width: "100%",
                           marginBottom: 10,
-                        }}
-                      >
+                        }}>
                         <Pressable onPress={() => this.props.viewProfile(item)}>
                           {item.imageProfile !== null &&
                           item.imageProfile !== undefined ? (
@@ -440,12 +431,10 @@ class ConversationGroup extends Component {
                               borderRadius: 5,
                               backgroundColor: "#4eaa41",
                               borderColor: "#4eaa41",
-                            }}
-                          >
+                            }}>
                             {"image" === item.type && (
                               <Pressable
-                                onPress={() => this.expandImage(item.message)}
-                              >
+                                onPress={() => this.expandImage(item.message)}>
                                 <FastImage
                                   style={GlobalStyles.gifImage}
                                   source={{
@@ -458,8 +447,7 @@ class ConversationGroup extends Component {
                             )}
                             {"gif" === item.type && (
                               <Pressable
-                                onPress={() => this.expandImage(item.message)}
-                              >
+                                onPress={() => this.expandImage(item.message)}>
                                 <View style={{ alignItems: "center" }}>
                                   <FastImage
                                     style={GlobalStyles.gifImage}
@@ -490,8 +478,7 @@ class ConversationGroup extends Component {
                                   longitude: item.lon,
                                   latitudeDelta: 0.0922,
                                   longitudeDelta: 0.1,
-                                }}
-                              >
+                                }}>
                                 <Marker
                                   key={1}
                                   coordinate={{
@@ -509,8 +496,7 @@ class ConversationGroup extends Component {
                               justifyContent: "flex-end",
                               flexDirection: "row",
                               paddingTop: 5,
-                            }}
-                          >
+                            }}>
                             <Icon
                               name="md-time"
                               size={16}
@@ -541,8 +527,7 @@ class ConversationGroup extends Component {
                   onPress={(e) =>
                     this.setState({ marker: e.nativeEvent.coordinate })
                   }
-                  initialRegion={this.state.locationInital}
-                >
+                  initialRegion={this.state.locationInital}>
                   {null !== this.state.marker && (
                     <Marker
                       key={1}
@@ -560,16 +545,14 @@ class ConversationGroup extends Component {
                       style={[
                         styles.button,
                         { backgroundColor: GreenFitrecColor },
-                      ]}
-                    >
+                      ]}>
                       <Text style={styles.textButton}>Cancel</Text>
                     </Pressable>
                   </View>
                   <View style={styles.viewButton}>
                     <Pressable
                       onPress={() => this.sendMessage("location")}
-                      style={[styles.button, { backgroundColor: SignUpColor }]}
-                    >
+                      style={[styles.button, { backgroundColor: SignUpColor }]}>
                       <Text style={styles.textButton}>Send</Text>
                     </Pressable>
                   </View>
@@ -578,8 +561,7 @@ class ConversationGroup extends Component {
             </View>
           )}
           <View
-            style={[styles.viewWriteMessage, this.getKeyboardOffsetStyle()]}
-          >
+            style={[styles.viewWriteMessage, this.getKeyboardOffsetStyle()]}>
             {!this.state.showKeyboard ||
             (this.state.showKeyboard && this.state.messageSend === "") ||
             this.state.showMoreOptions ? (
@@ -587,15 +569,13 @@ class ConversationGroup extends Component {
                 style={[
                   styles.viewWriteMessageIcons,
                   this.state.showMoreOptions ? { width: "28%" } : {},
-                ]}
-              >
+                ]}>
                 <Pressable
                   onPress={() => {
                     this.setState({ showPhoto: true });
                     Keyboard.dismiss();
                   }}
-                  style={styles.viewWriteMessageIconCamera}
-                >
+                  style={styles.viewWriteMessageIconCamera}>
                   <Icon name="camera" size={32} />
                 </Pressable>
                 <Pressable
@@ -603,8 +583,7 @@ class ConversationGroup extends Component {
                     this.showMap();
                     Keyboard.dismiss();
                   }}
-                  style={styles.viewWriteMessageIconMap}
-                >
+                  style={styles.viewWriteMessageIconMap}>
                   <Icon name="location-sharp" size={24} />
                 </Pressable>
                 <Pressable
@@ -613,15 +592,13 @@ class ConversationGroup extends Component {
                     Keyboard.dismiss();
                     this.props.getGiphy("");
                   }}
-                  style={styles.viewWriteMessageIconMap}
-                >
+                  style={styles.viewWriteMessageIconMap}>
                   <Image source={GifIcon} style={{ width: 30, height: 30 }} />
                 </Pressable>
                 {this.state.showMoreOptions && (
                   <Pressable
                     onPress={() => this.setState({ showMoreOptions: false })}
-                    style={styles.viewWriteMessageIconDismissMore}
-                  >
+                    style={styles.viewWriteMessageIconDismissMore}>
                     <Icon name="chevron-back-circle-outline" size={32} />
                   </Pressable>
                 )}
@@ -630,8 +607,7 @@ class ConversationGroup extends Component {
               <View style={styles.viewWriteMessageIconsMore}>
                 <Pressable
                   onPress={() => this.setState({ showMoreOptions: true })}
-                  style={styles.viewWriteMessageIconCamera}
-                >
+                  style={styles.viewWriteMessageIconCamera}>
                   <Icon name="chevron-forward-circle-outline" size={32} />
                 </Pressable>
               </View>
@@ -646,8 +622,7 @@ class ConversationGroup extends Component {
                     ? { width: "77%" }
                     : { width: "62%" }
                   : {},
-              ]}
-            >
+              ]}>
               <TextInput
                 placeholder="Type your message"
                 placeholderTextColor={PlaceholderColor}

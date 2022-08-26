@@ -1,4 +1,4 @@
-import React, { Component, useEffect, useState } from "react";
+import React, { Component, useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -55,10 +55,11 @@ import { RNFFmpeg } from "ffmpeg-kit-react-native";
 import { ShowHead } from "../../components/journey/ShowHead";
 import { ShowFooter } from "../../components/journey/ShowFooter";
 import moment from "moment/min/moment-with-locales";
-
+``;
 let RNFS = require("react-native-fs");
 
 const JourneyCreate = (props) => {
+  const oInputRef = useRef();
 
   const session = useSelector((state) => state.reducerSession);
   const journeyProps = useSelector((state) => state.reducerJourney);
@@ -83,15 +84,13 @@ const JourneyCreate = (props) => {
   useEffect(() => {
     props.navigation.setParams({ navigateBack: navigateBack });
     actionGetMyFriends(session.account.key);
-    if (journeyProps.journeys.length == 0)
-      dispatch(actionGetJourneyList());
+    if (journeyProps.journeys.length == 0) dispatch(actionGetJourneyList());
   }, []);
 
   useEffect(() => {
     props.navigation.setParams({ navigateBack: navigateBack });
     actionGetMyFriends(session.account.key);
-    if (journeyProps.journeys.length == 0)
-      dispatch(actionGetJourneyList());
+    if (journeyProps.journeys.length == 0) dispatch(actionGetJourneyList());
     if (
       journeyProps !== journeyProps &&
       null !== journeyProps.statusCreated &&
@@ -110,8 +109,7 @@ const JourneyCreate = (props) => {
     setPlayer(null);
     setIndex(0);
     setShowJourneyList(true);
-    if (null !== oInputRef && undefined !== oInputRef)
-      oInputRef.blur();
+    if (null !== oInputRef && undefined !== oInputRef) oInputRef.current.blur();
     props.navigation.navigate("JourneyList");
   };
 
@@ -137,14 +135,14 @@ const JourneyCreate = (props) => {
             })
               .then((oImage) => {
                 let oFileItem = {
-                  type: "",
-                  uri: oImage.path,
-                  name: "",
-                  realPath: oFile.path,
-                  order: 1,
-                  mediaType: "image/jpeg",
-                  tags: [],
-                },
+                    type: "",
+                    uri: oImage.path,
+                    name: "",
+                    realPath: oFile.path,
+                    order: 1,
+                    mediaType: "image/jpeg",
+                    tags: [],
+                  },
                   aFiles = [];
                 oFileItem.type = POST_TYPE_IMAGE;
                 oFileItem.name = "fitrec_photo.jpeg";
@@ -186,10 +184,10 @@ const JourneyCreate = (props) => {
                   sName.slice(0, nIndexName) + "_" + Date.now() + "_fitrec.mp4";
                 RNFFmpeg.execute(
                   "-i " +
-                  sPath +
-                  ' -ss 00:00 -to 01:00 -preset superfast -movflags +faststart -vf "scale=480:-2" -b:v 1800k ' +
-                  sTemporalPath +
-                  sName
+                    sPath +
+                    ' -ss 00:00 -to 01:00 -preset superfast -movflags +faststart -vf "scale=480:-2" -b:v 1800k ' +
+                    sTemporalPath +
+                    sName
                 )
                   .then((result) => {
                     let oFileItem = {
@@ -210,14 +208,16 @@ const JourneyCreate = (props) => {
                   .catch((oError) => {
                     setShowPhoto(true);
                     setLoading(false);
-                    dispatch(actionMessage(
-                      "There was a problem selecting the video"
-                    ));
+                    dispatch(
+                      actionMessage("There was a problem selecting the video")
+                    );
                   });
               } else {
                 setShowPhoto(true);
                 setLoading(false);
-                dispatch(actionMessage("There was a problem selecting the video"));
+                dispatch(
+                  actionMessage("There was a problem selecting the video")
+                );
               }
             } else {
               if (oResponse.error) {
@@ -268,10 +268,10 @@ const JourneyCreate = (props) => {
                   "_fitrec.mp4";
                 RNFFmpeg.execute(
                   "-i " +
-                  sPath +
-                  ' -ss 00:00 -to 01:00 -preset superfast -movflags +faststart -vf "scale=480:-2" -b:v 1800k ' +
-                  sTemporalPath +
-                  sName
+                    sPath +
+                    ' -ss 00:00 -to 01:00 -preset superfast -movflags +faststart -vf "scale=480:-2" -b:v 1800k ' +
+                    sTemporalPath +
+                    sName
                 )
                   .then((result) => {
                     oFileItem.type = POST_TYPE_VIDEO;
@@ -293,7 +293,9 @@ const JourneyCreate = (props) => {
                     }
                   })
                   .catch((oError) => {
-                    dispatch(actionMessage("There was a problem resizing the video"));
+                    dispatch(
+                      actionMessage("There was a problem resizing the video")
+                    );
                   });
               } else {
                 let sName, nIndex;
@@ -390,9 +392,8 @@ const JourneyCreate = (props) => {
 
   const setTagUser = (lItem) => {
     if (
-      files[index].tags.filter(
-        (element) => element.key === lItem.key
-      ).length > 0
+      files[index].tags.filter((element) => element.key === lItem.key).length >
+      0
     ) {
       removeUser(lItem);
     }
@@ -418,7 +419,7 @@ const JourneyCreate = (props) => {
       left: left - 22,
       justifyContent: "center",
     };
-  }
+  };
 
   const removeUser = (user) => {
     let aTags = files[index].tags;
@@ -464,8 +465,7 @@ const JourneyCreate = (props) => {
             activeOpacity={1}
             onPress={() => {
               setMuted(!muted);
-            }}
-          >
+            }}>
             <Video
               paused={index != oItem.order - 1}
               muted={muted}
@@ -498,8 +498,7 @@ const JourneyCreate = (props) => {
                 resize(oItem);
               }}
               style={styles.containerResizeIcon}
-              activeOpacity={1}
-            >
+              activeOpacity={1}>
               <Icon name="expand-outline" size={24} color={WhiteColor} />
             </Pressable>
             {getImage(oItem)}
@@ -510,8 +509,7 @@ const JourneyCreate = (props) => {
                   onPress={() => {
                     removeUser(list);
                   }}
-                  style={styles.tagUserView}
-                >
+                  style={styles.tagUserView}>
                   <Text style={styles.tagListText}> {list.name} </Text>
                   <View style={styles.removeTagUser}>
                     <Image
@@ -602,8 +600,7 @@ const JourneyCreate = (props) => {
               alignContent: "center",
               width: "100%",
               padding: 10,
-            }}
-          >
+            }}>
             <Text style={{ textAlign: "center", fontSize: 16 }}>
               There are no publications.
             </Text>
@@ -633,8 +630,7 @@ const JourneyCreate = (props) => {
               bottom: 0,
               left: 0,
               right: 0,
-            }}
-          >
+            }}>
             {renderBackground()}
           </View>
         </>
@@ -647,8 +643,7 @@ const JourneyCreate = (props) => {
                   <Text style={GlobalModal.headTitle}>Add User Tag</Text>
                   <Pressable
                     style={GlobalModal.buttonClose}
-                    onPress={() => setShowFriends(false)}
-                  >
+                    onPress={() => setShowFriends(false)}>
                     <Text style={GlobalModal.titleClose}>Close</Text>
                   </Pressable>
                 </View>
@@ -672,16 +667,14 @@ const JourneyCreate = (props) => {
                         style={{
                           borderBottomWidth: 1,
                           borderBottomColor: PlaceholderColor,
-                        }}
-                      >
+                        }}>
                         <Pressable
                           onPress={() => setTagUser(item)}
                           style={{
                             flexDirection: "row",
                             width: "100%",
                             padding: 10,
-                          }}
-                        >
+                          }}>
                           {null === item.image || undefined === item.image ? (
                             <Image
                               style={{ height: 80, width: 80 }}
@@ -705,8 +698,7 @@ const JourneyCreate = (props) => {
                             style={{
                               justifyContent: "center",
                               marginLeft: 10,
-                            }}
-                          >
+                            }}>
                             <Text style={styles.textUserReference}>
                               {item.name}
                             </Text>
@@ -742,14 +734,13 @@ const JourneyCreate = (props) => {
                         setRefresh(!refresh);
                       }}
                     />
-                    {files[index].type ==
-                      POST_TYPE_IMAGE && (
-                        <View style={styles.footerPhoto}>
-                          <Text style={styles.footerContent}>
-                            TAP PHOTO to tag people
-                          </Text>
-                        </View>
-                      )}
+                    {files[index].type == POST_TYPE_IMAGE && (
+                      <View style={styles.footerPhoto}>
+                        <Text style={styles.footerContent}>
+                          TAP PHOTO to tag people
+                        </Text>
+                      </View>
+                    )}
                     {files.length > 1 && (
                       <Pagination
                         dotsLength={files.length}
@@ -780,7 +771,7 @@ const JourneyCreate = (props) => {
                   numberOfLines={4}
                   textAlign="left"
                   placeholder="Your message"
-                  ref={(oRef) => (oInputRef = oRef)}
+                  ref={oInputRef}
                   placeholderTextColor={PlaceholderColor}
                   onChangeText={(text) => setText(text)}
                   value={text}
@@ -789,8 +780,7 @@ const JourneyCreate = (props) => {
               <View style={styles.viewButtons}>
                 <Pressable
                   onPress={() => createJourney()}
-                  style={styles.button}
-                >
+                  style={styles.button}>
                   <Text style={styles.text}>Create</Text>
                 </Pressable>
               </View>
@@ -801,7 +791,7 @@ const JourneyCreate = (props) => {
       <LoadingSpinner visible={loading} />
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   viewImage: {

@@ -120,8 +120,7 @@ const Blocks = (props) => {
                   <Pressable
                     onPress={() => onLockHandler(item)}
                     style={styles.removeButton}
-                    activeOpacity={0.8}
-                  >
+                    activeOpacity={0.8}>
                     <Icon
                       name="lock-open"
                       size={24}
@@ -160,8 +159,7 @@ const Blocks = (props) => {
                 style={[
                   ToastQuestionStyles.button,
                   { backgroundColor: GreenFitrecColor, marginRight: 10 },
-                ]}
-              >
+                ]}>
                 <Text style={ToastQuestionStyles.textButton}>Cancel</Text>
               </Pressable>
               <Pressable
@@ -169,8 +167,7 @@ const Blocks = (props) => {
                 style={[
                   ToastQuestionStyles.button,
                   { backgroundColor: SignUpColor },
-                ]}
-              >
+                ]}>
                 <Text style={ToastQuestionStyles.textButton}>Ok</Text>
               </Pressable>
             </View>
@@ -198,8 +195,7 @@ const Blocks = (props) => {
             tintColor={GreenFitrecColor}
             title="Pull to refresh..."
           />
-        }
-      >
+        }>
         {renderBlocks()}
       </ScrollView>
       {renderQuestions()}

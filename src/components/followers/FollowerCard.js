@@ -35,8 +35,7 @@ const FollowerCard = (props) => {
         <Pressable
           onPress={onPressUnfollow}
           style={styles.removeButton}
-          activeOpacity={0.8}
-        >
+          activeOpacity={0.8}>
           <Icon
             name="trash"
             size={24}

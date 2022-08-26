@@ -291,8 +291,7 @@ class MessagesGroup extends Component {
           onContentSizeChange={() => {
             if (null !== this.oScrollView && undefined !== this.oScrollView)
               this.oScrollView.scrollToEnd({ animated: true });
-          }}
-        >
+          }}>
           <FlatList
             data={aMessages}
             style={{ flexDirection: "column-reverse" }}
@@ -325,8 +324,7 @@ class MessagesGroup extends Component {
               padding: 5,
               justifyContent: "center",
               alignSelf: "center",
-            }}
-          >
+            }}>
             {this.renderMessage(oMessage, "#EFEFEF")}
           </View>
         </View>
@@ -339,8 +337,7 @@ class MessagesGroup extends Component {
       <View style={[oStyles.row, oStyles.mgB10, oStyles.leftAlign]}>
         <Pressable
           activeOpacity={1}
-          onPress={() => this.viewProfile(oMessage.sender)}
-        >
+          onPress={() => this.viewProfile(oMessage.sender)}>
           {this.getImageUser(oMessage.sender) ? (
             <FastImage
               style={oStyles.userImage}
@@ -355,8 +352,7 @@ class MessagesGroup extends Component {
           )}
         </Pressable>
         <View
-          style={[oStyles.w78, oStyles.containerMessageLeft, oStyles.pdB10]}
-        >
+          style={[oStyles.w78, oStyles.containerMessageLeft, oStyles.pdB10]}>
           <View
             style={[
               GlobalMessages.containerMessageRight,
@@ -371,8 +367,7 @@ class MessagesGroup extends Component {
               },
               oMessage.isSticker !== undefined &&
                 !oMessage.isSticker && { backgroundColor: "none" },
-            ]}
-          >
+            ]}>
             {this.renderMessage(oMessage)}
           </View>
           <View
@@ -383,8 +378,7 @@ class MessagesGroup extends Component {
                 oStyles.mgR5,
                 { justifyContent: "flex-end" },
               ],
-            ]}
-          >
+            ]}>
             <Icon
               name="md-time"
               size={16}
@@ -404,8 +398,7 @@ class MessagesGroup extends Component {
     return (
       <View style={[oStyles.row, oStyles.mgB10, oStyles.rigthAlign]}>
         <View
-          style={[oStyles.w78, oStyles.containerMessageRight, oStyles.pdB10]}
-        >
+          style={[oStyles.w78, oStyles.containerMessageRight, oStyles.pdB10]}>
           <View
             style={[
               GlobalMessages.containerMessage,
@@ -420,8 +413,7 @@ class MessagesGroup extends Component {
               },
               oMessage.isSticker !== undefined &&
                 !oMessage.isSticker && { backgroundColor: "none" },
-            ]}
-          >
+            ]}>
             {this.renderMessage(oMessage, "#6f6f6f")}
           </View>
           <View style={[oStyles.row, oStyles.pdT5]}>
@@ -501,8 +493,7 @@ class MessagesGroup extends Component {
               longitude: oMessage.lon,
               latitudeDelta: 0.0922,
               longitudeDelta: 0.1,
-            }}
-          >
+            }}>
             <Marker
               key={1}
               coordinate={{
@@ -522,8 +513,7 @@ class MessagesGroup extends Component {
       this.state;
     return (
       <View
-        style={[oStyles.viewWriteMessage, { paddingBottom: nKeyboardPadding }]}
-      >
+        style={[oStyles.viewWriteMessage, { paddingBottom: nKeyboardPadding }]}>
         {!bShowKeyboard ||
         (bShowKeyboard && sText === "") ||
         bShowMoreOptions ? (
@@ -532,34 +522,29 @@ class MessagesGroup extends Component {
               oStyles.row,
               oStyles.alignCenter,
               { width: bShowMoreOptions ? "28%" : "20%" },
-            ]}
-          >
+            ]}>
             <Pressable
               onPress={() => this.handlePressOptions("bShowOptionImage")}
-              style={oStyles.pdT2}
-            >
+              style={oStyles.pdT2}>
               <Icon name="camera" size={32} />
             </Pressable>
             <Pressable
               onPress={() => {
                 this.showMap();
               }}
-              style={oStyles.viewWriteMessageIconMap}
-            >
+              style={oStyles.viewWriteMessageIconMap}>
               <Icon name="location-sharp" size={24} />
             </Pressable>
             <Pressable
               onPress={() => this.handlePressOptions("bShowGifsModal")}
-              style={oStyles.viewWriteMessageIconMap}
-            >
+              style={oStyles.viewWriteMessageIconMap}>
               <Image source={GifIcon} style={{ width: 30, height: 30 }} />
             </Pressable>
             {bShowMoreOptions && (
               <Pressable
                 activeOpacity={1}
                 onPress={() => this.setState({ bShowMoreOptions: false })}
-                style={oStyles.viewWriteMessageIconDismissMore}
-              >
+                style={oStyles.viewWriteMessageIconDismissMore}>
                 <Icon name="chevron-back-circle-outline" size={32} />
               </Pressable>
             )}
@@ -569,8 +554,7 @@ class MessagesGroup extends Component {
             <Pressable
               activeOpacity={1}
               onPress={() => this.setState({ bShowMoreOptions: true })}
-              style={oStyles.pdT2}
-            >
+              style={oStyles.pdT2}>
               <Icon name="chevron-forward-circle-outline" size={32} />
             </Pressable>
           </View>
@@ -585,8 +569,7 @@ class MessagesGroup extends Component {
                 ? "77%"
                 : "57%"
               : "65%",
-          }}
-        >
+          }}>
           <TextInput
             placeholder="Type your message"
             placeholderTextColor={PlaceholderColor}
@@ -657,8 +640,7 @@ class MessagesGroup extends Component {
             style={[
               GlobalModal.viewContent,
               { marginTop: 0, borderTopLeftRadius: 0, borderTopRightRadius: 0 },
-            ]}
-          >
+            ]}>
             <ScrollView>
               <MapView
                 provider={this.props.provider}
@@ -666,8 +648,7 @@ class MessagesGroup extends Component {
                 onPress={(e) =>
                   this.setState({ oMarker: e.nativeEvent.coordinate })
                 }
-                initialRegion={this.state.locationInital}
-              >
+                initialRegion={this.state.locationInital}>
                 {null !== oMarker && (
                   <Marker key={1} coordinate={oMarker} pinColor="#FF0000" />
                 )}
@@ -681,8 +662,7 @@ class MessagesGroup extends Component {
                     style={[
                       oStyles.button,
                       { backgroundColor: GreenFitrecColor },
-                    ]}
-                  >
+                    ]}>
                     <Text style={[oStyles.textButton, oStyles.font18]}>
                       Cancel
                     </Text>
@@ -693,8 +673,7 @@ class MessagesGroup extends Component {
                     onPress={() =>
                       this.sendMessage(SEND_MESSAGE_TYPES.LOCATION)
                     }
-                    style={[oStyles.button, { backgroundColor: SignUpColor }]}
-                  >
+                    style={[oStyles.button, { backgroundColor: SignUpColor }]}>
                     <Text style={[oStyles.textButton, oStyles.font18]}>
                       Send
                     </Text>

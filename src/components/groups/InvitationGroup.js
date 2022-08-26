@@ -27,8 +27,7 @@ export const InvitationGroup = (props) =>
         style={
           (GlobalModal.viewHead,
           { justifyContent: "center", alignContent: "center" })
-        }
-      >
+        }>
         <Text style={GlobalModal.headTitle}>Group Invitation</Text>
         <Pressable style={GlobalModal.buttonClose} onPress={props.close}>
           <Text style={GlobalModal.titleClose}>Close</Text>
@@ -70,8 +69,7 @@ export const InvitationGroup = (props) =>
                 color: GreenFitrecColor,
                 fontWeight: "bold",
                 textAlign: "center",
-              }}
-            >
+              }}>
               {props.group.type === GROUP_PRIVATE
                 ? "Private Group"
                 : "Public Group"}
@@ -84,8 +82,7 @@ export const InvitationGroup = (props) =>
                 color: GreenFitrecColor,
                 fontSize: 18,
                 marginRight: 175,
-              }}
-            >
+              }}>
               {props.group.name}
             </Text>
             <Text
@@ -93,8 +90,7 @@ export const InvitationGroup = (props) =>
                 marginTop: 5,
                 fontWeight: "bold",
                 color: PlaceholderColor,
-              }}
-            >
+              }}>
               Description
             </Text>
             {"" !== props.group.description ? (
@@ -103,8 +99,7 @@ export const InvitationGroup = (props) =>
                   fontWeight: "normal",
                   marginRight: 175,
                   textAlign: "justify",
-                }}
-              >
+                }}>
                 {props.group.description}
               </Text>
             ) : (
@@ -114,16 +109,14 @@ export const InvitationGroup = (props) =>
                   marginRight: 175,
                   textAlign: "justify",
                   fontStyle: "italic",
-                }}
-              >
+                }}>
                 No associated description
               </Text>
             )}
           </View>
         </View>
         <View
-          style={{ flexDirection: "row", marginTop: 20, alignSelf: "center" }}
-        >
+          style={{ flexDirection: "row", marginTop: 20, alignSelf: "center" }}>
           <Icon name="ios-people" size={40} color={PlaceholderColor} />
           <View style={{ justifyContent: "center", marginLeft: "5%" }}>
             <Text style={{ fontSize: 16, color: GreenFitrecColor }}>
@@ -137,16 +130,14 @@ export const InvitationGroup = (props) =>
           <View style={{ flexDirection: "row" }}>
             <Pressable
               onPress={() => props.rejectRequest()}
-              style={{ flex: 6, marginRight: 5 }}
-            >
+              style={{ flex: 6, marginRight: 5 }}>
               <View style={GlobalStyles.buttonCancel}>
                 <Text style={GlobalStyles.textButton}>Reject</Text>
               </View>
             </Pressable>
             <Pressable
               onPress={() => props.acceptRequest()}
-              style={{ flex: 6, marginLeft: 5 }}
-            >
+              style={{ flex: 6, marginLeft: 5 }}>
               <View style={GlobalStyles.buttonConfirm}>
                 <Text style={GlobalStyles.textButton}>Accept</Text>
               </View>
@@ -184,8 +175,7 @@ export const InvitationGroup = (props) =>
                         )}
                       </View>
                       <View
-                        style={{ justifyContent: "center", marginLeft: 10 }}
-                      >
+                        style={{ justifyContent: "center", marginLeft: 10 }}>
                         <Text style={styles.textUserReference}>
                           {props.userLoginKey === item.key ? "You" : item.name}
                         </Text>
@@ -222,8 +212,7 @@ export const InvitationGroup = (props) =>
                   !props.group.users.includes(item.key) ? (
                   <Pressable
                     onPress={() => props.addParticipant(item)}
-                    style={{ flexDirection: "row", width: "100%" }}
-                  >
+                    style={{ flexDirection: "row", width: "100%" }}>
                     <View style={{ margin: 10 }}>
                       {item.image === undefined || item.image === null ? (
                         <Image
@@ -277,8 +266,7 @@ export const InvitationGroup = (props) =>
                         style={[
                           styles.viewIconRight,
                           { flexDirection: "row", alignItems: "center" },
-                        ]}
-                      >
+                        ]}>
                         <Text style={{ color: SignUpColor }}>Member </Text>
                         <Icon
                           name="md-checkmark-circle"
@@ -312,8 +300,7 @@ export const InvitationGroup = (props) =>
                         style={[
                           styles.viewIconRight,
                           { flexDirection: "row", alignItems: "center" },
-                        ]}
-                      >
+                        ]}>
                         <Text style={{ color: SignUpColor }}>Invited </Text>
                         <Icon
                           name="md-checkmark-circle"

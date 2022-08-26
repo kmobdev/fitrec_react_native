@@ -3,7 +3,6 @@ import { Text, View, FlatList, Pressable, Image } from "react-native";
 import { PlaceholderColor, GlobalModal } from "../../Styles";
 
 const SelectGyms = (props) => {
-
   const [refresh, setRefresh] = useState(false);
 
   const clear = () => {
@@ -18,7 +17,7 @@ const SelectGyms = (props) => {
       item.selected ||
       undefined === props.maxSelect ||
       props.gyms.filter((oGym) => oGym.selected === true).length <
-      props.maxSelect
+        props.maxSelect
     ) {
       item.selected = !item.selected;
       setRefresh(!refresh);
@@ -39,27 +38,19 @@ const SelectGyms = (props) => {
     props.visible && (
       <View style={GlobalModal.viewContent}>
         <View style={GlobalModal.viewHead}>
-          {props.gyms.filter((element) => element.selected).length >
-            0 ? (
-            <Pressable
-              style={GlobalModal.buttonLeft}
-              onPress={() => clear()}
-            >
+          {props.gyms.filter((element) => element.selected).length > 0 ? (
+            <Pressable style={GlobalModal.buttonLeft} onPress={() => clear()}>
               <Text style={GlobalModal.titleClose}>Clear</Text>
             </Pressable>
           ) : (
             <Pressable
               style={GlobalModal.buttonLeft}
-              onPress={() => selectAll()}
-            >
+              onPress={() => selectAll()}>
               <Text style={GlobalModal.titleClose}>Select All</Text>
             </Pressable>
           )}
           <Text style={GlobalModal.headTitle}>Select Gyms</Text>
-          <Pressable
-            style={GlobalModal.buttonClose}
-            onPress={props.close}
-          >
+          <Pressable style={GlobalModal.buttonClose} onPress={props.close}>
             <Text style={GlobalModal.titleClose}>OK</Text>
           </Pressable>
         </View>
@@ -82,8 +73,7 @@ const SelectGyms = (props) => {
                   padding: 20,
                   borderBottomWidth: 0.5,
                   borderBottomColor: PlaceholderColor,
-                }}
-              >
+                }}>
                 <View style={{ flexDirection: "row" }}>
                   <Text style={{ height: "100%", fontSize: 20 }}>
                     {item.name}
@@ -97,8 +87,7 @@ const SelectGyms = (props) => {
                         bottom: 0,
                         justifyContent: "center",
                         alignItems: "center",
-                      }}
-                    >
+                      }}>
                       <Image source={require("../../assets/checked.png")} />
                     </View>
                   ) : null}
@@ -110,6 +99,6 @@ const SelectGyms = (props) => {
       </View>
     )
   );
-}
+};
 
 export default SelectGyms;

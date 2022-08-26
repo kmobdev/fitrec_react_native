@@ -419,13 +419,11 @@ class ShowDetailsGroup extends Component {
                 borderBottomColor: PlaceholderColor,
                 borderBottomWidth: 0.5,
               })
-            }
-          >
+            }>
             {this.props.isParticipant && !this.props.isCapitan && (
               <Pressable
                 style={GlobalModal.buttonLeft}
-                onPress={() => this.showMessages()}
-              >
+                onPress={() => this.showMessages()}>
                 {undefined !== this.props.group.messagesRead &&
                   this.props.group.messagesRead > 0 && (
                     <View style={styles.badgeTop}>
@@ -451,8 +449,7 @@ class ShowDetailsGroup extends Component {
                   removeMeCapitans: false,
                   previewImage: null,
                 });
-              }}
-            >
+              }}>
               <Text style={GlobalModal.titleClose}>Close</Text>
             </Pressable>
           </View>
@@ -483,8 +480,7 @@ class ShowDetailsGroup extends Component {
                   />
                 ) : (
                   <Pressable
-                    onPress={() => this.expandImage(this.props.group.image)}
-                  >
+                    onPress={() => this.expandImage(this.props.group.image)}>
                     <FastImage
                       style={{
                         borderRadius: 100,
@@ -508,15 +504,13 @@ class ShowDetailsGroup extends Component {
                       borderRadius: 10,
                       borderWidth: 0.5,
                       padding: 5,
-                    }}
-                  >
+                    }}>
                     <Text
                       style={{
                         color: SignUpColor,
                         fontWeight: "bold",
                         textAlign: "center",
-                      }}
-                    >
+                      }}>
                       Change Group Photo
                     </Text>
                   </Pressable>
@@ -527,8 +521,7 @@ class ShowDetailsGroup extends Component {
                     fontWeight: "bold",
                     textAlign: "center",
                     marginTop: 10,
-                  }}
-                >
+                  }}>
                   {this.props.group.type === 1
                     ? "Private Group"
                     : "Public Group"}
@@ -539,16 +532,14 @@ class ShowDetailsGroup extends Component {
                   <View
                     style={{
                       flexDirection: "row",
-                    }}
-                  >
+                    }}>
                     <View style={{ width: "50%" }}>
                       <Text
                         style={{
                           fontWeight: "bold",
                           color: GreenFitrecColor,
                           fontSize: 18,
-                        }}
-                      >
+                        }}>
                         {this.props.group.name}
                       </Text>
                     </View>
@@ -559,8 +550,7 @@ class ShowDetailsGroup extends Component {
                         marginBottom: "auto",
                         marginRight: "auto",
                         marginLeft: "auto",
-                      }}
-                    >
+                      }}>
                       <Pressable
                         onPress={() =>
                           this.setState({
@@ -575,8 +565,7 @@ class ShowDetailsGroup extends Component {
                             othersMembers: [],
                             searchCapitan: "",
                           })
-                        }
-                      >
+                        }>
                         <Icon
                           name="ellipsis-vertical"
                           size={22}
@@ -592,8 +581,7 @@ class ShowDetailsGroup extends Component {
                       color: GreenFitrecColor,
                       fontSize: 18,
                       marginRight: 175,
-                    }}
-                  >
+                    }}>
                     {this.props.group.name}
                   </Text>
                 )}
@@ -603,8 +591,7 @@ class ShowDetailsGroup extends Component {
                       marginTop: 5,
                       fontWeight: "bold",
                       color: PlaceholderColor,
-                    }}
-                  >
+                    }}>
                     Description
                   </Text>
                   {"" !== this.props.group.description ? (
@@ -613,8 +600,7 @@ class ShowDetailsGroup extends Component {
                         fontWeight: "normal",
                         marginRight: 175,
                         textAlign: "justify",
-                      }}
-                    >
+                      }}>
                       {this.props.group.description}
                     </Text>
                   ) : (
@@ -624,8 +610,7 @@ class ShowDetailsGroup extends Component {
                         marginRight: 175,
                         textAlign: "justify",
                         fontStyle: "italic",
-                      }}
-                    >
+                      }}>
                       No associated description
                     </Text>
                   )}
@@ -642,8 +627,7 @@ class ShowDetailsGroup extends Component {
                           onPress={() =>
                             this.setState({ showSendNotification: true })
                           }
-                          style={{ flex: 6, marginRight: 5 }}
-                        >
+                          style={{ flex: 6, marginRight: 5 }}>
                           <View style={GlobalStyles.buttonCancel}>
                             <Text style={GlobalStyles.textButton}>
                               Notification
@@ -652,8 +636,7 @@ class ShowDetailsGroup extends Component {
                         </Pressable>
                         <Pressable
                           onPress={() => this.showMessages()}
-                          style={{ flex: 6, marginLeft: 5 }}
-                        >
+                          style={{ flex: 6, marginLeft: 5 }}>
                           <View style={GlobalStyles.buttonConfirm}>
                             <Text style={GlobalStyles.textButton}>Message</Text>
                             {undefined !== this.props.group.messagesRead &&
@@ -674,8 +657,7 @@ class ShowDetailsGroup extends Component {
                             this.props.addMember();
                             this.setState({ search: "" });
                           }}
-                          style={{ flex: 6, marginRight: 5 }}
-                        >
+                          style={{ flex: 6, marginRight: 5 }}>
                           <View style={GlobalStyles.buttonCancel}>
                             <Text style={GlobalStyles.textButton}>Cancel</Text>
                           </View>
@@ -685,8 +667,7 @@ class ShowDetailsGroup extends Component {
                             this.props.confirmAddMember();
                             this.setState({ search: "" });
                           }}
-                          style={{ flex: 6, marginLeft: 5 }}
-                        >
+                          style={{ flex: 6, marginLeft: 5 }}>
                           <View style={GlobalStyles.buttonConfirm}>
                             <Text style={GlobalStyles.textButton}>
                               Confirm{" "}
@@ -714,8 +695,7 @@ class ShowDetailsGroup extends Component {
                           this.props.addMember();
                           this.setState({ search: "" });
                         }}
-                        style={{ flex: 6, marginRight: 5 }}
-                      >
+                        style={{ flex: 6, marginRight: 5 }}>
                         <View style={GlobalStyles.buttonCancel}>
                           <Text style={GlobalStyles.textButton}>Cancel</Text>
                         </View>
@@ -725,8 +705,7 @@ class ShowDetailsGroup extends Component {
                           this.props.confirmAddMember();
                           this.setState({ search: "" });
                         }}
-                        style={{ flex: 6, marginLeft: 5 }}
-                      >
+                        style={{ flex: 6, marginLeft: 5 }}>
                         <View style={GlobalStyles.buttonConfirm}>
                           <Text style={GlobalStyles.textButton}>
                             Confirm{" "}
@@ -761,8 +740,7 @@ class ShowDetailsGroup extends Component {
                     flexDirection: "row",
                     marginTop: 10,
                     alignSelf: "center",
-                  }}
-                >
+                  }}>
                   <Icon name="ios-people" size={40} color={PlaceholderColor} />
                   <View style={{ justifyContent: "center", marginLeft: "5%" }}>
                     <Text style={{ fontSize: 16, color: GreenFitrecColor }}>
@@ -784,8 +762,7 @@ class ShowDetailsGroup extends Component {
                               onPress={() => {
                                 this.props.viewProfile(item);
                               }}
-                              style={{ flexDirection: "row", width: "100%" }}
-                            >
+                              style={{ flexDirection: "row", width: "100%" }}>
                               <View style={{ margin: 10 }}>
                                 {null !== item.image ? (
                                   <FastImage
@@ -807,8 +784,7 @@ class ShowDetailsGroup extends Component {
                                 style={{
                                   justifyContent: "center",
                                   marginLeft: 10,
-                                }}
-                              >
+                                }}>
                                 <Text style={styles.textUserReference}>
                                   {this.props.userLoginKey === item.key
                                     ? "You"
@@ -874,8 +850,7 @@ class ShowDetailsGroup extends Component {
                                     style={{
                                       flexDirection: "row",
                                       width: "100%",
-                                    }}
-                                  >
+                                    }}>
                                     <View style={{ margin: 10 }}>
                                       {null !== item.image ? (
                                         <FastImage
@@ -903,8 +878,7 @@ class ShowDetailsGroup extends Component {
                                       style={{
                                         justifyContent: "center",
                                         marginLeft: 10,
-                                      }}
-                                    >
+                                      }}>
                                       <Text style={styles.textUserReference}>
                                         {item.name}
                                       </Text>
@@ -963,8 +937,7 @@ class ShowDetailsGroup extends Component {
                                   style={{
                                     flexDirection: "row",
                                     width: "100%",
-                                  }}
-                                >
+                                  }}>
                                   <View style={{ margin: 10 }}>
                                     {null !== item.image ? (
                                       <FastImage
@@ -990,8 +963,7 @@ class ShowDetailsGroup extends Component {
                                     style={{
                                       justifyContent: "center",
                                       marginLeft: 10,
-                                    }}
-                                  >
+                                    }}>
                                     <Text style={styles.textUserReference}>
                                       {item.name}
                                     </Text>
@@ -1015,8 +987,7 @@ class ShowDetailsGroup extends Component {
                             </View>
                           ) : this.props.group.users.includes(item.key) ? (
                             <View
-                              style={{ flexDirection: "row", width: "100%" }}
-                            >
+                              style={{ flexDirection: "row", width: "100%" }}>
                               <View style={{ margin: 10 }}>
                                 {null !== item.image ? (
                                   <FastImage
@@ -1038,8 +1009,7 @@ class ShowDetailsGroup extends Component {
                                 style={{
                                   justifyContent: "center",
                                   marginLeft: 10,
-                                }}
-                              >
+                                }}>
                                 <Text style={styles.textUserReference}>
                                   {item.name}
                                 </Text>
@@ -1053,8 +1023,7 @@ class ShowDetailsGroup extends Component {
                                       flexDirection: "row",
                                       alignItems: "center",
                                     },
-                                  ]}
-                                >
+                                  ]}>
                                   <Text style={{ color: SignUpColor }}>
                                     Member
                                   </Text>
@@ -1068,8 +1037,7 @@ class ShowDetailsGroup extends Component {
                             </View>
                           ) : (
                             <View
-                              style={{ flexDirection: "row", width: "100%" }}
-                            >
+                              style={{ flexDirection: "row", width: "100%" }}>
                               <View style={{ margin: 10 }}>
                                 {null !== item.image ? (
                                   <FastImage
@@ -1091,8 +1059,7 @@ class ShowDetailsGroup extends Component {
                                 style={{
                                   justifyContent: "center",
                                   marginLeft: 10,
-                                }}
-                              >
+                                }}>
                                 <Text style={styles.textUserReference}>
                                   {item.name}
                                 </Text>
@@ -1106,8 +1073,7 @@ class ShowDetailsGroup extends Component {
                                       flexDirection: "row",
                                       alignItems: "center",
                                     },
-                                  ]}
-                                >
+                                  ]}>
                                   <Text style={{ color: SignUpColor }}>
                                     Invited{" "}
                                   </Text>
@@ -1131,8 +1097,7 @@ class ShowDetailsGroup extends Component {
                 <View style={{ flexDirection: "row" }}>
                   <Pressable
                     onPress={() => this.setState({ changeCapitans: false })}
-                    style={{ flex: 6, marginRight: 5 }}
-                  >
+                    style={{ flex: 6, marginRight: 5 }}>
                     <View style={GlobalStyles.buttonCancel}>
                       <Text style={GlobalStyles.textButton}>Cancel</Text>
                     </View>
@@ -1141,8 +1106,7 @@ class ShowDetailsGroup extends Component {
                     onPress={() => {
                       this.confirmUpdateCapitans();
                     }}
-                    style={{ flex: 6, marginLeft: 5 }}
-                  >
+                    style={{ flex: 6, marginLeft: 5 }}>
                     <View style={GlobalStyles.buttonConfirm}>
                       <Text style={GlobalStyles.textButton}>Confirm</Text>
                     </View>
@@ -1174,21 +1138,18 @@ class ShowDetailsGroup extends Component {
                             marginLeft: "auto",
                             marginRight: "auto",
                           },
-                        ]}
-                      >
+                        ]}>
                         {this.state.capitansList.map((item) => (
                           <Pressable
                             key={item.key}
                             onPress={() => {
                               this.removeCapitan(item);
-                            }}
-                          >
+                            }}>
                             <View
                               style={[
                                 styles.margin,
                                 { alignItems: "center", textAlign: "center" },
-                              ]}
-                            >
+                              ]}>
                               <View>
                                 {item.image === null ||
                                 item.image === undefined ? (
@@ -1251,8 +1212,7 @@ class ShowDetailsGroup extends Component {
                       return this.state.searchCapitan === "" ? (
                         <Pressable
                           onPress={() => this.addCapitan(item)}
-                          style={{ flexDirection: "row", width: "100%" }}
-                        >
+                          style={{ flexDirection: "row", width: "100%" }}>
                           <View style={{ margin: 10 }}>
                             {null !== item.image ? (
                               <FastImage
@@ -1271,8 +1231,10 @@ class ShowDetailsGroup extends Component {
                             )}
                           </View>
                           <View
-                            style={{ justifyContent: "center", marginLeft: 10 }}
-                          >
+                            style={{
+                              justifyContent: "center",
+                              marginLeft: 10,
+                            }}>
                             <Text style={styles.textUserReference}>
                               {item.name}
                             </Text>
@@ -1290,8 +1252,7 @@ class ShowDetailsGroup extends Component {
                             )) && (
                           <Pressable
                             onPress={() => this.addCapitan(item)}
-                            style={{ flexDirection: "row", width: "100%" }}
-                          >
+                            style={{ flexDirection: "row", width: "100%" }}>
                             <View style={{ margin: 10 }}>
                               {null !== item.image ? (
                                 <FastImage
@@ -1313,8 +1274,7 @@ class ShowDetailsGroup extends Component {
                               style={{
                                 justifyContent: "center",
                                 marginLeft: 10,
-                              }}
-                            >
+                              }}>
                               <Text style={styles.textUserReference}>
                                 {item.name}
                               </Text>
@@ -1337,8 +1297,7 @@ class ShowDetailsGroup extends Component {
                         membersToRemove: [],
                       })
                     }
-                    style={{ flex: 6, marginRight: 5 }}
-                  >
+                    style={{ flex: 6, marginRight: 5 }}>
                     <View style={GlobalStyles.buttonCancel}>
                       <Text style={GlobalStyles.textButton}>Cancel</Text>
                     </View>
@@ -1347,8 +1306,7 @@ class ShowDetailsGroup extends Component {
                     onPress={() => {
                       this.confirmRemoveMembers();
                     }}
-                    style={{ flex: 6, marginLeft: 5 }}
-                  >
+                    style={{ flex: 6, marginLeft: 5 }}>
                     <View style={GlobalStyles.buttonConfirm}>
                       <Text style={GlobalStyles.textButton}>
                         Confirm{" "}
@@ -1367,8 +1325,7 @@ class ShowDetailsGroup extends Component {
                       return this.state.searchCapitan === "" ? (
                         <Pressable
                           onPress={() => this.selectMember(item)}
-                          style={{ flexDirection: "row", width: "100%" }}
-                        >
+                          style={{ flexDirection: "row", width: "100%" }}>
                           <View style={{ margin: 10 }}>
                             {null !== item.image ? (
                               <FastImage
@@ -1387,8 +1344,10 @@ class ShowDetailsGroup extends Component {
                             )}
                           </View>
                           <View
-                            style={{ justifyContent: "center", marginLeft: 10 }}
-                          >
+                            style={{
+                              justifyContent: "center",
+                              marginLeft: 10,
+                            }}>
                             <Text style={styles.textUserReference}>
                               {item.name}
                             </Text>
@@ -1440,8 +1399,7 @@ class ShowDetailsGroup extends Component {
                             )) && (
                           <Pressable
                             onPress={() => this.addCapitan(item)}
-                            style={{ flexDirection: "row", width: "100%" }}
-                          >
+                            style={{ flexDirection: "row", width: "100%" }}>
                             <View style={{ margin: 10 }}>
                               {null !== item.image ? (
                                 <FastImage
@@ -1463,8 +1421,7 @@ class ShowDetailsGroup extends Component {
                               style={{
                                 justifyContent: "center",
                                 marginLeft: 10,
-                              }}
-                            >
+                              }}>
                               <Text style={styles.textUserReference}>
                                 {item.name}
                               </Text>
@@ -1493,15 +1450,13 @@ class ShowDetailsGroup extends Component {
           </ScrollView>
           {this.props.group.users.includes(this.props.session.account.key) ? (
             <Pressable
-              onPress={() => this.setState({ showConfirmLeaveGroup: true })}
-            >
+              onPress={() => this.setState({ showConfirmLeaveGroup: true })}>
               <View
                 style={{
                   backgroundColor: SignUpColor,
                   padding: 10,
                   alignItems: "center",
-                }}
-              >
+                }}>
                 <Text style={GlobalStyles.textButton}>Leave the group</Text>
               </View>
             </Pressable>
@@ -1512,8 +1467,7 @@ class ShowDetailsGroup extends Component {
                   backgroundColor: GreenFitrecColor,
                   padding: 10,
                   alignItems: "center",
-                }}
-              >
+                }}>
                 <Text style={GlobalStyles.textButton}>Send request join</Text>
               </View>
             </Pressable>
@@ -1524,8 +1478,7 @@ class ShowDetailsGroup extends Component {
                   backgroundColor: GreenFitrecColor,
                   padding: 10,
                   alignItems: "center",
-                }}
-              >
+                }}>
                 <Text style={GlobalStyles.textButton}>Join the group</Text>
               </View>
             </Pressable>
@@ -1548,8 +1501,7 @@ class ShowDetailsGroup extends Component {
                       style={ToastQuestionGenericStyles.buttonCancel}
                       onPress={() =>
                         this.setState({ showSendNotification: false })
-                      }
-                    >
+                      }>
                       <Text style={ToastQuestionGenericStyles.buttonText}>
                         Cancel
                       </Text>
@@ -1558,8 +1510,7 @@ class ShowDetailsGroup extends Component {
                   <View style={{ width: "50%" }}>
                     <Pressable
                       style={ToastQuestionGenericStyles.buttonConfirm}
-                      onPress={() => this.sendNotification()}
-                    >
+                      onPress={() => this.sendNotification()}>
                       <Text style={ToastQuestionGenericStyles.buttonText}>
                         Send
                       </Text>
@@ -1581,8 +1532,7 @@ class ShowDetailsGroup extends Component {
                       style={ToastQuestionGenericStyles.buttonCancel}
                       onPress={() =>
                         this.setState({ showConfirmLeaveGroup: false })
-                      }
-                    >
+                      }>
                       <Text style={ToastQuestionGenericStyles.buttonText}>
                         Cancel
                       </Text>
@@ -1594,8 +1544,7 @@ class ShowDetailsGroup extends Component {
                       onPress={() => {
                         this.setState({ showConfirmLeaveGroup: false }),
                           this.props.leaveGroup();
-                      }}
-                    >
+                      }}>
                       <Text style={ToastQuestionGenericStyles.buttonText}>
                         Confirm
                       </Text>
@@ -1615,13 +1564,11 @@ class ShowDetailsGroup extends Component {
                       changeInformation: true,
                       showOptions: false,
                     })
-                  }
-                >
+                  }>
                   <View style={ToastQuestionGenericStyles.viewButtonOption}>
                     <Icon name="ios-create" size={22} color={WhiteColor} />
                     <Text
-                      style={ToastQuestionGenericStyles.viewButtonOptionText}
-                    >
+                      style={ToastQuestionGenericStyles.viewButtonOptionText}>
                       Edit information
                     </Text>
                   </View>
@@ -1635,12 +1582,10 @@ class ShowDetailsGroup extends Component {
                         showOptions: false,
                       });
                       this.updateCaptiansList();
-                    }}
-                  >
+                    }}>
                     <View style={ToastQuestionGenericStyles.viewButtonOption}>
                       <Text
-                        style={ToastQuestionGenericStyles.viewButtonOptionText}
-                      >
+                        style={ToastQuestionGenericStyles.viewButtonOptionText}>
                         Modify captains
                       </Text>
                     </View>
@@ -1653,12 +1598,10 @@ class ShowDetailsGroup extends Component {
                         showOptions: false,
                       });
                       this.updateCaptiansList();
-                    }}
-                  >
+                    }}>
                     <View style={ToastQuestionGenericStyles.viewButtonOption}>
                       <Text
-                        style={ToastQuestionGenericStyles.viewButtonOptionText}
-                      >
+                        style={ToastQuestionGenericStyles.viewButtonOptionText}>
                         Stop being captain
                       </Text>
                     </View>
@@ -1667,25 +1610,21 @@ class ShowDetailsGroup extends Component {
                 <Pressable onPress={() => this.removeMembersView()}>
                   <View style={ToastQuestionGenericStyles.viewButtonOption}>
                     <Text
-                      style={ToastQuestionGenericStyles.viewButtonOptionText}
-                    >
+                      style={ToastQuestionGenericStyles.viewButtonOptionText}>
                       Remove Member
                     </Text>
                   </View>
                 </Pressable>
                 <Pressable
-                  onPress={() => this.setState({ showOptions: false })}
-                >
+                  onPress={() => this.setState({ showOptions: false })}>
                   <View
                     style={[
                       ToastQuestionGenericStyles.viewButtonOption,
                       { marginBottom: 0 },
-                    ]}
-                  >
+                    ]}>
                     <Icon name="md-close" size={22} color={WhiteColor} />
                     <Text
-                      style={ToastQuestionGenericStyles.viewButtonOptionText}
-                    >
+                      style={ToastQuestionGenericStyles.viewButtonOptionText}>
                       Close
                     </Text>
                   </View>
@@ -1706,12 +1645,10 @@ class ShowDetailsGroup extends Component {
                       editInformationInput: true,
                       editInformationValue: this.props.group.name,
                     })
-                  }
-                >
+                  }>
                   <View style={ToastQuestionGenericStyles.viewButtonOption}>
                     <Text
-                      style={ToastQuestionGenericStyles.viewButtonOptionText}
-                    >
+                      style={ToastQuestionGenericStyles.viewButtonOptionText}>
                       Title
                     </Text>
                   </View>
@@ -1724,12 +1661,10 @@ class ShowDetailsGroup extends Component {
                       editInformationInput: true,
                       editInformationValue: this.props.group.description,
                     })
-                  }
-                >
+                  }>
                   <View style={ToastQuestionGenericStyles.viewButtonOption}>
                     <Text
-                      style={ToastQuestionGenericStyles.viewButtonOptionText}
-                    >
+                      style={ToastQuestionGenericStyles.viewButtonOptionText}>
                       Description
                     </Text>
                   </View>
@@ -1740,18 +1675,15 @@ class ShowDetailsGroup extends Component {
                       changeInformation: false,
                       showOptions: true,
                     })
-                  }
-                >
+                  }>
                   <View
                     style={[
                       ToastQuestionGenericStyles.viewButtonOption,
                       { marginBottom: 0 },
-                    ]}
-                  >
+                    ]}>
                     <Icon name="md-arrow-back" size={22} color={WhiteColor} />
                     <Text
-                      style={ToastQuestionGenericStyles.viewButtonOptionText}
-                    >
+                      style={ToastQuestionGenericStyles.viewButtonOptionText}>
                       Back
                     </Text>
                   </View>
@@ -1782,8 +1714,7 @@ class ShowDetailsGroup extends Component {
                           editInformationInput: false,
                           changeInformation: true,
                         })
-                      }
-                    >
+                      }>
                       <Text style={ToastQuestionGenericStyles.buttonText}>
                         Cancel
                       </Text>
@@ -1794,8 +1725,7 @@ class ShowDetailsGroup extends Component {
                       style={ToastQuestionGenericStyles.buttonConfirm}
                       onPress={() => {
                         this.confirmChangeInformation();
-                      }}
-                    >
+                      }}>
                       <Text style={ToastQuestionGenericStyles.buttonText}>
                         Confirm
                       </Text>
@@ -1815,8 +1745,9 @@ class ShowDetailsGroup extends Component {
                   <View style={{ width: "50%" }}>
                     <Pressable
                       style={ToastQuestionGenericStyles.buttonCancel}
-                      onPress={() => this.setState({ removeMeCapitans: false })}
-                    >
+                      onPress={() =>
+                        this.setState({ removeMeCapitans: false })
+                      }>
                       <Text style={ToastQuestionGenericStyles.buttonText}>
                         Cancel
                       </Text>
@@ -1825,8 +1756,7 @@ class ShowDetailsGroup extends Component {
                   <View style={{ width: "50%" }}>
                     <Pressable
                       style={ToastQuestionGenericStyles.buttonConfirm}
-                      onPress={() => this.confirmRemoveMeCapitans()}
-                    >
+                      onPress={() => this.confirmRemoveMeCapitans()}>
                       <Text style={ToastQuestionGenericStyles.buttonText}>
                         Confirm
                       </Text>

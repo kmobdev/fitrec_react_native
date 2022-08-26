@@ -60,8 +60,7 @@ const HomeStack = createStackNavigator(
                 onPress={() => {
                   navigation.navigate("Followers");
                 }}
-                activeOpacity={1}
-              >
+                activeOpacity={1}>
                 <Image
                   style={{ width: 28, height: 28, marginRight: 13 }}
                   source={oFollowImage}
@@ -130,8 +129,7 @@ const HomeStack = createStackNavigator(
               <Pressable
                 activeOpacity={1}
                 onPress={params.people}
-                style={[GlobalModal.buttonClose, Styles.headerRight]}
-              >
+                style={[GlobalModal.buttonClose, Styles.headerRight]}>
                 <Icon
                   name={
                     params.bShowPeople ? "chatbubbles" : "people-circle-outline"
@@ -183,8 +181,7 @@ const HomeStack = createStackNavigator(
               return (
                 <Pressable
                   onPress={() => navigation.navigate("NewGroup")}
-                  style={[GlobalModal.buttonClose, Styles.headerRight]}
-                >
+                  style={[GlobalModal.buttonClose, Styles.headerRight]}>
                   <Icon
                     name="add"
                     size={20}
@@ -198,8 +195,7 @@ const HomeStack = createStackNavigator(
               return (
                 <Pressable
                   onPress={params.openOptions}
-                  style={[GlobalModal.buttonClose, Styles.headerRight]}
-                >
+                  style={[GlobalModal.buttonClose, Styles.headerRight]}>
                   <Icon name="ios-options" size={30} color={SignUpColor} />
                 </Pressable>
               );
@@ -230,8 +226,7 @@ const HomeStack = createStackNavigator(
           headerRight: () => (
             <Pressable
               onPress={() => params.createGroup()}
-              style={[GlobalModal.buttonClose, Styles.headerRight]}
-            >
+              style={[GlobalModal.buttonClose, Styles.headerRight]}>
               <Icon
                 name="checkmark"
                 size={20}
@@ -265,8 +260,7 @@ const HomeStack = createStackNavigator(
               <Pressable
                 activeOpacity={1}
                 onPress={params.messages}
-                style={[GlobalModal.buttonClose, Styles.headerRight]}
-              >
+                style={[GlobalModal.buttonClose, Styles.headerRight]}>
                 <Text style={GlobalModal.titleClose}>Messages</Text>
                 {params.countMessages && params.countMessages > 0 ? (
                   <View
@@ -278,14 +272,12 @@ const HomeStack = createStackNavigator(
                         right: 5,
                         justifyContent: "center",
                       },
-                    ]}
-                  >
+                    ]}>
                     <View
                       style={[
                         GlobalMessages.viewBubble,
                         { width: 15, height: 15 },
-                      ]}
-                    >
+                      ]}>
                       <Text style={[GlobalMessages.text, { fontSize: 12 }]}>
                         {params.countMessages}
                       </Text>
@@ -375,8 +367,7 @@ const HomeStack = createStackNavigator(
                 onPress={() => {
                   navigation.navigate("Followers");
                 }}
-                activeOpacity={1}
-              >
+                activeOpacity={1}>
                 <Image
                   style={{ width: 28, height: 28, marginRight: 13 }}
                   source={oFollowImage}
@@ -482,8 +473,7 @@ const Profile = createStackNavigator({
         headerRight: () => (
           <Pressable
             onPress={params.redirectEdit}
-            style={[GlobalModal.buttonClose, Styles.headerRight]}
-          >
+            style={[GlobalModal.buttonClose, Styles.headerRight]}>
             <Icon
               name="create"
               size={20}
@@ -518,8 +508,7 @@ const Profile = createStackNavigator({
         headerRight: () => (
           <Pressable
             onPress={params.saveProfile}
-            style={[GlobalModal.buttonClose, Styles.headerRight]}
-          >
+            style={[GlobalModal.buttonClose, Styles.headerRight]}>
             <Icon
               name="checkmark"
               size={20}
@@ -609,8 +598,7 @@ const NotificationsStack = createStackNavigator({
         headerRight: () => (
           <Pressable
             onPress={params.deleteAll}
-            style={[GlobalModal.buttonClose, Styles.headerRight]}
-          >
+            style={[GlobalModal.buttonClose, Styles.headerRight]}>
             <Icon
               name="trash-outline"
               size={24}
@@ -751,8 +739,7 @@ const JourneyStack = createStackNavigator({
         headerRight: (
           <Pressable
             onPress={params.navigateBack}
-            style={[GlobalModal.buttonClose, Styles.headerRight]}
-          >
+            style={[GlobalModal.buttonClose, Styles.headerRight]}>
             <Text style={GlobalModal.titleClose}>Cancel</Text>
           </Pressable>
         ),
@@ -804,8 +791,7 @@ const TabNavigator = createBottomTabNavigator(
                   borderTopWidth: tintColor === SignUpColor ? 1 : 0,
                   borderTopColor: tintColor,
                 },
-              ]}
-            >
+              ]}>
               <Icon name={sIconName} size={28} color={tintColor} />
             </View>
           );

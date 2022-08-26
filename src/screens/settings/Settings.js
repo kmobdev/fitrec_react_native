@@ -21,7 +21,6 @@ import { actionDesactiveAccount } from "../../redux/actions/UserActions";
 import { APP_VERSION } from "../../Constants";
 
 const Settings = (props) => {
-
   const session = useSelector((state) => state.reducerSession);
 
   const dispatch = useDispatch();
@@ -53,7 +52,7 @@ const Settings = (props) => {
 
   useEffect(() => {
     setLoading(false);
-  }, [])
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -151,16 +150,10 @@ const Settings = (props) => {
       />
       {showConditions && (
         <View style={styles.viewFullAbsolute}>
-          <View
-            style={[styles.head, props.noMargin && { paddingTop: 10 }]}
-          >
+          <View style={[styles.head, props.noMargin && { paddingTop: 10 }]}>
             <Text style={styles.headTitle}>Terms & Conditions</Text>
-            <View
-              style={[styles.headClose, props.noMargin && { top: 5 }]}
-            >
-              <Pressable
-                onPress={() => setShowConditions(false)}
-              >
+            <View style={[styles.headClose, props.noMargin && { top: 5 }]}>
+              <Pressable onPress={() => setShowConditions(false)}>
                 <Text style={styles.headCloseText}>Close</Text>
               </Pressable>
             </View>
@@ -205,7 +198,7 @@ const Settings = (props) => {
       <LoadingSpinner visible={loading} />
     </View>
   );
-}
+};
 
 export default Settings;
 

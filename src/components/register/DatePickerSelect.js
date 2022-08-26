@@ -5,7 +5,6 @@ import Icon from "react-native-vector-icons/Ionicons";
 import ReactNativePickerModule from "react-native-picker-module";
 
 const DatePickerSelect = (props) => {
-
   const pickerAge = useRef();
 
   const calculateAge = () => {
@@ -34,19 +33,13 @@ const DatePickerSelect = (props) => {
         GlobalStyles.viewSection,
         styles.textInput,
         { alignItems: "flex-end" },
-      ]}
-    >
+      ]}>
       <Text style={styles.textLabel}>{props.title}</Text>
-      <View
-        style={[styles.comboSelect, props.error && styles.paddingExtra]}
-      >
+      <View style={[styles.comboSelect, props.error && styles.paddingExtra]}>
         <Pressable
           onPress={() => pickerAge.current.show()}
-          style={{ flexDirection: "row" }}
-        >
-          <Text>
-            {null !== props.value ? calculateAge() : "Select here"}
-          </Text>
+          style={{ flexDirection: "row" }}>
+          <Text>{null !== props.value ? calculateAge() : "Select here"}</Text>
           <Icon name="chevron-down" size={22} style={styles.iconSelect} />
         </Pressable>
       </View>
@@ -55,8 +48,7 @@ const DatePickerSelect = (props) => {
           name="ios-warning"
           size={16}
           color={SignUpColor}
-          style={styles.iconError}
-        ></Icon>
+          style={styles.iconError}></Icon>
       ) : null}
       <ReactNativePickerModule
         pickerRef={pickerAge}
@@ -85,7 +77,7 @@ const DatePickerSelect = (props) => {
                 /> */}
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   textLabel: {

@@ -56,7 +56,6 @@ import {
 } from "../../redux/actions/FollowerActions";
 
 const ProfileViewHome = (props) => {
-
   const player = useRef();
 
   const profile = useSelector((state) => state.reducerProfile);
@@ -85,8 +84,6 @@ const ProfileViewHome = (props) => {
   const [showBlock, setShowBlock] = useState(false);
   const [showReportOptions, setShowReportOptions] = useState(false);
   const [refresh, setRefresh] = useState(false);
-
-
 
   useEffect(() => {
     if (
@@ -122,6 +119,7 @@ const ProfileViewHome = (props) => {
       if (null !== conversationSelect) {
         setConversationSelect(profile.conversation);
       }
+      console.log("profile.conversation ==============>>>>> ", profile);
     }
   }, [profile]);
 
@@ -189,10 +187,7 @@ const ProfileViewHome = (props) => {
   // }, [profile,  chatProps, myPalsRequest, propsProfilePal, blockProps])
 
   useEffect(() => {
-    if (
-      chatProps.statusSend &&
-      props.chatProps !== chatProps
-    ) {
+    if (chatProps.statusSend && props.chatProps !== chatProps) {
       setUser({
         ...user,
         conversation: null,
@@ -200,7 +195,7 @@ const ProfileViewHome = (props) => {
       getConversation();
     }
     setLoading(false);
-  }, [chatProps])
+  }, [chatProps]);
 
   useEffect(() => {
     if (
@@ -210,10 +205,7 @@ const ProfileViewHome = (props) => {
       dispatch(actionResetStateRequestHome());
       showToast("Successfully remove pal");
     }
-    if (
-      null !== myPalsRequest.statusSendHome &&
-      myPalsRequest.statusSendHome
-    ) {
+    if (null !== myPalsRequest.statusSendHome && myPalsRequest.statusSendHome) {
       dispatch(actionResetStateRequestHome());
       showToast("Your request has been sent");
     } else if (
@@ -226,8 +218,7 @@ const ProfileViewHome = (props) => {
       }
     }
     setLoading(false);
-  }, [myPalsRequest])
-
+  }, [myPalsRequest]);
 
   useEffect(() => {
     if (
@@ -238,7 +229,7 @@ const ProfileViewHome = (props) => {
       dispatch(setEmptyMessage());
     }
     setLoading(false);
-  }, [propsProfilePal])
+  }, [propsProfilePal]);
 
   useEffect(() => {
     if (blockProps.status) {
@@ -248,10 +239,7 @@ const ProfileViewHome = (props) => {
       }, 500);
     }
     setLoading(false);
-  }, [blockProps])
-
-
-
+  }, [blockProps]);
 
   const getConversation = () => {
     let data = {
@@ -262,11 +250,13 @@ const ProfileViewHome = (props) => {
   };
 
   const showConversationHandler = () => {
+    console.log(
+      "showConversationHandler ======== showConversationHandler ======== showConversationHandler ===>>> ",
+      user.conversation
+    );
     setShowConversation(true);
-    setConversationSelect(user.conversation);
+    // setConversationSelect(user.conversation);
   };
-
-
 
   const showToast = (text) => {
     setToastText(text);
@@ -277,18 +267,10 @@ const ProfileViewHome = (props) => {
     }, 2000);
   };
 
-
   const unfollowPal = () => {
     setShowToastQuestion(false);
     setShowAddOptions(false);
-    dispatch(
-      actionUnfollowPal(
-        user.id,
-        user.key,
-        session.account.key,
-        true
-      )
-    );
+    dispatch(actionUnfollowPal(user.id, user.key, session.account.key, true));
   };
 
   const sendRequest = () => {
@@ -316,9 +298,8 @@ const ProfileViewHome = (props) => {
     }
     if (myPalsRequest.requestsSent.length > 0) {
       if (
-        myPalsRequest.requestsSent.filter(
-          (element) => nIdFitrec === element.id
-        ).length > 0
+        myPalsRequest.requestsSent.filter((element) => nIdFitrec === element.id)
+          .length > 0
       ) {
         return false;
       }
@@ -333,13 +314,12 @@ const ProfileViewHome = (props) => {
   };
 
   const getInvitationsGroup = () => {
-    user !== null &&
-      dispatch(actionGetGroupInvitationsPals(user.key));
+    user !== null && dispatch(actionGetGroupInvitationsPals(user.key));
   };
 
   const openGroups = () => {
     setShowGroups(true);
-    setShowAddOptions(false)
+    setShowAddOptions(false);
     getInvitationsGroup();
   };
 
@@ -359,11 +339,7 @@ const ProfileViewHome = (props) => {
   const blockUser = () => {
     setShowBlock(false);
     dispatch(
-      actionBlockUser(
-        user.id,
-        user.key,
-        user.conversation.conversation
-      )
+      actionBlockUser(user.id, user.key, user.conversation.conversation)
     );
   };
 
@@ -373,13 +349,7 @@ const ProfileViewHome = (props) => {
       sDescription: `${session.account.name} started to follow you`,
       sPushId: user.id_push,
     };
-    dispatch(
-      actionFollow(
-        user.id,
-        session.account.id,
-        oDataNotification
-      )
-    );
+    dispatch(actionFollow(user.id, session.account.id, oDataNotification));
     setShowAddOptions(false);
   };
 
@@ -387,7 +357,7 @@ const ProfileViewHome = (props) => {
     dispatch(
       actionUnFollow(
         user.id_follow,
-        user.id,
+        user.id
         // session.account.id
       )
     );
@@ -402,10 +372,8 @@ const ProfileViewHome = (props) => {
             style={[
               GlobalStyles.photoProfileViewSection,
               GlobalStyles.photoProfileViewSectionPhotos,
-            ]}
-          >
-            {null !== user &&
-              null !== user.background ? (
+            ]}>
+            {null !== user && null !== user.background ? (
               <>
                 <FastImage
                   style={GlobalStyles.photoProfileCoverPreviewPhoto}
@@ -429,8 +397,7 @@ const ProfileViewHome = (props) => {
               {null !== user && null !== user.image ? (
                 <Pressable
                   onPress={() => expandImage(user.image)}
-                  style={GlobalStyles.photoProfileProfilePreviewPhoto}
-                >
+                  style={GlobalStyles.photoProfileProfilePreviewPhoto}>
                   <FastImage
                     style={GlobalStyles.photoProfileProfilePreviewPhotoPicker}
                     source={{
@@ -461,10 +428,8 @@ const ProfileViewHome = (props) => {
                     // Line commented since it will be used later - Leandro Curbelo 01/22/2021
                     // ('AGE: ' + moment().diff(user.age, 'years') + ' | ')
                     "AGE: " + user.age + " | "}
-                  {user.height &&
-                    "HEIGHT: " + user.height}
-                  {user.display_weight &&
-                    " | WEIGHT: " + user.weight + " lbs"}
+                  {user.height && "HEIGHT: " + user.height}
+                  {user.display_weight && " | WEIGHT: " + user.weight + " lbs"}
                 </Text>
                 {session.account.key !== user.key && (
                   <View style={{ flexDirection: "row" }}>
@@ -477,12 +442,9 @@ const ProfileViewHome = (props) => {
                           alignItems: "center",
                           color: WhiteColor,
                           fontSize: 14,
-                        }}
-                      >
+                        }}>
                         Last Activity:{" "}
-                        {moment(user.last_connection)
-                          .local()
-                          .fromNow()}
+                        {moment(user.last_connection).local().fromNow()}
                       </Text>
                     </View>
                     <View
@@ -490,12 +452,9 @@ const ProfileViewHome = (props) => {
                         marginTop: 5,
                         flexDirection: "row",
                         alignContent: "center",
-                      }}
-                    >
+                      }}>
                       <View>
-                        <Pressable
-                          onPress={() => setShowAddOptions(true)}
-                        >
+                        <Pressable onPress={() => setShowAddOptions(true)}>
                           <Icon
                             name="add-circle"
                             size={34}
@@ -511,11 +470,7 @@ const ProfileViewHome = (props) => {
                           style={{ marginLeft: 15 }}
                         />
                       </Pressable>
-                      <Pressable
-                        onPress={() =>
-                          setShowReportOptions(true)
-                        }
-                      >
+                      <Pressable onPress={() => setShowReportOptions(true)}>
                         <Icon
                           name="ellipsis-vertical"
                           size={32}
@@ -538,8 +493,7 @@ const ProfileViewHome = (props) => {
                       fontWeight: "bold",
                       color: GreenFitrecColor,
                       marginRight: 5,
-                    }}
-                  >
+                    }}>
                     Fitness Facility:
                     <Text
                       style={{
@@ -547,8 +501,7 @@ const ProfileViewHome = (props) => {
                         flex: 1,
                         flexWrap: "wrap",
                         fontWeight: "normal",
-                      }}
-                    >
+                      }}>
                       {user.gym !== null
                         ? " " //+  user.gym.name
                         : " None"}
@@ -570,60 +523,48 @@ const ProfileViewHome = (props) => {
                   <Text style={FollowersStyles.label}>Following</Text>
                 </View>
               </View>
-              {null !== user.goals &&
-                "" !== user.goals && (
-                  <View style={{ flexDirection: "row", paddingTop: 5 }}>
+              {null !== user.goals && "" !== user.goals && (
+                <View style={{ flexDirection: "row", paddingTop: 5 }}>
+                  <Text
+                    style={{
+                      fontWeight: "bold",
+                      color: GreenFitrecColor,
+                      marginRight: 5,
+                      marginBottom: 10,
+                    }}>
+                    About Me/Goals:
                     <Text
                       style={{
-                        fontWeight: "bold",
                         color: GreenFitrecColor,
-                        marginRight: 5,
-                        marginBottom: 10,
-                      }}
-                    >
-                      About Me/Goals:
-                      <Text
-                        style={{
-                          color: GreenFitrecColor,
-                          flex: 1,
-                          flexWrap: "wrap",
-                          fontWeight: "normal",
-                        }}
-                      >
-                        {" " + validateCharacters(user.goals)}
-                      </Text>
+                        flex: 1,
+                        flexWrap: "wrap",
+                        fontWeight: "normal",
+                      }}>
+                      {" " + validateCharacters(user.goals)}
                     </Text>
-                  </View>
-                )}
+                  </Text>
+                </View>
+              )}
               {!showMoreActivities ? (
                 <View style={ProfileStyles.viewActivitiesSelected}>
-                  {user.activities && user.activities.slice(0, 3).map((element) => (
-                    <View
-                      style={GlobalShowActivity.viewActivity}
-                      key={element.id}
-                    >
-                      <Text style={GlobalShowActivity.textActivity}>
-                        {element.name}
-                      </Text>
-                    </View>
-                  ))}
+                  {user.activities &&
+                    user.activities.slice(0, 3).map((element) => (
+                      <View
+                        style={GlobalShowActivity.viewActivity}
+                        key={element.id}>
+                        <Text style={GlobalShowActivity.textActivity}>
+                          {element.name}
+                        </Text>
+                      </View>
+                    ))}
                   {user.activities && user.activities.length > 3 && (
                     <View
                       style={[
                         GlobalShowActivity.viewActivity,
                         { borderWidth: 0 },
-                      ]}
-                    >
-                      <Pressable
-                        onPress={() =>
-                          setShowMoreActivities(true)
-                        }
-                      >
-                        <Icon
-                          name="add-circle"
-                          size={22}
-                          color={SignUpColor}
-                        />
+                      ]}>
+                      <Pressable onPress={() => setShowMoreActivities(true)}>
+                        <Icon name="add-circle" size={22} color={SignUpColor} />
                       </Pressable>
                     </View>
                   )}
@@ -639,8 +580,7 @@ const ProfileViewHome = (props) => {
                     .map((element) => (
                       <View
                         style={GlobalShowActivity.viewActivity}
-                        key={element.id}
-                      >
+                        key={element.id}>
                         <Text style={GlobalShowActivity.textActivity}>
                           {element.name}
                         </Text>
@@ -651,13 +591,8 @@ const ProfileViewHome = (props) => {
                       style={[
                         GlobalShowActivity.viewActivity,
                         { borderWidth: 0 },
-                      ]}
-                    >
-                      <Pressable
-                        onPress={() =>
-                          setShowMoreActivities(false)
-                        }
-                      >
+                      ]}>
+                      <Pressable onPress={() => setShowMoreActivities(false)}>
                         <Icon
                           name="remove-circle"
                           size={22}
@@ -684,8 +619,7 @@ const ProfileViewHome = (props) => {
                       <View style={{ flex: 1 / 3 }}>
                         <Pressable
                           style={ProfileStyles.touchableJourney}
-                          onPress={() => showJourneyHandler(item)}
-                        >
+                          onPress={() => showJourneyHandler(item)}>
                           {item.image.indexOf("mp4") >= 0 ? (
                             <View style={ProfileStyles.journeyImage}>
                               {Platform.OS === "ios" ? (
@@ -696,9 +630,7 @@ const ProfileViewHome = (props) => {
                                   controls={false}
                                   disableFocus={false}
                                   key={
-                                    "video_" +
-                                    item.id.toString() +
-                                    item.id_user
+                                    "video_" + item.id.toString() + item.id_user
                                   }
                                   resizeMode={"cover"}
                                   source={{ uri: item.image }}
@@ -764,16 +696,13 @@ const ProfileViewHome = (props) => {
         visible={showAddOptions}
         options={
           <View style={{ padding: 10 }}>
-            {null !== user &&
-              undefined !== user &&
-              !user.isPal ? (
+            {null !== user && undefined !== user && !user.isPal ? (
               allowSendRequest(user.id) ? (
                 <Pressable onPress={() => sendRequest()}>
                   <View style={ToastQuestionGenericStyles.viewButtonOption}>
                     <Icon name="person-add" size={22} color={WhiteColor} />
                     <Text
-                      style={ToastQuestionGenericStyles.viewButtonOptionText}
-                    >
+                      style={ToastQuestionGenericStyles.viewButtonOptionText}>
                       Add Pals
                     </Text>
                   </View>
@@ -781,9 +710,7 @@ const ProfileViewHome = (props) => {
               ) : (
                 <View style={ToastQuestionGenericStyles.viewButtonOption}>
                   <Icon name="hourglass" size={22} color={WhiteColor} />
-                  <Text
-                    style={ToastQuestionGenericStyles.viewButtonOptionText}
-                  >
+                  <Text style={ToastQuestionGenericStyles.viewButtonOptionText}>
                     Request Sent
                   </Text>
                 </View>
@@ -796,9 +723,7 @@ const ProfileViewHome = (props) => {
                     size={22}
                     color={WhiteColor}
                   />
-                  <Text
-                    style={ToastQuestionGenericStyles.viewButtonOptionText}
-                  >
+                  <Text style={ToastQuestionGenericStyles.viewButtonOptionText}>
                     Remove pal
                   </Text>
                 </View>
@@ -816,9 +741,7 @@ const ProfileViewHome = (props) => {
               <Pressable onPress={() => unfollow()}>
                 <View style={ToastQuestionGenericStyles.viewButtonOption}>
                   <Icon name="eye-off-outline" size={22} color={WhiteColor} />
-                  <Text
-                    style={ToastQuestionGenericStyles.viewButtonOptionText}
-                  >
+                  <Text style={ToastQuestionGenericStyles.viewButtonOptionText}>
                     Unfollow
                   </Text>
                 </View>
@@ -827,23 +750,18 @@ const ProfileViewHome = (props) => {
               <Pressable onPress={() => follow()}>
                 <View style={ToastQuestionGenericStyles.viewButtonOption}>
                   <Icon name="eye-outline" size={22} color={WhiteColor} />
-                  <Text
-                    style={ToastQuestionGenericStyles.viewButtonOptionText}
-                  >
+                  <Text style={ToastQuestionGenericStyles.viewButtonOptionText}>
                     Follow
                   </Text>
                 </View>
               </Pressable>
             )}
-            <Pressable
-              onPress={() => setShowAddOptions(false)}
-            >
+            <Pressable onPress={() => setShowAddOptions(false)}>
               <View
                 style={[
                   ToastQuestionGenericStyles.viewButtonOption,
                   { marginBottom: 0 },
-                ]}
-              >
+                ]}>
                 <Icon name="close" size={22} color={WhiteColor} />
                 <Text style={ToastQuestionGenericStyles.viewButtonOptionText}>
                   Close
@@ -862,9 +780,7 @@ const ProfileViewHome = (props) => {
               onPress={() => {
                 setShowReportOptions(false);
                 setShowReport(true);
-
-              }}
-            >
+              }}>
               <View style={ToastQuestionGenericStyles.viewButtonOption}>
                 <Icon
                   name="close-circle-outline"
@@ -880,8 +796,7 @@ const ProfileViewHome = (props) => {
               onPress={() => {
                 setShowReportOptions(false);
                 setShowBlock(true);
-              }}
-            >
+              }}>
               <View style={ToastQuestionGenericStyles.viewButtonOption}>
                 <Icon
                   name="remove-circle-outline"
@@ -893,15 +808,12 @@ const ProfileViewHome = (props) => {
                 </Text>
               </View>
             </Pressable>
-            <Pressable
-              onPress={() => setShowReportOptions(false)}
-            >
+            <Pressable onPress={() => setShowReportOptions(false)}>
               <View
                 style={[
                   ToastQuestionGenericStyles.viewButtonOption,
                   { marginBottom: 0 },
-                ]}
-              >
+                ]}>
                 <Icon name="close" size={22} color={WhiteColor} />
                 <Text style={ToastQuestionGenericStyles.viewButtonOptionText}>
                   Close
@@ -950,8 +862,7 @@ const ProfileViewHome = (props) => {
               <View style={{ width: "50%" }}>
                 <Pressable
                   style={ToastQuestionGenericStyles.buttonCancel}
-                  onPress={() => setShowBlock(false)}
-                >
+                  onPress={() => setShowBlock(false)}>
                   <Text style={ToastQuestionGenericStyles.buttonText}>
                     Cancel
                   </Text>
@@ -960,8 +871,7 @@ const ProfileViewHome = (props) => {
               <View style={{ width: "50%" }}>
                 <Pressable
                   style={ToastQuestionGenericStyles.buttonConfirm}
-                  onPress={() => blockUser()}
-                >
+                  onPress={() => blockUser()}>
                   <Text style={ToastQuestionGenericStyles.buttonText}>
                     Confirm
                   </Text>
@@ -973,6 +883,6 @@ const ProfileViewHome = (props) => {
       )}
     </View>
   );
-}
+};
 
 export default ProfileViewHome;

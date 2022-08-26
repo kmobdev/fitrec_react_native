@@ -5,7 +5,8 @@ import {
   StyleSheet,
   TextInput,
   ScrollView,
-  Pressable, SafeAreaView,
+  Pressable,
+  SafeAreaView,
 } from "react-native";
 import { GlobalStyles, PlaceholderColor, SignUpColor } from "../../Styles";
 import Icon from "react-native-vector-icons/Ionicons";
@@ -208,8 +209,7 @@ const RegisterFinalStep = ({ navigation }) => {
               styles.checkInput,
               { alignItems: "flex-end" },
               errors.showHeightError && GlobalStyles.errorBorder,
-            ]}
-          >
+            ]}>
             <Text style={styles.textLabel}>Height</Text>
             <View style={styles.comboSelect}>
               <SelectDropdown
@@ -237,13 +237,11 @@ const RegisterFinalStep = ({ navigation }) => {
             style={[
               errors.showWeightError && GlobalStyles.errorBorder,
               styles.row,
-            ]}
-          >
+            ]}>
             <Pressable
               style={styles.colLabel}
               onPress={() => weightRef.current.focus()}
-              activeOpacity={1}
-            >
+              activeOpacity={1}>
               <Text style={styles.textLabelColumn}>Weight</Text>
             </Pressable>
             <View style={styles.colInput}>
@@ -300,14 +298,12 @@ const RegisterFinalStep = ({ navigation }) => {
               styles.checkInput,
               { alignItems: "flex-end", borderBottomWidth: 0 },
               errors.showActivitiesError && GlobalStyles.errorBorder,
-            ]}
-          >
+            ]}>
             <Text style={styles.textLabel}>Activities</Text>
             <View style={styles.comboSelect}>
               <Pressable
                 style={{ flexDirection: "row", padding: 4 }}
-                onPress={() => setShowSelectActivities(true)}
-              >
+                onPress={() => setShowSelectActivities(true)}>
                 <Icon
                   name="md-create"
                   size={18}
@@ -332,8 +328,7 @@ const RegisterFinalStep = ({ navigation }) => {
               styles.viewSection,
               styles.displayComboBox,
               { paddingTop: 5 },
-            ]}
-          >
+            ]}>
             <Text style={[styles.textLabel, { width: "40%" }]}>
               Do you have a personal trainer?
             </Text>
@@ -397,7 +392,7 @@ const RegisterFinalStep = ({ navigation }) => {
 const styles = StyleSheet.create({
   header: {
     height: "7%",
-    width: '100%',
+    width: "100%",
     backgroundColor: "#ffff",
     flexDirection: "row",
     alignItems: "center",

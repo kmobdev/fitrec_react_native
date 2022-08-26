@@ -54,7 +54,6 @@ const screenWidth = Dimensions.get("window").width;
 const screenHeight = Dimensions.get("window").height;
 
 const ShowJourney = (props) => {
-
   const session = useSelector((state) => state.reducerSession);
   const journeyProps = useSelector((state) => state.reducerShowJourney);
   const myPals = useSelector((state) => state.reducerMyPals);
@@ -66,7 +65,8 @@ const ShowJourney = (props) => {
   const [refreshing, setRefreshing] = useState(false);
   const [showLikes, setShowLikes] = useState(false);
   const [statusGetLikesResponse, setStatusGetLikesResponse] = useState(false);
-  const [showQuestionDeleteJourney, setShowQuestionDeleteJourney] = useState(false);
+  const [showQuestionDeleteJourney, setShowQuestionDeleteJourney] =
+    useState(false);
   const [showToastEdit, setShowToastEdit] = useState(false);
   const [newDescription, setNewDescription] = useState("");
   const [changePhoto, setChangePhoto] = useState(false);
@@ -110,10 +110,10 @@ const ShowJourney = (props) => {
     let oDataNotification =
       session.account.id !== journeyProps.journey.user.id
         ? {
-          sHeader: session.account.username,
-          sDescription: `${session.account.name} likes your post`,
-          sPushId: journeyProps.journey.user.id_push,
-        }
+            sHeader: session.account.username,
+            sDescription: `${session.account.name} likes your post`,
+            sPushId: journeyProps.journey.user.id_push,
+          }
         : null;
     dispatch(actionAddUnLike(nIdJourney, bAddLike, oDataNotification));
   };
@@ -132,7 +132,7 @@ const ShowJourney = (props) => {
       left: left - 22,
       justifyContent: "center",
     };
-  }
+  };
 
   const deleteJourney = () => {
     setShowQuestionDeleteJourney(false);
@@ -240,7 +240,11 @@ const ShowJourney = (props) => {
         (element) => element.id_user === userTag.id
       ).length > 0
     ) {
-      dispatch(actionMessage("The tag already exists, you must remove the current tag to add a new tag"));
+      dispatch(
+        actionMessage(
+          "The tag already exists, you must remove the current tag to add a new tag"
+        )
+      );
     } else {
       setShowFriends(false);
       var nJourneyId = journeyProps.journey.id,
@@ -294,8 +298,7 @@ const ShowJourney = (props) => {
             activeOpacity={1}
             onPress={() => {
               setMuted(!muted);
-            }}
-          >
+            }}>
             <Video
               paused={bPaused == undefined ? true : bPaused}
               muted={muted}
@@ -337,8 +340,7 @@ const ShowJourney = (props) => {
                         setShowQuestionRemoveTag(true);
                         setUserTag(tag);
                       }}
-                      style={styles.tagUserView}
-                    >
+                      style={styles.tagUserView}>
                       <Text style={styles.tagListText}> {tag.name} </Text>
                       <View style={styles.removeTagUser}>
                         <Image
@@ -359,16 +361,14 @@ const ShowJourney = (props) => {
                 oItem.showTag = !oItem.showTag;
                 setRefresh(!refresh);
               }}
-              activeOpacity={1}
-            >
+              activeOpacity={1}>
               {getImage(oItem)}
             </Pressable>
             {oItem.tags.map((oTag) => (
               <Pressable
                 onPress={() => redirectionViewProfile(oTag.id_user)}
                 key={oTag.id.toString()}
-                style={dynamicStyle(oTag)}
-              >
+                style={dynamicStyle(oTag)}>
                 <View style={styles.tagTriangle}></View>
                 <View style={styles.tagUserView}>
                   <Text style={styles.tagListText}>{oTag.name}</Text>
@@ -382,8 +382,7 @@ const ShowJourney = (props) => {
               oItem.showTag = !oItem.showTag;
               setRefresh(!refresh);
             }}
-            activeOpacity={1}
-          >
+            activeOpacity={1}>
             {getImage(oItem)}
           </Pressable>
         )}
@@ -420,7 +419,10 @@ const ShowJourney = (props) => {
       {journeyProps.journey !== null && (
         <View style={styles.viewPost}>
           <ShowHead
-            date={moment(journeyProps.journey.created_at, "YYYY-MM-DD H:m:s").fromNow()}
+            date={moment(
+              journeyProps.journey.created_at,
+              "YYYY-MM-DD H:m:s"
+            ).fromNow()}
             level={journeyProps.journey.user.level}
             username={journeyProps.journey.user.username}
             image={journeyProps.journey.user.image}
@@ -437,9 +439,7 @@ const ShowJourney = (props) => {
                 crousel = oRef;
               }}
               data={journeyProps.journey.images}
-              renderItem={(oItem) =>
-                renderItem(oItem.item, oItem.index, false)
-              }
+              renderItem={(oItem) => renderItem(oItem.item, oItem.index, false)}
               sliderWidth={screenWidth}
               itemWidth={screenWidth}
               lockScrollWhileSnapping={true}
@@ -465,9 +465,7 @@ const ShowJourney = (props) => {
           </View>
           {isChangeTags && (
             <View style={styles.footerPhoto}>
-              <Text style={styles.footerContent}>
-                TAP PHOTO to tag people
-              </Text>
+              <Text style={styles.footerContent}>TAP PHOTO to tag people</Text>
             </View>
           )}
           <ShowFooter
@@ -495,13 +493,11 @@ const ShowJourney = (props) => {
                   onPress={() => {
                     setShowReport(true);
                     setShowToastQuestion(false);
-                  }}
-                >
+                  }}>
                   <View style={[ToastQuestionGenericStyles.viewButtonOption]}>
                     <Icon name="close-circle" size={22} color={WhiteColor} />
                     <Text
-                      style={ToastQuestionGenericStyles.viewButtonOptionText}
-                    >
+                      style={ToastQuestionGenericStyles.viewButtonOptionText}>
                       Report Post
                     </Text>
                   </View>
@@ -513,17 +509,11 @@ const ShowJourney = (props) => {
                   onPress={() => {
                     setShowToastEdit(true);
                     setShowToastQuestion(false);
-                  }}
-                >
+                  }}>
                   <View style={[ToastQuestionGenericStyles.viewButtonOption]}>
-                    <Icon
-                      name="create-outline"
-                      size={22}
-                      color={WhiteColor}
-                    />
+                    <Icon name="create-outline" size={22} color={WhiteColor} />
                     <Text
-                      style={ToastQuestionGenericStyles.viewButtonOptionText}
-                    >
+                      style={ToastQuestionGenericStyles.viewButtonOptionText}>
                       Edit
                     </Text>
                   </View>
@@ -536,13 +526,11 @@ const ShowJourney = (props) => {
                   onPress={() => {
                     setShowToastQuestion(false);
                     setIsChangeTags(true);
-                  }}
-                >
+                  }}>
                   <View style={[ToastQuestionGenericStyles.viewButtonOption]}>
                     <Icon name="pricetag" size={22} color={WhiteColor} />
                     <Text
-                      style={ToastQuestionGenericStyles.viewButtonOptionText}
-                    >
+                      style={ToastQuestionGenericStyles.viewButtonOptionText}>
                       Tags
                     </Text>
                   </View>
@@ -554,27 +542,22 @@ const ShowJourney = (props) => {
                   onPress={() => {
                     setShowToastQuestion(false);
                     setShowQuestionDeleteJourney(true);
-                  }}
-                >
+                  }}>
                   <View style={[ToastQuestionGenericStyles.viewButtonOption]}>
                     <Icon name="trash-outline" size={22} color={WhiteColor} />
                     <Text
-                      style={ToastQuestionGenericStyles.viewButtonOptionText}
-                    >
+                      style={ToastQuestionGenericStyles.viewButtonOptionText}>
                       Delete
                     </Text>
                   </View>
                 </Pressable>
               )}
-            <Pressable
-              onPress={() => setShowToastQuestion(false)}
-            >
+            <Pressable onPress={() => setShowToastQuestion(false)}>
               <View
                 style={[
                   ToastQuestionGenericStyles.viewButtonOption,
                   { marginBottom: 0 },
-                ]}
-              >
+                ]}>
                 <Icon name="md-close" size={22} color={WhiteColor} />
                 <Text style={ToastQuestionGenericStyles.viewButtonOptionText}>
                   Close
@@ -593,8 +576,7 @@ const ShowJourney = (props) => {
                 setChangeDescription(true);
                 setShowToastEdit(false);
                 setNewDescription(journeyProps.journey.description);
-              }}
-            >
+              }}>
               <View style={[ToastQuestionGenericStyles.viewButtonOption]}>
                 <Icon name="create-outline" size={22} color={WhiteColor} />
                 <Text style={ToastQuestionGenericStyles.viewButtonOptionText}>
@@ -614,14 +596,12 @@ const ShowJourney = (props) => {
               onPress={() => {
                 setShowToastQuestion(false);
                 setShowToastEdit(false);
-              }}
-            >
+              }}>
               <View
                 style={[
                   ToastQuestionGenericStyles.viewButtonOption,
                   { marginBottom: 0 },
-                ]}
-              >
+                ]}>
                 <Icon name="arrow-back" size={22} color={WhiteColor} />
                 <Text style={ToastQuestionGenericStyles.viewButtonOptionText}>
                   Back
@@ -648,8 +628,7 @@ const ShowJourney = (props) => {
                   onPress={() => {
                     setShowToastEdit(true);
                     setChangeDescription(false);
-                  }}
-                >
+                  }}>
                   <Text style={ToastQuestionGenericStyles.buttonText}>
                     Cancel
                   </Text>
@@ -658,8 +637,7 @@ const ShowJourney = (props) => {
               <View style={{ width: "50%" }}>
                 <Pressable
                   style={ToastQuestionGenericStyles.buttonConfirm}
-                  onPress={() => changeDescriptionHandler()}
-                >
+                  onPress={() => changeDescriptionHandler()}>
                   <Text style={ToastQuestionGenericStyles.buttonText}>
                     Confirm
                   </Text>
@@ -711,16 +689,14 @@ const ShowJourney = (props) => {
                 </View>
               </View>
               <View
-                style={[ToastQuestionStyles.viewButtons, { width: "100%" }]}
-              >
+                style={[ToastQuestionStyles.viewButtons, { width: "100%" }]}>
                 <View style={{ width: "50%" }}>
                   <Pressable
                     style={ToastQuestionGenericStyles.buttonCancel}
                     onPress={() => {
                       setShowQuestionChangeImage(false);
                       setNewImage(null);
-                    }}
-                  >
+                    }}>
                     <Text style={ToastQuestionGenericStyles.buttonText}>
                       Cancel
                     </Text>
@@ -729,8 +705,7 @@ const ShowJourney = (props) => {
                 <View style={{ width: "50%" }}>
                   <Pressable
                     style={ToastQuestionGenericStyles.buttonConfirm}
-                    onPress={() => changePhotoHandler()}
-                  >
+                    onPress={() => changePhotoHandler()}>
                     <Text style={ToastQuestionGenericStyles.buttonText}>
                       Confirm
                     </Text>
@@ -758,8 +733,7 @@ const ShowJourney = (props) => {
               onPress={() => {
                 setShowTagsList(false);
                 setTags(null);
-              }}
-            >
+              }}>
               <Icon name="close" color={SignUpColor} size={22} />
               <Text style={[GlobalModal.titleClose, { marginLeft: 2 }]}>
                 Close
@@ -781,14 +755,11 @@ const ShowJourney = (props) => {
         options={
           <View style={ToastQuestionStyles.viewButtons}>
             <Pressable
-              onPress={() =>
-                setShowQuestionDeleteJourney(false)
-              }
+              onPress={() => setShowQuestionDeleteJourney(false)}
               style={[
                 ToastQuestionStyles.button,
                 { backgroundColor: GreenFitrecColor, marginRight: 10 },
-              ]}
-            >
+              ]}>
               <Text style={ToastQuestionStyles.textButton}>Cancel</Text>
             </Pressable>
             <Pressable
@@ -796,8 +767,7 @@ const ShowJourney = (props) => {
               style={[
                 ToastQuestionStyles.button,
                 { backgroundColor: SignUpColor },
-              ]}
-            >
+              ]}>
               <Text style={ToastQuestionStyles.textButton}>Ok</Text>
             </Pressable>
           </View>
@@ -823,8 +793,7 @@ const ShowJourney = (props) => {
               width: "100%",
               backgroundColor: "rgba(255,255,255, 0.9)",
             },
-          ]}
-        >
+          ]}>
           <SearchUsername
             ph="Search for people or username"
             value={search}
@@ -837,7 +806,8 @@ const ShowJourney = (props) => {
               setRefresh(!refresh);
             }}
             close={() => setShowFriends(false)}
-          />``
+          />
+          ``
           {myPals.myFriends.length > 0 && (
             <FlatList
               data={myPals.myFriends.filter(
@@ -853,8 +823,7 @@ const ShowJourney = (props) => {
                   style={{
                     borderBottomWidth: 1,
                     borderBottomColor: PlaceholderColor,
-                  }}
-                >
+                  }}>
                   <Pressable
                     onPress={() => {
                       setUserTag(item);
@@ -865,8 +834,7 @@ const ShowJourney = (props) => {
                       flexDirection: "row",
                       width: "100%",
                       padding: 10,
-                    }}
-                  >
+                    }}>
                     {null === item.image ? (
                       <Image
                         style={{ height: 80, width: 80 }}
@@ -882,12 +850,8 @@ const ShowJourney = (props) => {
                         resizeMode={FastImage.resizeMode.contain}
                       />
                     )}
-                    <View
-                      style={{ justifyContent: "center", marginLeft: 10 }}
-                    >
-                      <Text style={styles.textUserReference}>
-                        {item.name}
-                      </Text>
+                    <View style={{ justifyContent: "center", marginLeft: 10 }}>
+                      <Text style={styles.textUserReference}>{item.name}</Text>
                       <Text style={{ fontSize: 14 }}>{item.fitnesLevel}</Text>
                     </View>
                   </Pressable>
@@ -908,8 +872,7 @@ const ShowJourney = (props) => {
               style={[
                 ToastQuestionStyles.button,
                 { backgroundColor: GreenFitrecColor, marginRight: 10 },
-              ]}
-            >
+              ]}>
               <Text style={ToastQuestionStyles.textButton}>Cancel</Text>
             </Pressable>
             <Pressable
@@ -917,8 +880,7 @@ const ShowJourney = (props) => {
               style={[
                 ToastQuestionStyles.button,
                 { backgroundColor: SignUpColor },
-              ]}
-            >
+              ]}>
               <Text style={ToastQuestionStyles.textButton}>Ok</Text>
             </Pressable>
           </View>
@@ -935,8 +897,7 @@ const ShowJourney = (props) => {
               style={[
                 ToastQuestionStyles.button,
                 { backgroundColor: GreenFitrecColor, marginRight: 10 },
-              ]}
-            >
+              ]}>
               <Text style={ToastQuestionStyles.textButton}>Cancel</Text>
             </Pressable>
             <Pressable
@@ -944,8 +905,7 @@ const ShowJourney = (props) => {
               style={[
                 ToastQuestionStyles.button,
                 { backgroundColor: SignUpColor },
-              ]}
-            >
+              ]}>
               <Text style={ToastQuestionStyles.textButton}>Ok</Text>
             </Pressable>
           </View>
@@ -953,7 +913,7 @@ const ShowJourney = (props) => {
       />
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   viewPost: {
@@ -1031,7 +991,5 @@ const styles = StyleSheet.create({
     opacity: 1,
   },
 });
-
-
 
 export default ShowJourney;

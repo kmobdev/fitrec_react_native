@@ -1163,6 +1163,7 @@ export const actionGetGiphy = (sSearch) => {
  * @author Leandro Curbelo
  */
 export const actionSetConversation = (oConversation) => {
+  console.log("actionSetConversation ===>>>> 2 ===>>> ", oConversation);
   return (dispatch) => {
     dispatch(actionDispatch(Actions.SET_CONVERSATION, oConversation));
   };

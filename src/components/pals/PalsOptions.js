@@ -4,10 +4,8 @@ import Icon from "react-native-vector-icons/Ionicons";
 import { SignUpColor, WhiteColor } from "../../Styles";
 
 const PalsOptions = (props) => {
-
   const [showNewMessage, setShowNewMessage] = useState(false);
   const [showGroupMessage, setShowGroupMessage] = useState(false);
-
 
   useEffect(() => {
     if (props.visible) {
@@ -16,25 +14,27 @@ const PalsOptions = (props) => {
       }, 50);
       setTimeout(() => {
         setShowGroupMessage(true);
-      }, 115);
+      }, 120);
     } else {
       setTimeout(() => {
         setShowGroupMessage(false);
-      }, 30);
+      }, 50);
       setTimeout(() => {
         setShowNewMessage(false);
-      }, 50);
+      }, 120);
     }
-  }, []);
+  }, [props]);
 
   return (
     <View style={styles.viewContent}>
       {showNewMessage && (
-        <View style={[styles.viewBubble, styles.viewBubbleSmall]}>
-          <Pressable
-            style={styles.touchable}
-            onPress={() => props.newMessage()}
-          >
+        <Pressable onPress={props.newMessage}>
+          <View
+            style={[
+              styles.viewBubble,
+              styles.viewBubbleSmall,
+              styles.touchable,
+            ]}>
             {showNewMessage && (
               <View style={styles.viewBubbleSmallDescription}>
                 <View style={styles.bubbleSmallDescription}>
@@ -42,16 +42,18 @@ const PalsOptions = (props) => {
                 </View>
               </View>
             )}
-            <Icon name="create" size={34} color={WhiteColor} />
-          </Pressable>
-        </View>
+            <Icon name="create" size={26} color={WhiteColor} />
+          </View>
+        </Pressable>
       )}
       {showGroupMessage && (
-        <View style={[styles.viewBubble, styles.viewBubbleSmall]}>
-          <Pressable
-            style={styles.touchable}
-            onPress={() => props.groupMessage()}
-          >
+        <Pressable onPress={props.groupMessage}>
+          <View
+            style={[
+              styles.viewBubble,
+              styles.viewBubbleSmall,
+              styles.touchable,
+            ]}>
             {showGroupMessage && (
               <View style={styles.viewBubbleSmallDescription}>
                 <View style={styles.bubbleSmallDescription}>
@@ -59,21 +61,19 @@ const PalsOptions = (props) => {
                 </View>
               </View>
             )}
-            <Icon name="people" size={34} color={WhiteColor} />
-          </Pressable>
-        </View>
-      )}
-      <View style={[styles.viewBubble, styles.viewBubbleBig]}>
-        <Pressable
-          style={[styles.touchable, { alignSelf: "center" }]}
-          onPress={() => props.openOptions()}
-        >
-          <Icon name="add" size={32} color={WhiteColor} />
+            <Icon name="people" size={26} color={WhiteColor} />
+          </View>
         </Pressable>
-      </View>
+      )}
+      <Pressable onPress={props.openOptions}>
+        <View
+          style={[styles.viewBubble, styles.viewBubbleBig, styles.touchable]}>
+          <Icon name="add" size={32} color={WhiteColor} />
+        </View>
+      </Pressable>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   viewContent: {
@@ -99,10 +99,8 @@ const styles = StyleSheet.create({
     width: 65,
   },
   touchable: {
-    height: "100%",
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 3,
   },
   text: {
     color: WhiteColor,
@@ -121,4 +119,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default PalsOptions; 
+export default PalsOptions;

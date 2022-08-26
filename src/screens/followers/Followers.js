@@ -28,13 +28,14 @@ import { actionGetProfile } from "../../redux/actions/ProfileActions";
 import { FollowerCard, FollowerTabs, Input } from "../../components";
 
 const Followers = (props) => {
-
   const oFollowers = useSelector((state) => state.reducerFollower);
   const session = useSelector((state) => state.reducerSession);
 
   const dispatch = useDispatch();
 
-  const [activeTab, setActiveTab] = useState(props.navigation.getParam("tab", true));
+  const [activeTab, setActiveTab] = useState(
+    props.navigation.getParam("tab", true)
+  );
   const [refresh, setRefresh] = useState(false);
   const [question, setQuestion] = useState(false);
   const [questionUnfollow, setQuestionUnfollow] = useState(false);
@@ -47,7 +48,7 @@ const Followers = (props) => {
     dispatch(actionGetFollowers());
     dispatch(actionGetFollowing());
     props.navigation.setParams({ navigateBack: navigateBack });
-  }, [])
+  }, []);
 
   const navigateBack = () => {
     dispatch(actionCleanFollowers());
@@ -95,22 +96,14 @@ const Followers = (props) => {
     if (nType === 1)
       return oFollowers.following.filter(
         (element) =>
-          element.name
-            .toUpperCase()
-            .includes(search.toUpperCase()) ||
-          element.username
-            .toUpperCase()
-            .includes(search.toUpperCase())
+          element.name.toUpperCase().includes(search.toUpperCase()) ||
+          element.username.toUpperCase().includes(search.toUpperCase())
       );
     else
       return oFollowers.followers.filter(
         (element) =>
-          element.name
-            .toUpperCase()
-            .includes(search.toUpperCase()) ||
-          element.username
-            .toUpperCase()
-            .includes(search.toUpperCase())
+          element.name.toUpperCase().includes(search.toUpperCase()) ||
+          element.username.toUpperCase().includes(search.toUpperCase())
       );
   };
 
@@ -141,8 +134,7 @@ const Followers = (props) => {
   const renderFollowing = () => {
     return (
       <>
-        {oFollowers.following.length > 0 &&
-          getData(1).length > 0 ? (
+        {oFollowers.following.length > 0 && getData(1).length > 0 ? (
           <FlatList
             data={getData(1)}
             keyExtractor={(item, index) => index.toString()}
@@ -171,8 +163,7 @@ const Followers = (props) => {
   const renderFollowers = () => {
     return (
       <>
-        {oFollowers.followers.length > 0 &&
-          getData(2).length > 0 ? (
+        {oFollowers.followers.length > 0 && getData(2).length > 0 ? (
           <FlatList
             data={getData(2)}
             keyExtractor={(item, index) => index.toString()}
@@ -202,15 +193,12 @@ const Followers = (props) => {
         <ToastQuestionGeneric
           visible={questionUnfollow}
           titleBig="Unfollow User"
-          title={
-            "Are you sure you want to unfollow " + questionName + "?"
-          }
+          title={"Are you sure you want to unfollow " + questionName + "?"}
           options={
             <View style={ToastQuestionStyles.viewButtons}>
               <Pressable
                 onPress={() => cancleHandler(1)}
-                style={[ToastQuestionStyles.button, styles.buttonDefault]}
-              >
+                style={[ToastQuestionStyles.button, styles.buttonDefault]}>
                 <Text style={ToastQuestionStyles.textButton}>Cancel</Text>
               </Pressable>
               <Pressable
@@ -218,8 +206,7 @@ const Followers = (props) => {
                 style={[
                   ToastQuestionStyles.button,
                   { backgroundColor: SignUpColor },
-                ]}
-              >
+                ]}>
                 <Text style={ToastQuestionStyles.textButton}>Ok</Text>
               </Pressable>
             </View>
@@ -237,8 +224,7 @@ const Followers = (props) => {
             <View style={ToastQuestionStyles.viewButtons}>
               <Pressable
                 onPress={() => cancleHandler(2)}
-                style={[ToastQuestionStyles.button, styles.buttonDefault]}
-              >
+                style={[ToastQuestionStyles.button, styles.buttonDefault]}>
                 <Text style={ToastQuestionStyles.textButton}>Cancel</Text>
               </Pressable>
               <Pressable
@@ -246,8 +232,7 @@ const Followers = (props) => {
                 style={[
                   ToastQuestionStyles.button,
                   { backgroundColor: SignUpColor },
-                ]}
-              >
+                ]}>
                 <Text style={ToastQuestionStyles.textButton}>Ok</Text>
               </Pressable>
             </View>
@@ -290,14 +275,12 @@ const Followers = (props) => {
             title="Pull to refresh..."
           />
         }>
-        {activeTab
-          ? renderFollowers()
-          : renderFollowing()}
+        {activeTab ? renderFollowers() : renderFollowing()}
       </ScrollView>
       {renderQuestions()}
     </View>
   );
-}
+};
 
 export default Followers;
 

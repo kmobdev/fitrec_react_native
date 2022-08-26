@@ -30,8 +30,7 @@ export const ShowHead = (props) => {
               color: GreenFitrecColor,
               fontWeight: "bold",
               fontSize: 16,
-            }}
-          >
+            }}>
             {props.username}
           </Text>
           <Text style={GlobalStyles.textMuted}>

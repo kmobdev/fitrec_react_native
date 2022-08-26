@@ -73,8 +73,8 @@ import { actionCleanNavigation } from "../../redux/actions/NavigationActions";
 let RNFS = require("react-native-fs");
 
 const JourneyList = (props) => {
-
-  const oSwiperRef = useRef();
+  const swiperRef = useRef();
+  const crouselRef = useRef();
 
   const session = useSelector((state) => state.reducerSession);
   const journeyProps = useSelector((state) => state.reducerJourney);
@@ -88,7 +88,8 @@ const JourneyList = (props) => {
   const [showLikes, setShowLikes] = useState(false);
   const [statusGetLikesResponse, setStatusGetLikesResponse] = useState(false);
   const [journey, setJourney] = useState(null);
-  const [showQuestionDeleteJourney, setShowQuestionDeleteJourney] = useState(false);
+  const [showQuestionDeleteJourney, setShowQuestionDeleteJourney] =
+    useState(false);
   const [showToastEdit, setShowToastEdit] = useState(false);
   const [changePhoto, setChangePhoto] = useState(false);
   const [newImage, setNewImage] = useState(null);
@@ -103,24 +104,16 @@ const JourneyList = (props) => {
   const [changeDescription, setChangeDescription] = useState(false);
 
   useEffect(() => {
-    props.swiperHome === undefined &&
-      props.navigation.setParams({ index: 1 });
-    getJourneyList();
-    setMuted(true);
-  }, []);
-
-  useEffect(() => {
+    props.swiperHome === undefined && props.navigation.setParams({ index: 1 });
     if (journeyProps.bNavigationJourney) {
       dispatch(actionCleanNavigation());
-      if (index !== 1) {
-        oSwiperRef.scrollTo(1, false);
-        setIndex(1);
-      }
     }
     setLoading(false);
     setRefreshing(false);
     setRefresh(!refresh);
-  }, [journeyProps]);
+    getJourneyList();
+    setMuted(true);
+  }, []);
 
   const getJourneyList = () => {
     dispatch(actionGetJourneyList());
@@ -137,10 +130,10 @@ const JourneyList = (props) => {
     let oDataNotification =
       session.account.id !== oJourney.user.id
         ? {
-          sHeader: session.account.username,
-          sDescription: `${session.account.name} likes your post`,
-          sPushId: oJourney.user.id_push,
-        }
+            sHeader: session.account.username,
+            sDescription: `${session.account.name} likes your post`,
+            sPushId: oJourney.user.id_push,
+          }
         : null;
     dispatch(actionAddUnLike(oJourney.id, bAddLike, oDataNotification));
   };
@@ -159,7 +152,7 @@ const JourneyList = (props) => {
       left: left - 22,
       justifyContent: "center",
     };
-  }
+  };
 
   const showLikesHandler = (nJourneyId) => {
     dispatch(actionGetLikes(nJourneyId));
@@ -185,12 +178,7 @@ const JourneyList = (props) => {
 
   const changeDescriptionHandler = () => {
     dispatch(
-      actionEditJourney(
-        journey.id,
-        session.account.id,
-        newDescription,
-        null
-      )
+      actionEditJourney(journey.id, session.account.id, newDescription, null)
     );
     setChangeDescription(false);
     setJourney(null);
@@ -284,10 +272,10 @@ const JourneyList = (props) => {
                   sName.slice(0, nIndexName) + "_" + Date.now() + "_fitrec.mp4";
                 RNFFmpeg.execute(
                   "-i " +
-                  sPath +
-                  ' -ss 00:00 -to 00:30 -preset superfast -movflags +faststart -vf "scale=480:-2" -b:v 1800k ' +
-                  sTemporalPath +
-                  sName
+                    sPath +
+                    ' -ss 00:00 -to 00:30 -preset superfast -movflags +faststart -vf "scale=480:-2" -b:v 1800k ' +
+                    sTemporalPath +
+                    sName
                 )
                   .then((result) => {
                     setNewStory(false);
@@ -301,18 +289,22 @@ const JourneyList = (props) => {
                     );
                   })
                   .catch((oError) => {
-                    dispatch(actionMessage("There was a problem resizing the video"));
+                    dispatch(
+                      actionMessage("There was a problem resizing the video")
+                    );
                   });
               } else {
                 setLoading(false);
                 setChangePhoto(false);
                 setJourney(null);
                 setNewStory(false);
-                dispatch(actionMessage("There was a problem selecting the video"));
+                dispatch(
+                  actionMessage("There was a problem selecting the video")
+                );
               }
             } else {
               if (oResponse.error) {
-                showToast(MESSAGE_ERROR)
+                showToast(MESSAGE_ERROR);
               }
               setLoading(false);
               setChangePhoto(false);
@@ -338,10 +330,10 @@ const JourneyList = (props) => {
                   sName.slice(0, nIndexName) + "_" + Date.now() + "_fitrec.mp4";
                 RNFFmpeg.execute(
                   "-i " +
-                  sPath +
-                  ' -ss 00:00 -to 00:30 -preset superfast -movflags +faststart -vf "scale=480:-2" -b:v 1800k ' +
-                  sTemporalPath +
-                  sName
+                    sPath +
+                    ' -ss 00:00 -to 00:30 -preset superfast -movflags +faststart -vf "scale=480:-2" -b:v 1800k ' +
+                    sTemporalPath +
+                    sName
                 )
                   .then((result) => {
                     setNewStory(false);
@@ -364,7 +356,11 @@ const JourneyList = (props) => {
                           )
                         );
                       } else {
-                        dispatch(actionMessage("There was a problem selecting the video"));
+                        dispatch(
+                          actionMessage(
+                            "There was a problem selecting the video"
+                          )
+                        );
                         setLoading(false);
                         setChangePhoto(false);
                         setJourney(null);
@@ -373,7 +369,9 @@ const JourneyList = (props) => {
                     }
                   })
                   .catch((oError) => {
-                    dispatch(actionMessage("There was a problem resizing the video"));
+                    dispatch(
+                      actionMessage("There was a problem resizing the video")
+                    );
                   });
               } else if (image.mime.indexOf("image") !== -1) {
                 setNewStory(false);
@@ -399,12 +397,10 @@ const JourneyList = (props) => {
                     setNewStory(false);
                   });
               } else dispatch(actionMessage("Unsupported file type"));
-            } else
-              setNewImage(image.data);
+            } else setNewImage(image.data);
             setLoading(false);
             setShowQuestionChangeImage(true);
             setChangePhoto(false);
-
           },
           (cancel) => {
             setLoading(false);
@@ -431,13 +427,6 @@ const JourneyList = (props) => {
     setShowQuestionChangeImage(false);
     setNewImage(null);
     setJourney(null);
-  };
-
-  const swipe = (nIndex) => {
-    props.navigation.setParams({
-      index: nIndex,
-    });
-    setIndex(nIndex);
   };
 
   const actionChangePhoto = () => {
@@ -472,8 +461,7 @@ const JourneyList = (props) => {
             activeOpacity={1}
             onPress={() => {
               setMuted(!muted);
-            }}
-          >
+            }}>
             <Video
               paused={
                 props.swiperHome === undefined
@@ -482,12 +470,11 @@ const JourneyList = (props) => {
                       ? true
                       : bPaused
                     : true
-                  : props.indexHome === 1 ||
-                    props.indexHome === undefined
-                    ? bPaused == undefined
-                      ? true
-                      : bPaused
-                    : true
+                  : props.indexHome === 1 || props.indexHome === undefined
+                  ? bPaused == undefined
+                    ? true
+                    : bPaused
+                  : true
               }
               muted={
                 props.swiperHome !== undefined
@@ -524,8 +511,7 @@ const JourneyList = (props) => {
                 oItem.showTag = !oItem.showTag;
                 setRefresh(!refresh);
               }}
-              activeOpacity={1}
-            >
+              activeOpacity={1}>
               {getImage(oItem)}
             </Pressable>
             {oItem.showTag &&
@@ -533,8 +519,7 @@ const JourneyList = (props) => {
                 <Pressable
                   onPress={() => redirectionViewProfileHandler(oTag.id_user)}
                   key={oTag.id.toString()}
-                  style={dynamicStyle(oTag)}
-                >
+                  style={dynamicStyle(oTag)}>
                   <View style={styles.tagTriangle}></View>
                   <View style={styles.tagUserView}>
                     <Text style={styles.tagListText}>{oTag.name}</Text>
@@ -562,237 +547,208 @@ const JourneyList = (props) => {
     );
   };
 
-  const renderContent = () => {
-    return (
-      <View style={{ backgroundColor: WhiteColor, flex: 1 }}>
-        <ScrollView
-          scrollEventThrottle={1}
-          onScroll={handleScrollView}
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={() => onRefresh()}
-              tintColor={GreenFitrecColor}
-              title="Pull to refresh..."
-            />
-          }
-        >
-          <View
-            style={{ borderBottomColor: "#A6A7A8", borderBottomWidth: 0.5 }}
-          >
-            <Stories
-              new={() => setNewStory(true)}
-              options={() => setViewMyStory(true)}
-            />
-          </View>
-          {journeyProps.journeys.length > 0 ? (
-            <FlatList
-              keyExtractor={(item, index) => index.toString()}
-              data={journeyProps.journeys}
-              extraData={refresh}
-              scrollEnabled={false}
-              refreshing={refresh}
-              getItemLayout={(data, index) => {
-                if (index === -1) return { index, length: 0, offset: 0 };
-                data[index].scroll = 540 * index + 60;
-                return {
-                  index: index,
-                  length: 540,
-                  offset: 540 * index + 60,
-                };
-              }}
-              renderItem={({ item }) => (
-                <View style={styles.viewPost}>
-                  <ShowHead
-                    date={moment(item.created_at, "YYYY-MM-DD H:m:s").fromNow()}
-                    level={item.user.level}
-                    username={item.user.username}
-                    image={item.user.image}
-                    redirectionViewProfile={() =>
-                      redirectionViewProfileHandler(item.user.id)
-                    }
-                    options={() => {
-                      setShowToastQuestion(true);
-                      setJourney(item);
-                    }}
-                  />
-                  <View style={{ aspectRatio: 1 }}>
-                    <SafeAreaView>
-                      <Carousel
-                        ref={(oRef) => {
-                          crousel = oRef;
-                        }}
-                        data={item.images}
-                        renderItem={(oItem) =>
-                          renderItem(oItem.item, oItem.index, item.paused)
-                        }
-                        sliderWidth={screenWidth}
-                        itemWidth={screenWidth}
-                        lockScrollWhileSnapping={true}
-                        autoplay={false}
-                        style={CarouselStyle.carouselContainer}
-                        loop={false}
-                        onSnapToItem={(index) => {
-                          item.nIndex = index;
-                          setRefresh(!refresh);
-                        }}
-                      />
-                      {item.images.length > 1 && (
-                        <Pagination
-                          dotsLength={item.images.length}
-                          activeDotIndex={item.nIndex}
-                          containerStyle={CarouselStyle.paginationContainer}
-                          dotStyle={CarouselStyle.paginationActive}
-                          inactiveDotStyle={CarouselStyle.paginationInactive}
-                          inactiveDotOpacity={0.4}
-                          inactiveDotScale={1}
-                        />
-                      )}
-                    </SafeAreaView>
-                  </View>
-                  {item.images[item.nIndex] && (
-                    <ShowFooter
-                      isLiked={item.isLiked}
-                      likes={item.likes}
-                      text={item.description}
-                      pressAddLike={() => addUnLike(item, true)}
-                      existTags={item.images[item.nIndex].tags.length > 0}
-                      showTags={() => {
-                        setShowTagsList(true);
-                        setTags(item.images[item.nIndex].tags);
+  return (
+    <View style={{ backgroundColor: WhiteColor, flex: 1 }}>
+      <ScrollView
+        scrollEventThrottle={1}
+        onScroll={handleScrollView}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={() => onRefresh()}
+            tintColor={GreenFitrecColor}
+            title="Pull to refresh..."
+          />
+        }>
+        <View style={{ borderBottomColor: "#A6A7A8", borderBottomWidth: 0.5 }}>
+          <Stories
+            new={() => setNewStory(true)}
+            options={() => setViewMyStory(true)}
+          />
+        </View>
+        {journeyProps.journeys.length > 0 ? (
+          <FlatList
+            keyExtractor={(item, index) => index.toString()}
+            data={journeyProps.journeys}
+            extraData={refresh}
+            scrollEnabled={false}
+            refreshing={refresh}
+            getItemLayout={(data, index) => {
+              if (index === -1) return { index, length: 0, offset: 0 };
+              data[index].scroll = 540 * index + 60;
+              return {
+                index: index,
+                length: 540,
+                offset: 540 * index + 60,
+              };
+            }}
+            renderItem={({ item }) => (
+              <View style={styles.viewPost}>
+                <ShowHead
+                  date={moment(item.created_at, "YYYY-MM-DD H:m:s").fromNow()}
+                  level={item.user.level}
+                  username={item.user.username}
+                  image={item.user.image}
+                  redirectionViewProfile={() =>
+                    redirectionViewProfileHandler(item.user.id)
+                  }
+                  options={() => {
+                    setShowToastQuestion(true);
+                    setJourney(item);
+                  }}
+                />
+                <View style={{ aspectRatio: 1 }}>
+                  <SafeAreaView>
+                    <Carousel
+                      ref={crouselRef}
+                      data={item.images}
+                      renderItem={(oItem) =>
+                        renderItem(oItem.item, oItem.index, item.paused)
+                      }
+                      sliderWidth={screenWidth}
+                      itemWidth={screenWidth}
+                      lockScrollWhileSnapping={true}
+                      autoplay={false}
+                      style={CarouselStyle.carouselContainer}
+                      loop={false}
+                      onSnapToItem={(index) => {
+                        item.nIndex = index;
+                        setRefresh(!refresh);
                       }}
-                      pressUnLike={() => addUnLike(item, false)}
-                      showLikes={() => showLikesHandler(item.id)}
                     />
-                  )}
-                </View>
-              )}
-            />
-          ) : (
-            <View
-              style={{
-                flex: 1,
-                marginTop: "25%",
-                alignContent: "center",
-                width: "100%",
-                padding: 10,
-              }}
-            >
-              <Text style={{ textAlign: "center", fontSize: 16 }}>
-                There are no publications.
-              </Text>
-              <Text style={{ textAlign: "center", fontSize: 16 }}>
-                You can be the first to make a Journey post
-              </Text>
-            </View>
-          )}
-        </ScrollView>
-        <ToastQuestionGeneric
-          maxWidth={180}
-          visible={showToastQuestion}
-          options={
-            <View style={{ padding: 10 }}>
-              {null !== journey &&
-                journey.user.id !==
-                session.account.id && (
-                  <Pressable
-                    onPress={() => {
-                      setShowReport(true);
-                      setShowToastQuestion(false);
-                    }}
-                  >
-                    <View style={[ToastQuestionGenericStyles.viewButtonOption]}>
-                      <Icon name="close-circle" size={22} color={WhiteColor} />
-                      <Text
-                        style={ToastQuestionGenericStyles.viewButtonOptionText}
-                      >
-                        Report Post
-                      </Text>
-                    </View>
-                  </Pressable>
-                )}
-              {null !== journey &&
-                journey.user.id ===
-                session.account.id && (
-                  <Pressable
-                    onPress={() => {
-                      setShowToastQuestion(false);
-                      setShowToastEdit(true);
-                    }}
-                  >
-                    <View style={[ToastQuestionGenericStyles.viewButtonOption]}>
-                      <Icon
-                        name="create-outline"
-                        size={22}
-                        color={WhiteColor}
+                    {item.images.length > 1 && (
+                      <Pagination
+                        dotsLength={item.images.length}
+                        activeDotIndex={item.nIndex}
+                        containerStyle={CarouselStyle.paginationContainer}
+                        dotStyle={CarouselStyle.paginationActive}
+                        inactiveDotStyle={CarouselStyle.paginationInactive}
+                        inactiveDotOpacity={0.4}
+                        inactiveDotScale={1}
                       />
-                      <Text
-                        style={ToastQuestionGenericStyles.viewButtonOptionText}
-                      >
-                        Edit
-                      </Text>
-                    </View>
-                  </Pressable>
-                )}
-              {null !== journey &&
-                journey.user.id ===
-                session.account.id && (
-                  <Pressable
-                    onPress={() => {
-                      setShowToastQuestion(false);
-                      setShowQuestionDeleteJourney(true);
+                    )}
+                  </SafeAreaView>
+                </View>
+                {item.images[item.nIndex] && (
+                  <ShowFooter
+                    isLiked={item.isLiked}
+                    likes={item.likes}
+                    text={item.description}
+                    pressAddLike={() => addUnLike(item, true)}
+                    existTags={item.images[item.nIndex].tags.length > 0}
+                    showTags={() => {
+                      setShowTagsList(true);
+                      setTags(item.images[item.nIndex].tags);
                     }}
-                  >
-                    <View style={[ToastQuestionGenericStyles.viewButtonOption]}>
-                      <Icon name="trash-outline" size={22} color={WhiteColor} />
-                      <Text
-                        style={ToastQuestionGenericStyles.viewButtonOptionText}
-                      >
-                        Delete
-                      </Text>
-                    </View>
-                  </Pressable>
+                    pressUnLike={() => addUnLike(item, false)}
+                    showLikes={() => showLikesHandler(item.id)}
+                  />
                 )}
+              </View>
+            )}
+          />
+        ) : (
+          <View
+            style={{
+              flex: 1,
+              marginTop: "25%",
+              alignContent: "center",
+              width: "100%",
+              padding: 10,
+            }}>
+            <Text style={{ textAlign: "center", fontSize: 16 }}>
+              There are no publications.
+            </Text>
+            <Text style={{ textAlign: "center", fontSize: 16 }}>
+              You can be the first to make a Journey post
+            </Text>
+          </View>
+        )}
+      </ScrollView>
+      <ToastQuestionGeneric
+        maxWidth={180}
+        visible={showToastQuestion}
+        options={
+          <View style={{ padding: 10 }}>
+            {null !== journey && journey.user.id !== session.account.id && (
+              <Pressable
+                onPress={() => {
+                  setShowReport(true);
+                  setShowToastQuestion(false);
+                }}>
+                <View style={[ToastQuestionGenericStyles.viewButtonOption]}>
+                  <Icon name="close-circle" size={22} color={WhiteColor} />
+                  <Text style={ToastQuestionGenericStyles.viewButtonOptionText}>
+                    Report Post
+                  </Text>
+                </View>
+              </Pressable>
+            )}
+            {null !== journey && journey.user.id === session.account.id && (
               <Pressable
                 onPress={() => {
                   setShowToastQuestion(false);
-                  setJourney(null);
-                }}
-              >
-                <View
-                  style={[
-                    ToastQuestionGenericStyles.viewButtonOption,
-                    { marginBottom: 0 },
-                  ]}
-                >
-                  <Icon name="md-close" size={22} color={WhiteColor} />
-                  <Text style={ToastQuestionGenericStyles.viewButtonOptionText}>
-                    Close
-                  </Text>
-                </View>
-              </Pressable>
-            </View>
-          }
-        />
-        <ToastQuestionGeneric
-          visible={showToastEdit}
-          options={
-            <View style={{ padding: 10 }}>
-              <Pressable
-                onPress={() => {
-                  setChangeDescription(true);
-                  setShowToastEdit(false);
-                  setNewDescription(journey.description);
-                }}
-              >
+                  setShowToastEdit(true);
+                }}>
                 <View style={[ToastQuestionGenericStyles.viewButtonOption]}>
                   <Icon name="create-outline" size={22} color={WhiteColor} />
                   <Text style={ToastQuestionGenericStyles.viewButtonOptionText}>
-                    Description
+                    Edit
                   </Text>
                 </View>
               </Pressable>
-              {/*
+            )}
+            {null !== journey && journey.user.id === session.account.id && (
+              <Pressable
+                onPress={() => {
+                  setShowToastQuestion(false);
+                  setShowQuestionDeleteJourney(true);
+                }}>
+                <View style={[ToastQuestionGenericStyles.viewButtonOption]}>
+                  <Icon name="trash-outline" size={22} color={WhiteColor} />
+                  <Text style={ToastQuestionGenericStyles.viewButtonOptionText}>
+                    Delete
+                  </Text>
+                </View>
+              </Pressable>
+            )}
+            <Pressable
+              onPress={() => {
+                setShowToastQuestion(false);
+                setJourney(null);
+              }}>
+              <View
+                style={[
+                  ToastQuestionGenericStyles.viewButtonOption,
+                  { marginBottom: 0 },
+                ]}>
+                <Icon name="md-close" size={22} color={WhiteColor} />
+                <Text style={ToastQuestionGenericStyles.viewButtonOptionText}>
+                  Close
+                </Text>
+              </View>
+            </Pressable>
+          </View>
+        }
+      />
+      <ToastQuestionGeneric
+        visible={showToastEdit}
+        options={
+          <View style={{ padding: 10 }}>
+            <Pressable
+              onPress={() => {
+                setChangeDescription(true);
+                setShowToastEdit(false);
+                setNewDescription(journey.description);
+              }}>
+              <View style={[ToastQuestionGenericStyles.viewButtonOption]}>
+                <Icon name="create-outline" size={22} color={WhiteColor} />
+                <Text style={ToastQuestionGenericStyles.viewButtonOptionText}>
+                  Description
+                </Text>
+              </View>
+            </Pressable>
+            {/*
                         // TODO: Commented since now with multiple images you should not be able to change - Leandro Curbelo
                             <Pressable onPress={() => actionChangePhoto()}>
                                 <View style={[ToastQuestionGenericStyles.viewButtonOption]}>
@@ -803,46 +759,129 @@ const JourneyList = (props) => {
                                 </View>
                             </Pressable> 
                         */}
-              <Pressable
-                onPress={() => {
-                  setShowToastQuestion(true);
-                  setShowToastEdit(false);
-                }}
-              >
-                <View
-                  style={[
-                    ToastQuestionGenericStyles.viewButtonOption,
-                    { marginBottom: 0 },
-                  ]}
-                >
-                  <Icon name="arrow-back" size={22} color={WhiteColor} />
-                  <Text style={ToastQuestionGenericStyles.viewButtonOptionText}>
-                    Back
+            <Pressable
+              onPress={() => {
+                setShowToastQuestion(true);
+                setShowToastEdit(false);
+              }}>
+              <View
+                style={[
+                  ToastQuestionGenericStyles.viewButtonOption,
+                  { marginBottom: 0 },
+                ]}>
+                <Icon name="arrow-back" size={22} color={WhiteColor} />
+                <Text style={ToastQuestionGenericStyles.viewButtonOptionText}>
+                  Back
+                </Text>
+              </View>
+            </Pressable>
+          </View>
+        }
+      />
+      {changeDescription && (
+        <View style={ToastQuestionGenericStyles.contentToast}>
+          <View style={ToastQuestionGenericStyles.viewToast}>
+            <TextInput
+              numberOfLines={4}
+              multiline={true}
+              style={ToastQuestionGenericStyles.inputLarge}
+              value={newDescription}
+              onChangeText={(text) => setNewDescription(text)}
+            />
+            <View style={{ flexDirection: "row" }}>
+              <View style={{ width: "50%" }}>
+                <Pressable
+                  style={ToastQuestionGenericStyles.buttonCancel}
+                  onPress={() => {
+                    setShowToastEdit(true);
+                    setChangeDescription(false);
+                  }}>
+                  <Text style={ToastQuestionGenericStyles.buttonText}>
+                    Cancel
                   </Text>
-                </View>
-              </Pressable>
+                </Pressable>
+              </View>
+              <View style={{ width: "50%" }}>
+                <Pressable
+                  style={ToastQuestionGenericStyles.buttonConfirm}
+                  onPress={() => changeDescriptionHandler()}>
+                  <Text style={ToastQuestionGenericStyles.buttonText}>
+                    Confirm
+                  </Text>
+                </Pressable>
+              </View>
             </View>
-          }
+          </View>
+        </View>
+      )}
+      {newStory ? (
+        <ToastQuestion
+          visible={changePhoto || newStory}
+          close={() => {
+            setChangePhoto(false);
+            setNewStory(false);
+          }}
+          functionCamera={() => addImage("camera")}
+          functionGallery={() => addImage("gallery")}
+          functionVideo={() => addImage("video")}
         />
-        {changeDescription && (
-          <View style={ToastQuestionGenericStyles.contentToast}>
-            <View style={ToastQuestionGenericStyles.viewToast}>
-              <TextInput
-                numberOfLines={4}
-                multiline={true}
-                style={ToastQuestionGenericStyles.inputLarge}
-                value={newDescription}
-                onChangeText={(text) => setNewDescription(text)}
-              />
-              <View style={{ flexDirection: "row" }}>
+      ) : (
+        <ToastQuestion
+          visible={changePhoto || newStory}
+          close={() => {
+            setChangePhoto(false);
+            setNewStory(false);
+          }}
+          functionCamera={() => addImage("camera")}
+          functionGallery={() => addImage("gallery")}
+        />
+      )}
+      {null !== journey && (
+        <ToastQuestionGeneric
+          visible={showQuestionChangeImage}
+          titleBig="Change Photo Journey"
+          maxWidth={250}
+          title="Are you sure you want to change journey photo?"
+          options={
+            <View>
+              <View style={ToastQuestionStyles.container}>
+                <View style={ToastQuestionStyles.containerImage}>
+                  <FastImage
+                    style={ToastQuestionStyles.image}
+                    source={{
+                      uri: journey.image,
+                      priority: FastImage.priority.high,
+                    }}
+                    resizeMode={FastImage.resizeMode.cover}
+                  />
+                </View>
+                <View style={ToastQuestionStyles.iconContainer}>
+                  <Icon
+                    name="arrow-forward-circle-outline"
+                    color={SignUpColor}
+                    size={34}
+                  />
+                </View>
+                <View style={ToastQuestionStyles.containerImage}>
+                  <Image
+                    style={ToastQuestionStyles.image}
+                    resizeMode="cover"
+                    source={{
+                      uri: `data:image/jpg;base64,` + newImage,
+                    }}
+                  />
+                </View>
+              </View>
+              <View
+                style={[ToastQuestionStyles.viewButtons, { width: "100%" }]}>
                 <View style={{ width: "50%" }}>
                   <Pressable
                     style={ToastQuestionGenericStyles.buttonCancel}
                     onPress={() => {
-                      setShowToastEdit(true);
-                      setChangeDescription(false);
-                    }}
-                  >
+                      setShowQuestionChangeImage(false);
+                      setNewImage(null);
+                      setJourney(null);
+                    }}>
                     <Text style={ToastQuestionGenericStyles.buttonText}>
                       Cancel
                     </Text>
@@ -851,8 +890,7 @@ const JourneyList = (props) => {
                 <View style={{ width: "50%" }}>
                   <Pressable
                     style={ToastQuestionGenericStyles.buttonConfirm}
-                    onPress={() => changeDescriptionHandler()}
-                  >
+                    onPress={() => changePhotoHandler()}>
                     <Text style={ToastQuestionGenericStyles.buttonText}>
                       Confirm
                     </Text>
@@ -860,232 +898,119 @@ const JourneyList = (props) => {
                 </View>
               </View>
             </View>
-          </View>
-        )}
-        {newStory ? (
-          <ToastQuestion
-            visible={changePhoto || newStory}
-            close={() => { setChangePhoto(false); setNewStory(false); }}
-            functionCamera={() => addImage("camera")}
-            functionGallery={() => addImage("gallery")}
-            functionVideo={() => addImage("video")}
-          />
-        ) : (
-          <ToastQuestion
-            visible={changePhoto || newStory}
-            close={() => { setChangePhoto(false); setNewStory(false); }}
-            functionCamera={() => addImage("camera")}
-            functionGallery={() => addImage("gallery")}
-          />
-        )}
-        {null !== journey && (
-          <ToastQuestionGeneric
-            visible={showQuestionChangeImage}
-            titleBig="Change Photo Journey"
-            maxWidth={250}
-            title="Are you sure you want to change journey photo?"
-            options={
-              <View>
-                <View style={ToastQuestionStyles.container}>
-                  <View style={ToastQuestionStyles.containerImage}>
-                    <FastImage
-                      style={ToastQuestionStyles.image}
-                      source={{
-                        uri: journey.image,
-                        priority: FastImage.priority.high,
-                      }}
-                      resizeMode={FastImage.resizeMode.cover}
-                    />
-                  </View>
-                  <View style={ToastQuestionStyles.iconContainer}>
-                    <Icon
-                      name="arrow-forward-circle-outline"
-                      color={SignUpColor}
-                      size={34}
-                    />
-                  </View>
-                  <View style={ToastQuestionStyles.containerImage}>
-                    <Image
-                      style={ToastQuestionStyles.image}
-                      resizeMode="cover"
-                      source={{
-                        uri: `data:image/jpg;base64,` + newImage,
-                      }}
-                    />
-                  </View>
-                </View>
-                <View
-                  style={[ToastQuestionStyles.viewButtons, { width: "100%" }]}
-                >
-                  <View style={{ width: "50%" }}>
-                    <Pressable
-                      style={ToastQuestionGenericStyles.buttonCancel}
-                      onPress={() => {
-                        setShowQuestionChangeImage(false);
-                        setNewImage(null);
-                        setJourney(null);
-                      }}
-                    >
-                      <Text style={ToastQuestionGenericStyles.buttonText}>
-                        Cancel
-                      </Text>
-                    </Pressable>
-                  </View>
-                  <View style={{ width: "50%" }}>
-                    <Pressable
-                      style={ToastQuestionGenericStyles.buttonConfirm}
-                      onPress={() => changePhotoHandler()}
-                    >
-                      <Text style={ToastQuestionGenericStyles.buttonText}>
-                        Confirm
-                      </Text>
-                    </Pressable>
-                  </View>
-                </View>
-              </View>
-            }
-          />
-        )}
-        <LoadingSpinner visible={loading} />
-        <ShowLikes
-          visible={showLikes}
-          close={() => setShowLikes(false)}
-          navigation={props.navigation}
-          redirectionViewProfile={(nIdFitrec) =>
-            redirectionViewProfileHandler(nIdFitrec)
           }
         />
-        {showTagsList && (
-          <View style={GlobalModal.viewContent}>
-            <View style={GlobalModal.viewHead}>
-              <Text style={GlobalModal.headTitle}>Tags in this Photo</Text>
-              <Pressable
-                style={[GlobalModal.buttonClose, { flexDirection: "row" }]}
-                onPress={() => {
-                  setShowTagsList(false);
-                  setTags(null);
-                }}
-              >
-                <Icon name="close" color={SignUpColor} size={22} />
-                <Text style={[GlobalModal.titleClose, { marginLeft: 2 }]}>
+      )}
+      <LoadingSpinner visible={loading} />
+      <ShowLikes
+        visible={showLikes}
+        close={() => setShowLikes(false)}
+        navigation={props.navigation}
+        redirectionViewProfile={(nIdFitrec) =>
+          redirectionViewProfileHandler(nIdFitrec)
+        }
+      />
+      {showTagsList && (
+        <View style={GlobalModal.viewContent}>
+          <View style={GlobalModal.viewHead}>
+            <Text style={GlobalModal.headTitle}>Tags in this Photo</Text>
+            <Pressable
+              style={[GlobalModal.buttonClose, { flexDirection: "row" }]}
+              onPress={() => {
+                setShowTagsList(false);
+                setTags(null);
+              }}>
+              <Icon name="close" color={SignUpColor} size={22} />
+              <Text style={[GlobalModal.titleClose, { marginLeft: 2 }]}>
+                Close
+              </Text>
+            </Pressable>
+          </View>
+          <ListPeople
+            people={tags}
+            refresh={refresh}
+            action={(item) => redirectionViewProfileHandler(item.id_user)}
+            grid={false}
+          />
+        </View>
+      )}
+      <ToastQuestionGeneric
+        visible={showQuestionDeleteJourney}
+        titleBig="Delete journey"
+        title="Are you sure you want to delete journey?"
+        options={
+          <View style={ToastQuestionStyles.viewButtons}>
+            <Pressable
+              onPress={() => setShowQuestionDeleteJourney(false)}
+              style={[
+                ToastQuestionStyles.button,
+                { backgroundColor: GreenFitrecColor, marginRight: 10 },
+              ]}>
+              <Text style={ToastQuestionStyles.textButton}>Cancel</Text>
+            </Pressable>
+            <Pressable
+              onPress={() => deleteJourney()}
+              style={[
+                ToastQuestionStyles.button,
+                { backgroundColor: SignUpColor },
+              ]}>
+              <Text style={ToastQuestionStyles.textButton}>Ok</Text>
+            </Pressable>
+          </View>
+        }
+      />
+      {showReport && journey !== null && (
+        <ModalReport
+          visible={showReport}
+          close={() => setShowReport(false)}
+          send={() => setShowReport(false)}
+          type={REPORT_JOURNEY_TYPE}
+          id={journey.id}
+        />
+      )}
+      <ToastQuestionGeneric
+        visible={viewMyStory}
+        options={
+          <View style={{ padding: 10 }}>
+            <Pressable
+              onPress={() => {
+                dispatch(actionViewStoryAction());
+                setViewMyStory(false);
+              }}>
+              <View style={[ToastQuestionGenericStyles.viewButtonOption]}>
+                <Text style={ToastQuestionGenericStyles.viewButtonOptionText}>
+                  View
+                </Text>
+              </View>
+            </Pressable>
+            <Pressable
+              onPress={() => {
+                setNewStory(true);
+                setViewMyStory(false);
+              }}>
+              <View style={[ToastQuestionGenericStyles.viewButtonOption]}>
+                <Text style={ToastQuestionGenericStyles.viewButtonOptionText}>
+                  Upload
+                </Text>
+              </View>
+            </Pressable>
+            <Pressable onPress={() => setViewMyStory(false)}>
+              <View
+                style={[
+                  ToastQuestionGenericStyles.viewButtonOption,
+                  { marginBottom: 0 },
+                ]}>
+                <Text style={ToastQuestionGenericStyles.viewButtonOptionText}>
                   Close
                 </Text>
-              </Pressable>
-            </View>
-            <ListPeople
-              people={tags}
-              refresh={refresh}
-              action={(item) => redirectionViewProfileHandler(item.id_user)}
-              grid={false}
-            />
+              </View>
+            </Pressable>
           </View>
-        )}
-        <ToastQuestionGeneric
-          visible={showQuestionDeleteJourney}
-          titleBig="Delete journey"
-          title="Are you sure you want to delete journey?"
-          options={
-            <View style={ToastQuestionStyles.viewButtons}>
-              <Pressable
-                onPress={() => setShowQuestionDeleteJourney(false)}
-                style={[
-                  ToastQuestionStyles.button,
-                  { backgroundColor: GreenFitrecColor, marginRight: 10 },
-                ]}
-              >
-                <Text style={ToastQuestionStyles.textButton}>Cancel</Text>
-              </Pressable>
-              <Pressable
-                onPress={() => deleteJourney()}
-                style={[
-                  ToastQuestionStyles.button,
-                  { backgroundColor: SignUpColor },
-                ]}
-              >
-                <Text style={ToastQuestionStyles.textButton}>Ok</Text>
-              </Pressable>
-            </View>
-          }
-        />
-        {showReport && journey !== null && (
-          <ModalReport
-            visible={showReport}
-            close={() => setShowReport(false)}
-            send={() => setShowReport(false)}
-            type={REPORT_JOURNEY_TYPE}
-            id={journey.id}
-          />
-        )}
-        <ToastQuestionGeneric
-          visible={viewMyStory}
-          options={
-            <View style={{ padding: 10 }}>
-              <Pressable
-                onPress={() => {
-                  dispatch(actionViewStoryAction());
-                  setViewMyStory(false);
-                }}
-              >
-                <View style={[ToastQuestionGenericStyles.viewButtonOption]}>
-                  <Text style={ToastQuestionGenericStyles.viewButtonOptionText}>
-                    View
-                  </Text>
-                </View>
-              </Pressable>
-              <Pressable
-                onPress={() => {
-                  setNewStory(true);
-                  setViewMyStory(false);
-                }}
-              >
-                <View style={[ToastQuestionGenericStyles.viewButtonOption]}>
-                  <Text style={ToastQuestionGenericStyles.viewButtonOptionText}>
-                    Upload
-                  </Text>
-                </View>
-              </Pressable>
-              <Pressable onPress={() => setViewMyStory(false)}>
-                <View
-                  style={[
-                    ToastQuestionGenericStyles.viewButtonOption,
-                    { marginBottom: 0 },
-                  ]}
-                >
-                  <Text style={ToastQuestionGenericStyles.viewButtonOptionText}>
-                    Close
-                  </Text>
-                </View>
-              </Pressable>
-            </View>
-          }
-        />
-      </View>
-    );
-  };
-
-  return (
-    <View style={{ flex: 1 }}>
-      {props.swiperHome === undefined ? (
-        <Swiper
-          loop={false}
-          showsPagination={false}
-          onIndexChanged={(nIndex) => swipe(nIndex)}
-          scrollEnabled={true}
-          horizontal={true}
-          index={1}
-          ref={oSwiperRef}
-        >
-          <View style={styles.contentSwipe}>
-            <Home swiperHome={true} navigation={props.navigation} />
-          </View>
-          <View style={styles.contentSwipe}>{renderContent()}</View>
-        </Swiper>
-      ) : (
-        renderContent()
-      )}
+        }
+      />
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   viewPost: {
@@ -1135,45 +1060,4 @@ const styles = StyleSheet.create({
   },
 });
 
-const mapStateToProps = (state) => ({
-  session: state.reducerSession,
-  journeyProps: state.reducerJourney,
-});
-
-const mapDispatchToProps = (dispatch) => ({
-  getJourneyList: () => {
-    dispatch(actionGetJourneyList());
-  },
-  addLike: (nJourneyId, bAddLike, aDataNotification) => {
-    dispatch(actionAddUnLike(nJourneyId, bAddLike, aDataNotification));
-  },
-  getProfile: (nUserId) => {
-    dispatch(actionGetProfile(nUserId, true));
-  },
-  showLikes: (nJourneyId) => {
-    dispatch(actionGetLikes(nJourneyId));
-  },
-  deleteJourney: (nJourneyId, nUserId) => {
-    dispatch(actionDeleteJourney(nJourneyId, nUserId));
-  },
-  editJourney: (nJourneyId, nUserId, sDescription, sImage) => {
-    dispatch(actionEditJourney(nJourneyId, nUserId, sDescription, sImage));
-  },
-  message: (sMessage) => {
-    dispatch(actionMessage(sMessage));
-  },
-  getStories: () => {
-    dispatch(actionGetStories());
-  },
-  previewStory: (nType, sImage, sVideoName = null) => {
-    dispatch(actionPreviewStory(nType, sImage, sVideoName));
-  },
-  viewMyStory: () => {
-    dispatch(actionViewStoryAction());
-  },
-  cleanNavigation: () => {
-    dispatch(actionCleanNavigation());
-  },
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(JourneyList);
+export default JourneyList;

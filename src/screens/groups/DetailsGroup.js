@@ -432,7 +432,7 @@ class ShowDetailsGroup extends Component {
     this.setState({ sSearch: sText });
   };
 
-  handleFocusSearch = () => { };
+  handleFocusSearch = () => {};
 
   handleCleanSearch = () => {
     this.setState({ sSearch: "" });
@@ -645,8 +645,7 @@ class ShowDetailsGroup extends Component {
             oStyles.container,
             { paddingBottom: nKeyboardPadding },
           ]}
-          ref={(oRef) => (this.oScrollRef = oRef)}
-        >
+          ref={(oRef) => (this.oScrollRef = oRef)}>
           <View style={[oStyles.row, oStyles.mgB10]}>
             <View style={[oStyles.centerAlign, oStyles.headerLeft]}>
               {null !== sPreviewImage ? (
@@ -671,15 +670,13 @@ class ShowDetailsGroup extends Component {
               {bIsCaptain && (
                 <Pressable
                   onPress={() => this.setState({ bShowGroupPhoto: true })}
-                  style={oStyles.border}
-                >
+                  style={oStyles.border}>
                   <Text
                     style={[
                       oStyles.textRed,
                       oStyles.textBold,
                       oStyles.textCenter,
-                    ]}
-                  >
+                    ]}>
                     Change Group Photo
                   </Text>
                 </Pressable>
@@ -690,8 +687,7 @@ class ShowDetailsGroup extends Component {
                   oStyles.textBold,
                   oStyles.textCenter,
                   oStyles.mgT5,
-                ]}
-              >
+                ]}>
                 {oGroup.type === GROUP_PRIVATE
                   ? "Private Group"
                   : "Public Group"}
@@ -699,8 +695,7 @@ class ShowDetailsGroup extends Component {
             </View>
             <View style={oStyles.headerRight}>
               <Text
-                style={[oStyles.textBold, oStyles.textGreen, oStyles.font18]}
-              >
+                style={[oStyles.textBold, oStyles.textGreen, oStyles.font18]}>
                 {oGroup.name}
               </Text>
               <Text style={[oStyles.textGray, oStyles.textBold, oStyles.mgT5]}>
@@ -711,17 +706,17 @@ class ShowDetailsGroup extends Component {
           </View>
           {this.renderButtons(oGroup)}
           {!bChangeCaptains &&
-            !bRemoveMembers &&
-            !bIsAddParticipants &&
-            !bShowAssignCaptain
+          !bRemoveMembers &&
+          !bIsAddParticipants &&
+          !bShowAssignCaptain
             ? this.renderParticipants(oGroup)
             : bChangeCaptains
-              ? this.renderChangeCaptains()
-              : bRemoveMembers
-                ? this.renderRemoveMembers()
-                : bShowAssignCaptain
-                  ? this.renderAssignCaptain()
-                  : this.renderAddMembers()}
+            ? this.renderChangeCaptains()
+            : bRemoveMembers
+            ? this.renderRemoveMembers()
+            : bShowAssignCaptain
+            ? this.renderAssignCaptain()
+            : this.renderAddMembers()}
         </ScrollView>
       </View>
     );
@@ -746,16 +741,14 @@ class ShowDetailsGroup extends Component {
             <View style={oStyles.row}>
               <Pressable
                 onPress={() => this.setState({ bShowSendNotification: true })}
-                style={[oStyles.middleFlex, oStyles.mgR5]}
-              >
+                style={[oStyles.middleFlex, oStyles.mgR5]}>
                 <View style={GlobalStyles.buttonCancel}>
                   <Text style={GlobalStyles.textButton}>Notification</Text>
                 </View>
               </Pressable>
               <Pressable
                 onPress={() => this.openOptions()}
-                style={[oStyles.middleFlex, oStyles.mgL5]}
-              >
+                style={[oStyles.middleFlex, oStyles.mgL5]}>
                 <View style={GlobalStyles.buttonConfirm}>
                   <Text style={GlobalStyles.textButton}>Options</Text>
                 </View>
@@ -765,12 +758,11 @@ class ShowDetailsGroup extends Component {
         {(bIsCaptain || (bIsParticipant && oGroup.type === GROUP_PUBLIC)) && (
           <>
             {!bIsAddParticipants &&
-              !bChangeCaptains &&
-              !bRemoveMembers &&
-              !bShowAssignCaptain ? (
+            !bChangeCaptains &&
+            !bRemoveMembers &&
+            !bShowAssignCaptain ? (
               <Pressable
-                onPress={() => this.setState({ bIsAddParticipants: true })}
-              >
+                onPress={() => this.setState({ bIsAddParticipants: true })}>
                 <View style={GlobalStyles.buttonConfirm}>
                   <Text style={GlobalStyles.textButton}>Add Member</Text>
                 </View>
@@ -779,16 +771,14 @@ class ShowDetailsGroup extends Component {
               <View style={[oStyles.row]}>
                 <Pressable
                   onPress={this.handleOnCancel}
-                  style={[oStyles.middleFlex, oStyles.mgR5]}
-                >
+                  style={[oStyles.middleFlex, oStyles.mgR5]}>
                   <View style={GlobalStyles.buttonCancel}>
                     <Text style={GlobalStyles.textButton}>Cancel</Text>
                   </View>
                 </Pressable>
                 <Pressable
                   onPress={this.handleOnConfirm}
-                  style={[oStyles.middleFlex, oStyles.mgL5]}
-                >
+                  style={[oStyles.middleFlex, oStyles.mgL5]}>
                   <View style={GlobalStyles.buttonConfirm}>
                     <Text style={GlobalStyles.textButton}>
                       Confirm{bRemoveMembers && ` (${this.getCountRemove()})`}
@@ -815,8 +805,7 @@ class ShowDetailsGroup extends Component {
               oStyles.textGreen,
               oStyles.font18,
               oStyles.participantsLabel,
-            ]}
-          >
+            ]}>
             PARTICIPANTS: {participants.length}
           </Text>
         </View>
@@ -855,8 +844,7 @@ class ShowDetailsGroup extends Component {
               oStyles.font14,
               oStyles.textGreen,
               oStyles.p10,
-            ]}
-          >
+            ]}>
             List of Captains
           </Text>
         </View>
@@ -867,19 +855,16 @@ class ShowDetailsGroup extends Component {
             oStyles.m5,
             oStyles.centerAlign,
             { marginLeft: "auto", marginRight: "auto" },
-          ]}
-        >
+          ]}>
           {aCaptains.map((oParticipant) => (
             <Pressable
               activeOpacity={1}
               key={oParticipant.key}
               onPress={() => {
                 this.updateCaptain(oParticipant);
-              }}
-            >
+              }}>
               <View
-                style={[oStyles.m5, oStyles.centerAlign, oStyles.textCenter]}
-              >
+                style={[oStyles.m5, oStyles.centerAlign, oStyles.textCenter]}>
                 <View>
                   {oParticipant.image === null ? (
                     <Image
@@ -925,8 +910,7 @@ class ShowDetailsGroup extends Component {
                 oStyles.font14,
                 oStyles.textGreen,
                 oStyles.p10,
-              ]}
-            >
+              ]}>
               List of memebers
             </Text>
           </View>
@@ -940,8 +924,7 @@ class ShowDetailsGroup extends Component {
                 oStyles.font14,
                 oStyles.textGreen,
                 oStyles.p10,
-              ]}
-            >
+              ]}>
               The all members are captains
             </Text>
           </View>
@@ -1014,8 +997,7 @@ class ShowDetailsGroup extends Component {
                   oStyles.font14,
                   oStyles.textGreen,
                   oStyles.p10,
-                ]}
-              >
+                ]}>
                 List of invitations
               </Text>
             </View>
@@ -1039,8 +1021,7 @@ class ShowDetailsGroup extends Component {
                   oStyles.font14,
                   oStyles.textGreen,
                   oStyles.p10,
-                ]}
-              >
+                ]}>
                 List of pals
               </Text>
             </View>
@@ -1069,8 +1050,7 @@ class ShowDetailsGroup extends Component {
                   oStyles.font14,
                   oStyles.textGreen,
                   oStyles.p10,
-                ]}
-              >
+                ]}>
                 List of people
               </Text>
             </View>
@@ -1097,8 +1077,7 @@ class ShowDetailsGroup extends Component {
                   oStyles.font14,
                   oStyles.textGreen,
                   oStyles.p10,
-                ]}
-              >
+                ]}>
                 No results for that search
               </Text>
             </View>
@@ -1116,8 +1095,7 @@ class ShowDetailsGroup extends Component {
         <Pressable
           activeOpacity={1}
           onPress={() => fAction(oParticipant)}
-          style={[oStyles.row, oStyles.middleFlex]}
-        >
+          style={[oStyles.row, oStyles.middleFlex]}>
           <View style={[oStyles.row, oStyles.flex10]}>
             <View style={oStyles.imageUserContainer}>
               {null !== oParticipant.image ? (
@@ -1261,8 +1239,7 @@ class ShowDetailsGroup extends Component {
                     style={ToastQuestionGenericStyles.buttonCancel}
                     onPress={() =>
                       this.setState({ bShowSendNotification: false })
-                    }
-                  >
+                    }>
                     <Text style={ToastQuestionGenericStyles.buttonText}>
                       Cancel
                     </Text>
@@ -1271,8 +1248,7 @@ class ShowDetailsGroup extends Component {
                 <View style={oStyles.middleFlex}>
                   <Pressable
                     style={ToastQuestionGenericStyles.buttonConfirm}
-                    onPress={() => this.sendNotification()}
-                  >
+                    onPress={() => this.sendNotification()}>
                     <Text style={ToastQuestionGenericStyles.buttonText}>
                       Send
                     </Text>
@@ -1297,8 +1273,7 @@ class ShowDetailsGroup extends Component {
                     bChangeInformation: true,
                     bShowOptions: false,
                   })
-                }
-              >
+                }>
                 <View style={ToastQuestionGenericStyles.viewButtonOption}>
                   <Icon name="ios-create" size={22} color={WhiteColor} />
                   <Text style={ToastQuestionGenericStyles.viewButtonOptionText}>
@@ -1310,8 +1285,7 @@ class ShowDetailsGroup extends Component {
                 <Pressable onPress={() => this.updateCaptiansList()}>
                   <View style={ToastQuestionGenericStyles.viewButtonOption}>
                     <Text
-                      style={ToastQuestionGenericStyles.viewButtonOptionText}
-                    >
+                      style={ToastQuestionGenericStyles.viewButtonOptionText}>
                       Modify captains
                     </Text>
                   </View>
@@ -1324,12 +1298,10 @@ class ShowDetailsGroup extends Component {
                       bShowOptions: false,
                     });
                     this.updateCaptiansList(false);
-                  }}
-                >
+                  }}>
                   <View style={ToastQuestionGenericStyles.viewButtonOption}>
                     <Text
-                      style={ToastQuestionGenericStyles.viewButtonOptionText}
-                    >
+                      style={ToastQuestionGenericStyles.viewButtonOptionText}>
                       Stop being captain
                     </Text>
                   </View>
@@ -1347,8 +1319,7 @@ class ShowDetailsGroup extends Component {
                   style={[
                     ToastQuestionGenericStyles.viewButtonOption,
                     { marginBottom: 0 },
-                  ]}
-                >
+                  ]}>
                   <Icon name="md-close" size={22} color={WhiteColor} />
                   <Text style={ToastQuestionGenericStyles.viewButtonOptionText}>
                     Close
@@ -1374,8 +1345,7 @@ class ShowDetailsGroup extends Component {
                     bShowEditInformationInput: true,
                     sEditInformationValue: oGroup.name,
                   })
-                }
-              >
+                }>
                 <View style={ToastQuestionGenericStyles.viewButtonOption}>
                   <Text style={ToastQuestionGenericStyles.viewButtonOptionText}>
                     Title
@@ -1390,8 +1360,7 @@ class ShowDetailsGroup extends Component {
                     bShowEditInformationInput: true,
                     sEditInformationValue: oGroup.description,
                   })
-                }
-              >
+                }>
                 <View style={ToastQuestionGenericStyles.viewButtonOption}>
                   <Text style={ToastQuestionGenericStyles.viewButtonOptionText}>
                     Descripcion
@@ -1404,14 +1373,12 @@ class ShowDetailsGroup extends Component {
                     bChangeInformation: false,
                     bShowOptions: true,
                   })
-                }
-              >
+                }>
                 <View
                   style={[
                     ToastQuestionGenericStyles.viewButtonOption,
                     { marginBottom: 0 },
-                  ]}
-                >
+                  ]}>
                   <Icon name="md-arrow-back" size={22} color={WhiteColor} />
                   <Text style={ToastQuestionGenericStyles.viewButtonOptionText}>
                     Back
@@ -1451,8 +1418,7 @@ class ShowDetailsGroup extends Component {
                         bShowEditInformationInput: false,
                         bChangeInformation: true,
                       })
-                    }
-                  >
+                    }>
                     <Text style={ToastQuestionGenericStyles.buttonText}>
                       Cancel
                     </Text>
@@ -1463,8 +1429,7 @@ class ShowDetailsGroup extends Component {
                     style={ToastQuestionGenericStyles.buttonConfirm}
                     onPress={() => {
                       this.confirmChangeInformation();
-                    }}
-                  >
+                    }}>
                     <Text style={ToastQuestionGenericStyles.buttonText}>
                       Confirm
                     </Text>
@@ -1495,8 +1460,7 @@ class ShowDetailsGroup extends Component {
                 <View style={oStyles.middleFlex}>
                   <Pressable
                     style={ToastQuestionGenericStyles.buttonCancel}
-                    onPress={() => this.setState(oInitialState)}
-                  >
+                    onPress={() => this.setState(oInitialState)}>
                     <Text style={ToastQuestionGenericStyles.buttonText}>
                       Cancel
                     </Text>
@@ -1505,8 +1469,7 @@ class ShowDetailsGroup extends Component {
                 <View style={oStyles.middleFlex}>
                   <Pressable
                     style={ToastQuestionGenericStyles.buttonConfirm}
-                    onPress={() => this.handleOnConfirm()}
-                  >
+                    onPress={() => this.handleOnConfirm()}>
                     <Text style={ToastQuestionGenericStyles.buttonText}>
                       Confirm
                     </Text>
@@ -1536,8 +1499,7 @@ class ShowDetailsGroup extends Component {
                         bConfirmationDeleteGroup: true,
                         bShowQuestionLeavePrincipalCaptain: false,
                       })
-                    }
-                  >
+                    }>
                     <Text style={ToastQuestionGenericStyles.buttonText}>
                       Delete
                     </Text>
@@ -1546,8 +1508,7 @@ class ShowDetailsGroup extends Component {
                 <View style={oStyles.middleFlex}>
                   <Pressable
                     style={ToastQuestionGenericStyles.buttonConfirm}
-                    onPress={() => this.assignCaptain()}
-                  >
+                    onPress={() => this.assignCaptain()}>
                     <Text style={ToastQuestionGenericStyles.buttonText}>
                       Assign
                     </Text>
@@ -1627,18 +1588,16 @@ class ShowDetailsGroup extends Component {
       <>
         {bIsParticipant ? (
           !bChangeCaptains &&
-            !bRemoveMembers &&
-            !bIsAddParticipants &&
-            !bShowAssignCaptain ? (
+          !bRemoveMembers &&
+          !bIsAddParticipants &&
+          !bShowAssignCaptain ? (
             <Pressable
-              onPress={() => this.setState({ bShowConfirmLeaveGroup: true })}
-            >
+              onPress={() => this.setState({ bShowConfirmLeaveGroup: true })}>
               <View
                 style={[
                   oStyles.p10,
                   { backgroundColor: SignUpColor, alignItems: "center" },
-                ]}
-              >
+                ]}>
                 <Text style={GlobalStyles.textButton}>Leave the group</Text>
               </View>
             </Pressable>
@@ -1646,15 +1605,13 @@ class ShowDetailsGroup extends Component {
         ) : nGroupType === GROUP_PRIVATE ? (
           !this.getIsRequestUser() ? (
             <Pressable
-              onPress={() => this.setState({ bShowConfirmSendRequest: true })}
-            >
+              onPress={() => this.setState({ bShowConfirmSendRequest: true })}>
               <View
                 style={{
                   backgroundColor: GreenFitrecColor,
                   padding: 10,
                   alignItems: "center",
-                }}
-              >
+                }}>
                 <Text style={GlobalStyles.textButton}>Send request join</Text>
               </View>
             </Pressable>
@@ -1664,8 +1621,7 @@ class ShowDetailsGroup extends Component {
                 backgroundColor: GreenFitrecColor,
                 padding: 10,
                 alignItems: "center",
-              }}
-            >
+              }}>
               <Text style={GlobalStyles.textButton}>
                 Your request has already been sent!
               </Text>
@@ -1678,8 +1634,7 @@ class ShowDetailsGroup extends Component {
                 backgroundColor: GreenFitrecColor,
                 padding: 10,
                 alignItems: "center",
-              }}
-            >
+              }}>
               <Text style={GlobalStyles.textButton}>Join the group</Text>
             </View>
           </Pressable>

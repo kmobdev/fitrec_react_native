@@ -5,9 +5,7 @@ import ReactNativePickerModule from "react-native-picker-module";
 import Icon from "react-native-vector-icons/Ionicons";
 
 const SelectCombo = (props) => {
-
   const picker = useRef();
-
 
   return (
     <View
@@ -15,21 +13,13 @@ const SelectCombo = (props) => {
         GlobalStyles.viewSection,
         styles.textInput,
         { alignItems: "flex-end" },
-      ]}
-    >
+      ]}>
       <Text style={styles.textLabel}>{props.title}</Text>
-      <View
-        style={[styles.comboSelect, props.error && styles.paddingExtra]}
-      >
+      <View style={[styles.comboSelect, props.error && styles.paddingExtra]}>
         <Pressable
           onPress={() => picker.current.show()}
-          style={{ flexDirection: "row" }}
-        >
-          <Text>
-            {null !== props.value
-              ? props.textSelect
-              : "Select here"}
-          </Text>
+          style={{ flexDirection: "row" }}>
+          <Text>{null !== props.value ? props.textSelect : "Select here"}</Text>
           <Icon name="chevron-down" size={22} style={styles.iconSelect} />
         </Pressable>
       </View>
@@ -38,8 +28,7 @@ const SelectCombo = (props) => {
           name="ios-warning"
           size={16}
           color={SignUpColor}
-          style={styles.iconError}
-        ></Icon>
+          style={styles.iconError}></Icon>
       ) : null}
       <ReactNativePickerModule
         pickerRef={picker}
@@ -51,7 +40,7 @@ const SelectCombo = (props) => {
       />
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   textLabel: {
