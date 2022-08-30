@@ -128,6 +128,23 @@ const MyPalsList = (props) => {
       dispatch(actionResetStateRequest());
       showToast("Successfully cancel");
     }
+
+    setRefresh(!refresh);
+    setLoading(false);
+    setRefreshing(false);
+  }, [myPalsRequest]);
+
+  useEffect(() => {
+    if (myPals.bRequestNavigation) {
+      setTabSelectPals(false);
+      dispatch(actionCleanNavigation());
+    }
+    setRefresh(!refresh);
+    setLoading(false);
+    setRefreshing(false);
+  }, [myPals]);
+
+  useEffect(() => {
     if (activity.activities.length > 0) {
       setActivities(activity.activities);
     }
@@ -139,14 +156,11 @@ const MyPalsList = (props) => {
       setGym(activity.gyms);
       setGymsName(aGymsName);
     }
-    if (myPals.bRequestNavigation) {
-      setTabSelectPals(false);
-      dispatch(actionCleanNavigation());
-    }
+
     setRefresh(!refresh);
     setLoading(false);
     setRefreshing(false);
-  }, [myPalsRequest, myPals, activity]);
+  }, [activity]);
 
   const openOptions = () => {
     Keyboard.dismiss();
@@ -167,7 +181,7 @@ const MyPalsList = (props) => {
     setFilterRequests(search);
     var aActivitiesSelected =
       activities.filter((item) => item.selected).length > 0 &&
-      activities.filter((item) => item.selected).length < activities.length
+        activities.filter((item) => item.selected).length < activities.length
         ? activities.filter((item) => item.selected)
         : null;
 
@@ -303,6 +317,9 @@ const MyPalsList = (props) => {
         false
       )
     );
+    setTimeout(() => {
+      setLoading(false);
+    }, 1500);
   };
 
   const acceptRequest = (oPal) => {
@@ -515,15 +532,18 @@ const MyPalsList = (props) => {
               myPalsRequest.requestsRecived instanceof Array &&
               myPalsRequest.requestsRecived !== null && (
                 <FlatList
-                  data={myPalsRequest.requestsRecived.filter(
-                    (element) =>
-                      element.name
-                        .toUpperCase()
-                        .includes(filterRequests.toUpperCase()) ||
-                      element.username
-                        .toUpperCase()
-                        .includes(filterRequests.toUpperCase())
-                  )}
+                  data={myPalsRequest.requestsRecived.filter((element) => {
+                    if (element.name !== null && element.name !== undefined) {
+                      return (
+                        element.name
+                          .toUpperCase()
+                          .includes(filterRequests.toUpperCase()) ||
+                        element.username
+                          .toUpperCase()
+                          .includes(filterRequests.toUpperCase())
+                      );
+                    }
+                  })}
                   keyExtractor={(item, index) => index.toString()}
                   extraData={refresh}
                   renderItem={({ item }) => (
@@ -577,11 +597,14 @@ const MyPalsList = (props) => {
               )}
             {undefined !== myPalsRequest.requestsSent && (
               <FlatList
-                data={myPalsRequest.requestsSent.filter(
-                  (element) =>
-                    element.name.includes(filterRequests) ||
-                    element.username.includes(filterRequests)
-                )}
+                data={myPalsRequest.requestsSent.filter((element) => {
+                  if (element.name !== null && element.name !== undefined) {
+                    return (
+                      element.name.includes(filterRequests) ||
+                      element.username.includes(filterRequests)
+                    );
+                  }
+                })}
                 keyExtractor={(item, index) => index.toString()}
                 extraData={refresh}
                 renderItem={({ item }) => (
@@ -590,8 +613,8 @@ const MyPalsList = (props) => {
                       onPress={() => redirectionViewProfile(item.id)}
                       style={styles.dummyImagePressable}>
                       {undefined === item.image ||
-                      null === item.image ||
-                      "" === item.image ? (
+                        null === item.image ||
+                        "" === item.image ? (
                         <Image
                           style={styles.dummyImage}
                           source={require("../../assets/imgProfileReadOnly2.png")}
@@ -685,9 +708,9 @@ const MyPalsList = (props) => {
         <View style={GlobalModal.viewContent}>
           <View style={GlobalModal.viewHead}>
             {ageRange !== null ||
-            gym !== null ||
-            activities.filter((item) => item.selected).length > 0 ||
-            nearMe !== false ? (
+              gym !== null ||
+              activities.filter((item) => item.selected).length > 0 ||
+              nearMe !== false ? (
               <Pressable
                 style={[GlobalModal.buttonLeft, { flexDirection: "row" }]}
                 onPress={() => resetFilters()}>
@@ -823,15 +846,17 @@ const MyPalsList = (props) => {
             </View>
             <View style={styles.viewActivitiesSelected}>
               {activities !== undefined &&
-              activities.filter((item) => item.selected) !== undefined &&
-              activities.filter((item) => item.selected).length > 0 &&
-              activities.filter((item) => item.selected).length <
+                activities.filter((item) => item.selected) !== undefined &&
+                activities.filter((item) => item.selected).length > 0 &&
+                activities.filter((item) => item.selected).length <
                 activities.length ? (
                 activities
                   .filter((item) => item.selected)
                   .map((element) => (
                     <View style={styles.activityContainer} key={element.id}>
-                      <Text style={styles.activityNode}>{element.name}</Text>
+                      <Text style={styles.activityNode}>
+                        {element.name && element.name}
+                      </Text>
                     </View>
                   ))
               ) : (

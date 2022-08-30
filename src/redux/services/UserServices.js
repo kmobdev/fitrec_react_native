@@ -29,28 +29,6 @@ export const UserLoginFB = (data) => {
     })
     .then((oResult) => oResult.data);
 };
-
-export const SaveOneSignalCode = (sPushCode) => {
-  return oAxiosInstance
-    .post(`${Constants.URL_SERVICE}pushcode`, { id_push: sPushCode })
-    .then((oResult) => oResult.data);
-};
-/**
- * Function that validates that there are no user with the email and/or the username received.
- *
- * @param {string} sEmail Email
- * @param {string} sUsername Username you want to modify
- *
- * @author Leandro Curbelo
- */
-export const UserRegisterValidate = (sEmail, sUsername) => {
-  return oAxiosInstance
-    .post(Constants.URL_SERVICE + "register/validate", {
-      email: sEmail,
-      username: sUsername,
-    })
-    .then((oResult) => oResult.data);
-};
 /**
  * Function that sends the data from the registration to the API to process your registration.
  *
@@ -83,6 +61,27 @@ export const UserRegister = (oData) => {
       background: oData.background,
       activities: oData.activities,
       personal_trainer: oData.personalTrainer,
+    })
+    .then((oResult) => oResult.data);
+};
+export const SaveOneSignalCode = (sPushCode) => {
+  return oAxiosInstance
+    .post(`${Constants.URL_SERVICE}pushcode`, { id_push: sPushCode })
+    .then((oResult) => oResult.data);
+};
+/**
+ * Function that validates that there are no user with the email and/or the username received.
+ *
+ * @param {string} sEmail Email
+ * @param {string} sUsername Username you want to modify
+ *
+ * @author Leandro Curbelo
+ */
+export const UserRegisterValidate = (sEmail, sUsername) => {
+  return oAxiosInstance
+    .post(Constants.URL_SERVICE + "register/validate", {
+      email: sEmail,
+      username: sUsername,
     })
     .then((oResult) => oResult.data);
 };

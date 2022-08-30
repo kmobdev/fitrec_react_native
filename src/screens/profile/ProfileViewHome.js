@@ -284,6 +284,9 @@ const ProfileViewHome = (props) => {
         true
       )
     );
+    setTimeout(() => {
+      setLoading(false);
+    }, 1500);
   };
 
   const allowSendRequest = (nIdFitrec) => {

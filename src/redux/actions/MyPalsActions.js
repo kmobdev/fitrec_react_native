@@ -259,8 +259,6 @@ export const actionSendRequest = (
                     sUserPalKey
                 )
                 .set(true);
-              //TODO: This console log is for checking the push ID value. need to fix the undefined push ID issue
-              console.log("checking sIdPush ======>>>>> ", sIdPush);
               if (undefined !== sIdPush && null !== sIdPush) {
                 var oDataNotification = {
                   headings: { en: sDescription },
@@ -296,7 +294,15 @@ export const actionSendRequest = (
                   }
                 );
               } else {
-                dispatch(actionMessage(MESSAGE_PUSH_ERROR));
+                bIsHome
+                  ? dispatch(
+                      actionDispatch(Actions.SEND_REQUEST_FRIEND_HOME_SUCCESS)
+                    )
+                  : dispatch(
+                      actionDispatch(Actions.SEND_REQUEST_FRIEND_SUCCESS)
+                    );
+                dispatch(actionGetRequests(sUserKey));
+                dispatch(actionGetPeople({ text: "" }));
               }
             })
             .catch(() => {});
